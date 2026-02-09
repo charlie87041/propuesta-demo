@@ -25,18 +25,20 @@ This command creates a complete implementation plan following TDD principles and
 
 When you run `/plan-tdd <description>`:
 
-1. **Delegate to planner-tdd agent**:
+1. **Loads Context**: Automatically includes `planner-tdd.md` context with template references
+
+2. **Delegate to planner-tdd agent**:
    ```
    @planner-tdd create implementation plan for: <description>
    ```
 
-2. **Agent will analyze**:
+3. **Agent will analyze**:
    - Identify entities, services, APIs
    - Extract correctness properties from design docs
    - Organize into milestones (Infrastructure → Core → Domain → Advanced)
    - Break into granular issues with TDD structure
 
-3. **Agent will output**:
+4. **Agent will output**:
    - Complete milestone breakdown
    - Issues with Red-Green-Refactor phases
    - Property test mappings
