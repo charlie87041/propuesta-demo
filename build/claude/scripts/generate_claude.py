@@ -12,7 +12,7 @@ from datetime import datetime
 class ClaudeConfigGenerator:
     def __init__(self, output_dir: str = ".claude"):
         self.output_dir = Path(output_dir)
-        self.templates_dir = Path(__file__).resolve().parent.parent
+        self.templates_dir = Path(__file__).resolve().parent.parent / "stubs"
         
     def generate(self, project_name: str, language: str, framework: str = None, 
                  build_tool: str = None):
