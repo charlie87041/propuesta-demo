@@ -302,3 +302,29 @@ Use Spring’s `@Scheduled` or integrate with queues (e.g., Kafka, SQS, RabbitMQ
 - Enforce null-safety via `@NonNull` and `Optional` where appropriate
 
 **Remember**: Keep controllers thin, services focused, repositories simple, and errors handled centrally. Optimize for maintainability and testability.
+
+# Skill: springboot-patterns
+
+## Purpose
+Guiar el diseño de servicios Spring Boot con patrones de arquitectura, API REST, servicios por capas, persistencia, cache, async y logging.
+
+## When to Use
+- Al diseñar controladores REST, servicios y repositorios en Spring Boot.
+- Cuando necesites caching, jobs en background, paginación o resiliencia.
+- Para establecer estándares de observabilidad y manejo de errores.
+
+## Usage
+- Define controladores delgados y servicios transaccionales.
+- Usa DTOs con validación, repositorios Spring Data y manejo centralizado de errores.
+- Aplica cache/async y filtros cuando el flujo lo requiera.
+
+## Examples
+- Crear un `@RestController` con validación y respuesta paginada.
+- Implementar un servicio con `@Transactional` y un repositorio JPA.
+- Añadir un filtro de logging o rate limiting con Bucket4j.
+
+## Related Skills
+- springboot-tdd
+- springboot-security
+- jpa-patterns
+- springboot-verification

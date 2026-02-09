@@ -492,3 +492,27 @@ Before ANY production deployment:
 ---
 
 **Remember**: Security is not optional. One vulnerability can compromise the entire platform. When in doubt, err on the side of caution.
+
+# Skill: security-review
+
+## Purpose
+Checklist integral de seguridad para auth, inputs, secretos, endpoints y datos sensibles.
+
+## When to Use
+- Al manejar autenticación, autorizaciones o pagos.
+- Cuando se reciben inputs de usuarios o archivos.
+- Antes de lanzar a producción o crear PRs sensibles.
+
+## Usage
+- Revisa cada sección (secrets, validation, SQLi, XSS, CSRF, rate limit).
+- Añade tests de seguridad y validaciones.
+- Aplica políticas de logging y error handling seguro.
+
+## Examples
+- Validar requests con Zod.
+- Usar cookies httpOnly para tokens.
+- Añadir rate limiting a endpoints costosos.
+
+## Related Skills
+- springboot-security
+- backend-patterns

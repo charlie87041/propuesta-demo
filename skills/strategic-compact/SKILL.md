@@ -61,3 +61,24 @@ Environment variables:
 
 - [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) - Token optimization section
 - Memory persistence hooks - For state that survives compaction
+
+# Skill: strategic-compact
+
+## Purpose
+Sugerir compacción manual en puntos lógicos para conservar contexto clave.
+
+## When to Use
+- Sesiones largas con muchas herramientas.
+- Antes/después de cambios de fase (exploración → implementación).
+
+## Usage
+- Instala el hook `PreToolUse` con `suggest-compact.sh`.
+- Ajusta `COMPACT_THRESHOLD` si necesitas más o menos frecuencia.
+
+## Examples
+- Configurar `~/.claude/settings.json` con el hook.
+- Compactar tras completar un milestone.
+
+## Related Skills
+- iterative-retrieval
+- continuous-learning

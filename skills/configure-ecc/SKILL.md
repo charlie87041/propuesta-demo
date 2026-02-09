@@ -296,3 +296,25 @@ Then print a summary report:
 ### "Path reference errors after project-level install"
 - Some skills assume `~/.claude/` paths. Run Step 4 verification to find and fix these.
 - For `continuous-learning-v2`, the `~/.claude/homunculus/` directory is always user-level — this is expected and not an error.
+
+# Skill: configure-ecc
+
+## Purpose
+Guiar la instalación interactiva de Everything Claude Code (skills y rules) a nivel usuario o proyecto.
+
+## When to Use
+- Cuando el usuario pide instalar o configurar ECC.
+- Para verificar y optimizar instalaciones existentes.
+
+## Usage
+- Clona el repo en `/tmp` y define el nivel de instalación.
+- Selecciona categorías/skills/rules con `AskUserQuestion`.
+- Verifica rutas y referencias cruzadas, luego optimiza si aplica.
+
+## Examples
+- Instalar skills de Database y Workflow en `~/.claude/`.
+- Ejecutar verificación de paths y corregir referencias.
+
+## Related Skills
+- continuous-learning-v2
+- strategic-compact

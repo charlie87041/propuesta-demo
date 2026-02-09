@@ -117,3 +117,27 @@ http
 - [ ] Logs free of sensitive data
 
 **Remember**: Deny by default, validate inputs, least privilege, and secure-by-configuration first.
+
+# Skill: springboot-security
+
+## Purpose
+Aplicar buenas prácticas de seguridad en Spring Boot: authn/authz, CSRF, headers, secrets y rate limiting.
+
+## When to Use
+- Al implementar autenticación/autorización.
+- Al crear endpoints y validar inputs.
+- Cuando se manejan secretos o datos sensibles.
+
+## Usage
+- Usa filtros de auth y `@PreAuthorize`.
+- Habilita validación con Bean Validation.
+- Configura headers de seguridad y políticas CSRF adecuadas.
+
+## Examples
+- Implementar `JwtAuthFilter` con `OncePerRequestFilter`.
+- Configurar CSP y `SameSite` en headers.
+
+## Related Skills
+- springboot-patterns
+- security-review
+- springboot-verification

@@ -585,3 +585,28 @@ export async function GET(request: Request) {
 ```
 
 **Remember**: Backend patterns enable scalable, maintainable server-side applications. Choose patterns that fit your complexity level.
+
+# Skill: backend-patterns
+
+## Purpose
+Proveer patrones backend para APIs, servicios, repositorios, caching y observabilidad.
+
+## When to Use
+- Al diseñar endpoints REST o middlewares.
+- Para optimizar consultas y manejar errores.
+- Al añadir autenticación, rate limiting o colas.
+
+## Usage
+- Separa capas (controller/service/repo).
+- Aplica cache-aside y manejo centralizado de errores.
+- Usa patrones de logging estructurado.
+
+## Examples
+- Implementar un `MarketService` con repositorio.
+- Añadir rate limiting por IP.
+- Usar un error handler con `ApiError`.
+
+## Related Skills
+- postgres-patterns
+- security-review
+- frontend-patterns

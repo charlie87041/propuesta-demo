@@ -118,3 +118,24 @@ Run: /verify
 
 This skill complements PostToolUse hooks but provides deeper verification.
 Hooks catch issues immediately; this skill provides comprehensive review.
+
+# Skill: verification-loop
+
+## Purpose
+Ejecutar un ciclo de verificación (build, types, lint, tests, seguridad) antes de PR.
+
+## When to Use
+- Tras completar features o refactors.
+- Antes de crear un PR.
+
+## Usage
+- Ejecuta cada fase en orden y reporta resultados.
+- Detén la entrega si alguna fase crítica falla.
+
+## Examples
+- `npm run build` seguido de `npm run lint`.
+- Revisar diffs con `git diff --stat`.
+
+## Related Skills
+- springboot-verification
+- tdd-workflow
