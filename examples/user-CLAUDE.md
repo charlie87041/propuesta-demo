@@ -45,7 +45,7 @@ Located in `~/.claude/agents/`:
 
 | Agent | Purpose |
 |-------|---------|
-| planner | Feature implementation planning |
+| planner-tdd | Feature implementation planning |
 | architect | System design and architecture |
 | tdd-guide | Test-driven development |
 | code-reviewer | Code review for quality/security |
