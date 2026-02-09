@@ -226,22 +226,23 @@ def main():
     )
     parser.add_argument(
         "--project-name",
-        required=True,
+        default="MyProject",
         help="Nombre del proyecto"
     )
     parser.add_argument(
         "--language",
-        required=True,
-        choices=["java", "python", "javascript", "typescript", "go", "rust"],
+        default="java",
+        choices=["java", "javascript", "typescript"],
         help="Lenguaje principal del proyecto"
     )
     parser.add_argument(
         "--framework",
+        default="spring-boot",
         help="Framework usado (spring-boot, django, react, etc.)"
     )
     parser.add_argument(
         "--build-tool",
-        choices=["npm", "yarn", "pnpm", "bun", "gradle", "maven", "pip", "go", "cargo"],
+        choices=["npm", "yarn", "gradle", "maven"],
         help="Build tool (se infiere del lenguaje si no se especifica)"
     )
     parser.add_argument(
