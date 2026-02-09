@@ -112,4 +112,4 @@ Agent (planner):
 
 ## 相关代理
 
-此命令调用位于 `~/.claude/agents/planner.md` 的 `planner` 代理。
+此命令调用位于 `~/.claude/agents/planner-tdd.md` 的 `planner` 代理。

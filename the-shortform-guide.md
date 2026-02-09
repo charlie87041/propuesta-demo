@@ -82,7 +82,7 @@ Subagents work nicely with skills - a subagent capable of executing a subset of 
 ```bash
 # Example subagent structure
 ~/.claude/agents/
-  planner.md           # Feature implementation planning
+  planner-tdd.md           # Feature implementation planning
   architect.md         # System design decisions
   tdd-guide.md         # Test-driven development
   code-reviewer.md     # Quality/security review
@@ -388,7 +388,7 @@ affoon:~ ctx:65% Opus 4.5 19:52
 
 ```
 ~/.claude/agents/
-  planner.md           # Break down features
+  planner-tdd.md           # Break down features
   architect.md         # System design
   tdd-guide.md         # Write tests first
   code-reviewer.md     # Quality review

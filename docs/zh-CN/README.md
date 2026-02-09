@@ -147,7 +147,7 @@ everything-claude-code/
 |   |-- marketplace.json    # 用于 /plugin marketplace add 的市场目录
 |
 |-- agents/           # 用于任务委派的专用子代理
-|   |-- planner.md           # 功能实现规划
+|   |-- planner-tdd.md           # 功能实现规划
 |   |-- architect.md         # 系统设计决策
 |   |-- tdd-guide.md         # 测试驱动开发
 |   |-- code-reviewer.md     # 质量与安全审查
