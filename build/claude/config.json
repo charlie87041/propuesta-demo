@@ -1,0 +1,224 @@
+{
+  "$schema": "./schemas/config.schema.json",
+  "version": "1.0.0",
+  "project": {
+    "name": "collaborative-document-platform",
+    "description": "Sistema colaborativo de gestión de documentos con Spring Boot",
+    "language": "java",
+    "framework": "spring-boot",
+    "buildTool": "gradle"
+  },
+  "agents": {
+    "default": "planner",
+    "available": [
+      "planner",
+      "planner-tdd",
+      "architect",
+      "code-reviewer",
+      "tdd-guide",
+      "build-error-resolver",
+      "go-build-resolver",
+      "database-reviewer",
+      "security-reviewer",
+      "python-reviewer",
+      "go-reviewer",
+      "e2e-runner",
+      "doc-updater",
+      "refactor-cleaner"
+    ],
+    "autoSelect": true
+  },
+  "skills": {
+    "enabled": [
+      "backend-patterns",
+      "frontend-patterns",
+      "springboot-patterns",
+      "springboot-security",
+      "springboot-tdd",
+      "springboot-verification",
+      "django-patterns",
+      "django-security",
+      "django-tdd",
+      "django-verification",
+      "postgres-patterns",
+      "clickhouse-io",
+      "jpa-patterns",
+      "java-coding-standards",
+      "verification-loop",
+      "security-review",
+      "coding-standards",
+      "continuous-learning-v2",
+      "strategic-compact",
+      "eval-harness",
+      "iterative-retrieval",
+      "configure-ecc",
+      "nutrient-document-processing",
+      "project-guidelines-example",
+      "tdd-milestone-planning"
+    ],
+    "autoLoad": true
+  },
+  "contexts": {
+    "available": [
+      "dev",
+      "research",
+      "review",
+      "planner-tdd"
+    ],
+    "default": "dev"
+  },
+  "rules": {
+    "enabled": [
+      "common/agents",
+      "common/coding-style",
+      "common/git-workflow",
+      "common/hooks",
+      "common/patterns",
+      "common/performance",
+      "common/security",
+      "common/testing"
+    ],
+    "strict": true
+  },
+  "commands": {
+    "aliases": {
+      "t": "tdd",
+      "p": "plan-tdd",
+      "r": "code-review",
+      "b": "build-fix"
+    }
+  },
+  "workflows": {
+    "development": {
+      "steps": [
+        "plan-tdd",
+        "tdd",
+        "code-review",
+        "verify"
+      ]
+    },
+    "refactoring": {
+      "steps": [
+        "code-review",
+        "refactor-clean",
+        "verify",
+        "update-docs"
+      ]
+    }
+  },
+  "integrations": {
+    "mcp": {
+      "enabled": true,
+      "configPath": "mcp-configs/mcp-servers.json"
+    },
+    "hooks": {
+      "enabled": true,
+      "configPath": "hooks/hooks.json"
+    }
+  },
+  "features": {
+    "continuousLearning": true,
+    "strategicCompact": true,
+    "autoDocumentation": true,
+    "codeGeneration": true,
+    "testGeneration": true
+  },
+  "preferences": {
+    "verbosity": "normal",
+    "autoCommit": false,
+    "formatOnSave": true,
+    "lintOnSave": true,
+    "testOnSave": false
+  },
+  "permissions": {
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(.env.local)",
+      "Read(.env.production)",
+      "Read(.env.development)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/secrets/**)",
+      "Read(**/credentials.json)"
+    ],
+    "ask": [
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git push --force:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset --hard:*)"
+    ],
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Bash(git log:*)",
+      "Bash(git stash:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(pnpm:*)",
+      "Bash(bun:*)",
+      "Bash(yarn:*)",
+      "Bash(eza:*)",
+      "Bash(fd:*)",
+      "Bash(bat:*)",
+      "Bash(rg:*)",
+      "Bash(sd:*)",
+      "Bash(which:*)",
+      "Bash(brew:*)",
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Bash(uvx:*)",
+      "Bash(uv:*)",
+      "Bash(cargo:*)",
+      "Bash(rustc:*)",
+      "Bash(go:*)",
+      "Bash(make:*)",
+      "Bash(docker:*)",
+      "Bash(gh:*)",
+      "Bash(code:*)",
+      "Bash(nvim:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(touch:*)",
+      "Bash(chmod:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(echo:*)",
+      "Bash(printf:*)",
+      "Bash(pwd:*)",
+      "Bash(cd:*)",
+      "Bash(env:*)",
+      "Bash(export:*)",
+      "Bash(source:*)",
+      "Bash(pytest:*)",
+      "Bash(jest:*)",
+      "Bash(vitest:*)",
+      "Bash(ng:*)",
+      "Bash(nx:*)",
+      "Bash(turbo:*)",
+      "WebFetch",
+      "WebSearch"
+    ]
+  }
+}

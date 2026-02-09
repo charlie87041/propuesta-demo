@@ -1,0 +1,44 @@
+{
+  "name": "my-claude-code",
+  "owner": {
+    "name": "ch4rlie87041",
+    "email": "ch4rlie87041@example.com"
+  },
+  "metadata": {
+    "description": "Claude Code configurations example for java spring app"
+  },
+  "plugins": [
+    {
+      "name": "my-claude-code",
+      "source": "./",
+      "description": "Claude code configuration example for java",
+      "author": {
+        "name": "ch4rlie87041"
+      },
+      "homepage": "https://github.com/charlie87041/propuesta-demo/",
+      "repository": "https://github.com/charlie87041/propuesta-demo/",
+      "license": "MIT",
+      "keywords": [
+        "agents",
+        "skills",
+        "hooks",
+        "commands",
+        "tdd",
+        "code-review",
+        "security",
+        "best-practices"
+      ],
+      "category": "workflow",
+      "tags": [
+        "agents",
+        "skills",
+        "hooks",
+        "commands",
+        "tdd",
+        "code-review",
+        "security",
+        "best-practices"
+      ]
+    }
+  ]
+}
