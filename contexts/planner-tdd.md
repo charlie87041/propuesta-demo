@@ -106,6 +106,14 @@ When creating implementation plans:
    - Extract business rules
    - Define correctness properties
 
+2.1 **Ingest Image Prototypes (if present)**
+   - Use `assets/figma` image files as primary inputs.
+   - Ignore HTML exports unless explicitly requested.
+   - Derive user stories + acceptance criteria from visible UI states,
+     required fields, and user actions.
+   - Merge with existing `assets/specs` content, preserving numbering and
+     noting any new or conflicting requirements.
+
 3. **Design Architecture**
    - Follow dependency order (Infrastructure → Shared → Core → Domain → Advanced)
    - Define component interfaces
@@ -197,6 +205,15 @@ When creating specs, produce three documents:
 3. **tasks.md**: Milestones + TDD tasks + estimates
 
 Each document should match the structure and detail level of the templates.
+
+## Prototype-to-Spec Consolidation Checklist
+
+Use this checklist when image prototypes exist:
+- [ ] All screens in `assets/figma` are enumerated with a short goal summary
+- [ ] UI actions map to user stories and acceptance criteria
+- [ ] Requirements numbering stays consistent with existing specs
+- [ ] Conflicts or gaps with `assets/specs` are explicitly noted
+- [ ] New properties are added to design and mapped to property tests
 
 ## Notes for Claude Code Compatibility
 
