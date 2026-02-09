@@ -150,58 +150,76 @@ ORDER BY market_id, date;
 
 ### Bulk Insert (Recommended)
 
-```typescript
-import { ClickHouse } from 'clickhouse'
-
-const clickhouse = new ClickHouse({
-  url: process.env.CLICKHOUSE_URL,
-  port: 8123,
-  basicAuth: {
-    username: process.env.CLICKHOUSE_USER,
-    password: process.env.CLICKHOUSE_PASSWORD
-  }
-})
+```java
+ClickHouseDataSource dataSource = new ClickHouseDataSource(
+    System.getenv("CLICKHOUSE_URL"),
+    new Properties() {{
+      put("user", System.getenv("CLICKHOUSE_USER"));
+      put("password", System.getenv("CLICKHOUSE_PASSWORD"));
+    }}
+);
 
 // ✅ Batch insert (efficient)
-async function bulkInsertTrades(trades: Trade[]) {
-  const values = trades.map(trade => `(
-    '${trade.id}',
-    '${trade.market_id}',
-    '${trade.user_id}',
-    ${trade.amount},
-    '${trade.timestamp.toISOString()}'
-  )`).join(',')
+void bulkInsertTrades(List<Trade> trades) throws SQLException {
+  String sql = "INSERT INTO trades (id, market_id, user_id, amount, timestamp) VALUES (?, ?, ?, ?, ?)";
 
-  await clickhouse.query(`
-    INSERT INTO trades (id, market_id, user_id, amount, timestamp)
-    VALUES ${values}
-  `).toPromise()
+  try (Connection conn = dataSource.getConnection();
+       PreparedStatement stmt = conn.prepareStatement(sql)) {
+    for (Trade trade : trades) {
+      stmt.setString(1, trade.id());
+      stmt.setString(2, trade.marketId());
+      stmt.setString(3, trade.userId());
+      stmt.setBigDecimal(4, trade.amount());
+      stmt.setTimestamp(5, Timestamp.from(trade.timestamp()));
+      stmt.addBatch();
+    }
+    stmt.executeBatch();
+  }
 }
 
 // ❌ Individual inserts (slow)
-async function insertTrade(trade: Trade) {
+void insertTrade(Trade trade) throws SQLException {
   // Don't do this in a loop!
-  await clickhouse.query(`
-    INSERT INTO trades VALUES ('${trade.id}', ...)
-  `).toPromise()
+  try (Connection conn = dataSource.getConnection();
+       PreparedStatement stmt = conn.prepareStatement(
+           "INSERT INTO trades (id, market_id, user_id, amount, timestamp) VALUES (?, ?, ?, ?, ?)")) {
+    stmt.setString(1, trade.id());
+    stmt.setString(2, trade.marketId());
+    stmt.setString(3, trade.userId());
+    stmt.setBigDecimal(4, trade.amount());
+    stmt.setTimestamp(5, Timestamp.from(trade.timestamp()));
+    stmt.executeUpdate();
+  }
 }
 ```
 
 ### Streaming Insert
 
-```typescript
+```java
 // For continuous data ingestion
-import { createWriteStream } from 'fs'
-import { pipeline } from 'stream/promises'
+ClickHouseClient client = ClickHouseClient.newInstance(ClickHouseProtocol.HTTP);
 
-async function streamInserts() {
-  const stream = clickhouse.insert('trades').stream()
-
-  for await (const batch of dataSource) {
-    stream.write(batch)
+void streamInserts(Stream<Trade> tradeStream) throws Exception {
+  try (ClickHouseResponse response = client.connect(System.getenv("CLICKHOUSE_URL"))
+      .write()
+      .format(ClickHouseFormat.JSONEachRow)
+      .table("trades")
+      .data(output -> {
+        tradeStream.forEach(trade -> {
+          String json = String.format(
+              "{\"id\":\"%s\",\"market_id\":\"%s\",\"user_id\":\"%s\",\"amount\":%s,\"timestamp\":\"%s\"}%n",
+              trade.id(), trade.marketId(), trade.userId(), trade.amount(), trade.timestamp()
+          );
+          try {
+            output.write(json.getBytes(StandardCharsets.UTF_8));
+          } catch (IOException e) {
+            throw new UncheckedIOException(e);
+          }
+        });
+      })
+      .executeAndWait()) {
+    // handle response if needed
   }
-
-  await stream.end()
 }
 ```
 
@@ -351,50 +369,55 @@ ORDER BY cohort, months_since_signup;
 
 ### ETL Pattern
 
-```typescript
+```java
 // Extract, Transform, Load
-async function etlPipeline() {
-  // 1. Extract from source
-  const rawData = await extractFromPostgres()
+@Service
+class MarketEtlJob {
+  private final PostgresClient postgresClient;
+  private final ClickHouseLoader clickHouseLoader;
 
-  // 2. Transform
-  const transformed = rawData.map(row => ({
-    date: new Date(row.created_at).toISOString().split('T')[0],
-    market_id: row.market_slug,
-    volume: parseFloat(row.total_volume),
-    trades: parseInt(row.trade_count)
-  }))
+  MarketEtlJob(PostgresClient postgresClient, ClickHouseLoader clickHouseLoader) {
+    this.postgresClient = postgresClient;
+    this.clickHouseLoader = clickHouseLoader;
+  }
 
-  // 3. Load to ClickHouse
-  await bulkInsertToClickHouse(transformed)
+  @Scheduled(fixedRateString = "PT1H")
+  public void etlPipeline() {
+    List<MarketRow> rawData = postgresClient.fetchMarketRows();
+
+    List<MarketAggregate> transformed = rawData.stream()
+        .map(row -> new MarketAggregate(
+            row.createdAt().toLocalDate(),
+            row.marketSlug(),
+            new BigDecimal(row.totalVolume()),
+            Integer.parseInt(row.tradeCount())
+        ))
+        .toList();
+
+    clickHouseLoader.bulkInsert(transformed);
+  }
 }
-
-// Run periodically
-setInterval(etlPipeline, 60 * 60 * 1000)  // Every hour
 ```
 
 ### Change Data Capture (CDC)
 
-```typescript
+```java
 // Listen to PostgreSQL changes and sync to ClickHouse
-import { Client } from 'pg'
+Connection pgConnection = DriverManager.getConnection(System.getenv("DATABASE_URL"));
+PGConnection pg = pgConnection.unwrap(PGConnection.class);
+pg.addNotificationListener((processId, channel, payload) -> {
+  MarketUpdate update = MarketUpdate.fromJson(payload);
+  clickHouseLoader.insertUpdate(new ClickHouseMarketUpdate(
+      update.id(),
+      update.operation(), // INSERT, UPDATE, DELETE
+      Instant.now(),
+      update.newDataJson()
+  ));
+});
 
-const pgClient = new Client({ connectionString: process.env.DATABASE_URL })
-
-pgClient.query('LISTEN market_updates')
-
-pgClient.on('notification', async (msg) => {
-  const update = JSON.parse(msg.payload)
-
-  await clickhouse.insert('market_updates', [
-    {
-      market_id: update.id,
-      event_type: update.operation,  // INSERT, UPDATE, DELETE
-      timestamp: new Date(),
-      data: JSON.stringify(update.new_data)
-    }
-  ])
-})
+try (Statement stmt = pgConnection.createStatement()) {
+  stmt.execute("LISTEN market_updates");
+}
 ```
 
 ## Best Practices
