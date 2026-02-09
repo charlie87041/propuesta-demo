@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hilo de Discusión de Propuesta</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#196ee6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .diff-added { background-color: rgba(34, 197, 94, 0.1); color: #166534; }
+        .diff-removed { background-color: rgba(239, 68, 68, 0.1); color: #991b1b; text-decoration: line-through; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-20 flex items-center bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 p-4">
+<div class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<div class="flex-1 px-2">
+<h1 class="text-base font-bold leading-tight">Propuesta de Cambio</h1>
+<p class="text-[11px] font-medium uppercase tracking-wider text-slate-500">ID: #4092-24</p>
+</div>
+<div class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">more_horiz</span>
+</div>
+</header>
+<main class="pb-40">
+<!-- Content Comparison Section -->
+<section class="p-4">
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-sm font-bold text-slate-500 uppercase tracking-widest">Comparación de Contenido</h2>
+<span class="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-1 rounded text-[10px] font-bold">REVISIÓN PENDIENTE</span>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+<div class="p-4 border-b border-slate-100 dark:border-slate-800">
+<h3 class="font-bold text-lg mb-1">Cláusula 4.2: Términos de Pago</h3>
+<p class="text-xs text-slate-400">Editado por Carlos Ruiz hace 4 horas</p>
+</div>
+<div class="p-4 space-y-4">
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-red-500 text-sm">remove_circle</span>
+<span class="text-xs font-bold text-slate-400 uppercase">Original</span>
+</div>
+<div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg text-sm leading-relaxed diff-removed">
+                            El pago se realizará en un periodo de 30 días naturales posteriores a la recepción de la factura correspondiente.
+                        </div>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-green-500 text-sm">add_circle</span>
+<span class="text-xs font-bold text-slate-400 uppercase">Propuesta</span>
+</div>
+<div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg text-sm leading-relaxed diff-added">
+                            El pago se procesará en un plazo máximo de <span class="font-bold">15 días hábiles</span> para garantizar la liquidez del proveedor.
+                        </div>
+</div>
+</div>
+</div>
+</section>
+<!-- Discussion Header -->
+<div class="px-4 pt-6 pb-2 border-t border-slate-100 dark:border-slate-800">
+<h2 class="text-sm font-bold text-slate-500 uppercase tracking-widest">Discusión de Consultores</h2>
+</div>
+<!-- Chat Thread Area -->
+<div class="space-y-6 px-4 py-4">
+<!-- Message 1 -->
+<div class="flex gap-3">
+<div class="h-10 w-10 shrink-0 rounded-full bg-slate-200 overflow-hidden border border-slate-200 dark:border-slate-700">
+<img class="h-full w-full object-cover" data-alt="Retrato de consultora Sofía Chen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5OJKbcPFLTuSpBxUJzj4fFDJF-TFYakBWbj1Je9spmTr5DJhusUpupWM5YOIqL5LYLTD_pl0F1Igm1fin0C9lIKzDJm-3r6xpPadBqoP1PgFXCqoDgB1Z2OtVtYbLlbuCa2rkZvu8Xs1ARkrMYOTD1Gv36RMuQaYhrmQ0UAV9tLqZjeMxSA2qqmwOKsOlmoN0XcNtgb9dFeJxIs2ZEKw3BWenqLKOmGmOyy7WqWtSFxhdrC5L0uCxUEydLTGo8bm_PMcguE31h7I"/>
+</div>
+<div class="flex-1">
+<div class="flex items-baseline gap-2 mb-1">
+<span class="font-bold text-sm">Sofía Chen</span>
+<span class="text-[10px] text-slate-400 font-medium">Líder de Finanzas</span>
+<span class="text-[10px] text-slate-400 ml-auto">2h ago</span>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-tr-xl rounded-b-xl shadow-sm">
+<p class="text-sm leading-relaxed">He revisado los términos legales y me parece que 15 días es más competitivo para el cliente actual. ¿Podemos validar con el área de tesorería?</p>
+</div>
+<div class="flex items-center gap-4 mt-2">
+<button class="flex items-center gap-1 text-primary text-xs font-semibold">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span>
+<span>3</span>
+</button>
+<button class="text-slate-400 text-xs font-semibold">Responder</button>
+</div>
+</div>
+</div>
+<!-- Message 2 -->
+<div class="flex gap-3">
+<div class="h-10 w-10 shrink-0 rounded-full bg-slate-200 overflow-hidden border border-slate-200 dark:border-slate-700">
+<img class="h-full w-full object-cover" data-alt="Retrato de consultor Marcos Rivera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh-04ZfkiNUO-JMJBM7wWWQrEVL9KG7evo-XsnFZYtZeL-1UcUnvxC-cv3atix9tkkdIDRUYlrbHFIwIjhZR4abAwe5pZq2q6dWt-S-mprQX-IazNclNe0VoDw6BMeflrrjCHdbbtWET3zEL2EQ6FIbsr6MmBmpfRU1vyPmBbRg_PffJw-_MH5jH9Y0Ac2fQNLTzqBkfjt_8zhuJws40ZJViqXGwDzpWJkkbz9WpHoVqwmUTlsRHLTDKguYbQ0kykXM7GimRoWu4E"/>
+</div>
+<div class="flex-1">
+<div class="flex items-baseline gap-2 mb-1">
+<span class="font-bold text-sm">Marcos Rivera</span>
+<span class="text-[10px] text-slate-400 font-medium">Asesor Legal</span>
+<span class="text-[10px] text-slate-400 ml-auto">1h ago</span>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-tr-xl rounded-b-xl shadow-sm">
+<p class="text-sm leading-relaxed">De acuerdo con Sofía. Legalmente no hay impedimento para reducir el plazo a 15 días hábiles. He adjuntado el anexo de conformidad.</p>
+<div class="mt-2 flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
+<span class="material-symbols-outlined text-primary">description</span>
+<span class="text-xs font-medium truncate">anexo_pago_v2.pdf</span>
+</div>
+</div>
+<div class="flex items-center gap-4 mt-2">
+<button class="flex items-center gap-1 text-slate-400 text-xs font-semibold">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span>
+<span>1</span>
+</button>
+<button class="text-slate-400 text-xs font-semibold">Responder</button>
+</div>
+</div>
+</div>
+<!-- Message 3 (My own) -->
+<div class="flex gap-3 flex-row-reverse">
+<div class="h-10 w-10 shrink-0 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+<span class="text-primary font-bold text-xs">YO</span>
+</div>
+<div class="flex-1 text-right">
+<div class="flex flex-row-reverse items-baseline gap-2 mb-1">
+<span class="font-bold text-sm">Tú</span>
+<span class="text-[10px] text-slate-400 ml-auto">15m ago</span>
+</div>
+<div class="bg-primary text-white p-3 rounded-tl-xl rounded-b-xl shadow-md text-left inline-block max-w-full">
+<p class="text-sm leading-relaxed">Perfecto. Procederé a preparar la versión final si no hay más comentarios en la próxima hora.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Sticky Bottom Area -->
+<footer class="fixed bottom-0 left-0 right-0 z-30">
+<!-- Input Area -->
+<div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 p-3 flex items-center gap-3">
+<button class="flex size-10 items-center justify-center text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<div class="relative flex-1">
+<input class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary/50" placeholder="Añadir un comentario..." type="text"/>
+</div>
+<button class="flex size-10 items-center justify-center text-primary">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+<!-- Action Bar -->
+<div class="bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 p-4 pb-8 flex flex-col gap-3">
+<div class="flex gap-3">
+<button class="flex-1 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 py-3 rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    Cancelar
+                </button>
+<button class="flex-1 border border-primary text-primary py-3 rounded-xl text-sm font-bold hover:bg-primary/5 transition-colors">
+                    Sugerir Mezcla
+                </button>
+</div>
+<button class="w-full bg-primary text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+                Enviar Versión Final
+            </button>
+</div>
+</footer>
+</body></html>

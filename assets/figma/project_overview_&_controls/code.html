@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Project Overview &amp; Controls</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#196ee6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden max-w-md mx-auto shadow-2xl">
+<!-- TopAppBar -->
+<div class="flex items-center bg-white dark:bg-slate-900 p-4 pb-2 justify-between sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800">
+<div class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">Project Overview</h2>
+<div class="flex size-10 items-center justify-end">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</div>
+<div class="p-4 space-y-4">
+<!-- Hero Card -->
+<div class="flex flex-col items-stretch justify-start rounded-xl shadow-sm bg-white dark:bg-slate-900 overflow-hidden border border-slate-200 dark:border-slate-800">
+<div class="w-full bg-center bg-no-repeat aspect-[16/7] bg-cover" data-alt="Abstract colorful office workspace background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCswV37hSedjQhAuO8pf2o3-cKwMeMQg1Ep23zDJqNpN9NKrJ2lONBNqaPM3olK_n5q3tGlTEFSdoeZAu0XlFXRA1HKD_qKz-dj3Hp4LuP82pVCpJOLf_DzspRuKI1X7QtHnv1WTmMSA5muvYocS-S6eHaGUQlXOYc8rObJkD0_C5Kps-zBmf74G4N_K7606DHByV306VjEPTnQ3tu-I8upRfRn0Pj1tJjpDyodN9xY_n-olbEwzpZ9SRp97nVaOpn7scLr8VJ3h1I");'>
+</div>
+<div class="flex w-full flex-col items-stretch justify-center gap-2 p-5">
+<div class="flex justify-between items-start">
+<p class="bg-primary/10 text-primary dark:bg-primary/20 text-xs font-bold px-2 py-1 rounded-full">v2.4.1</p>
+<span class="material-symbols-outlined text-slate-400" data-icon="more_horiz">more_horiz</span>
+</div>
+<h1 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">Global Rebranding Initiative</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-relaxed">
+                        Comprehensive content strategy for the 2024 global rollout. Focuses on consistency across all digital channels and internal asset management.
+                    </p>
+<div class="mt-2 flex gap-2">
+<button class="flex-1 cursor-pointer items-center justify-center rounded-lg h-10 bg-primary text-white text-sm font-semibold transition-opacity active:opacity-80">
+                            Edit Project
+                        </button>
+<button class="flex size-10 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Workflow Progress -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-slate-900 dark:text-white text-md font-bold">Workflow Progress</h3>
+<span class="text-primary text-xs font-bold uppercase tracking-wider">Consultation</span>
+</div>
+<div class="relative flex items-center justify-between mb-2">
+<div class="absolute top-1/2 left-0 w-full h-1 bg-slate-100 dark:bg-slate-800 -translate-y-1/2 rounded-full"></div>
+<div class="absolute top-1/2 left-0 w-2/3 h-1 bg-primary -translate-y-1/2 rounded-full"></div>
+<!-- Stages dots -->
+<div class="relative z-10 flex flex-col items-center gap-1">
+<div class="size-3 rounded-full bg-primary border-4 border-white dark:border-slate-900"></div>
+<span class="text-[10px] text-slate-500 font-medium">Editing</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-1">
+<div class="size-3 rounded-full bg-primary border-4 border-white dark:border-slate-900"></div>
+<span class="text-[10px] text-primary font-bold">Consultation</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-1">
+<div class="size-3 rounded-full bg-slate-200 dark:bg-slate-700 border-4 border-white dark:border-slate-900"></div>
+<span class="text-[10px] text-slate-400 font-medium">Published</span>
+</div>
+</div>
+</div>
+<!-- Quick Stats -->
+<div class="flex gap-3">
+<div class="flex flex-1 flex-col gap-1 rounded-xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Active Proposals</p>
+<div class="flex items-center gap-2">
+<p class="text-slate-900 dark:text-white text-2xl font-bold">5</p>
+<span class="text-emerald-500 text-[10px] font-bold">+2</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col gap-1 rounded-xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Members</p>
+<div class="flex items-center gap-2">
+<p class="text-slate-900 dark:text-white text-2xl font-bold">12</p>
+<div class="flex -space-x-2">
+<div class="size-5 rounded-full bg-slate-300 border border-white dark:border-slate-900"></div>
+<div class="size-5 rounded-full bg-slate-400 border border-white dark:border-slate-900"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pending Actions -->
+<div class="space-y-3">
+<h3 class="text-slate-900 dark:text-white text-md font-bold px-1">Pending Actions</h3>
+<div class="flex items-center gap-4 p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm active:bg-slate-50 dark:active:bg-slate-800 transition-colors cursor-pointer">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+<span class="material-symbols-outlined" data-icon="task">task</span>
+</div>
+<div class="flex flex-1 flex-col">
+<p class="text-slate-900 dark:text-slate-100 text-sm font-semibold">Approve Change Proposal #42</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Awaiting your final review signature</p>
+</div>
+<span class="material-symbols-outlined text-slate-300" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm active:bg-slate-50 dark:active:bg-slate-800 transition-colors cursor-pointer">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/30 text-primary">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+</div>
+<div class="flex flex-1 flex-col">
+<p class="text-slate-900 dark:text-slate-100 text-sm font-semibold">Review Feedback</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">New comments on Branding Guide</p>
+</div>
+<span class="material-symbols-outlined text-slate-300" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Tabs Navigation -->
+<div class="pt-4">
+<div class="flex p-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-lg">
+<button class="flex-1 py-2 text-sm font-semibold rounded-md bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white">
+                        Content Index
+                    </button>
+<button class="flex-1 py-2 text-sm font-semibold rounded-md text-slate-500 dark:text-slate-400">
+                        Team Management
+                    </button>
+</div>
+<!-- Tab Content Placeholder -->
+<div class="mt-4 space-y-4 pb-20">
+<div class="flex items-center justify-between p-3 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400" data-icon="folder">folder</span>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-200">Brand Guidelines</span>
+</div>
+<span class="text-xs text-slate-400">12 items</span>
+</div>
+<div class="flex items-center justify-between p-3 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400" data-icon="description">description</span>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-200">Q4 Strategy Report</span>
+</div>
+<span class="text-xs text-slate-400">Final Draft</span>
+</div>
+<div class="flex items-center justify-between p-3 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400" data-icon="image">image</span>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-200">Asset Library</span>
+</div>
+<span class="text-xs text-slate-400">248 files</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-6 right-1/2 translate-x-1/2 md:translate-x-0 md:right-10 flex items-center justify-center gap-2 px-6 h-14 bg-primary text-white rounded-full shadow-lg shadow-primary/30 z-40 transition-transform active:scale-95">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span class="font-bold text-sm">New Proposal</span>
+</button>
+</div>
+</body></html>

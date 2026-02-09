@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Configuración de Proyecto (Paso 1)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#196ee6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .ios-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between px-4 h-16">
+<button class="text-primary flex items-center gap-1">
+<span class="material-symbols-outlined">chevron_left</span>
+<span class="text-lg">Atrás</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">Nuevo Proyecto</h1>
+<button class="text-primary font-medium text-lg">Cancelar</button>
+</div>
+<!-- Progress Stepper -->
+<div class="px-4 pb-4">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold uppercase tracking-wider text-primary">Paso 1 de 2</span>
+<span class="text-xs font-medium text-slate-500">Info &amp; Estructura</span>
+</div>
+<div class="flex gap-2 h-1.5 w-full">
+<div class="h-full flex-1 bg-primary rounded-full"></div>
+<div class="h-full flex-1 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+</div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto px-4 py-6 max-w-lg mx-auto w-full">
+<!-- Section: Basic Info -->
+<section class="mb-8">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">info</span>
+<h2 class="text-xl font-bold">Información básica</h2>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 dark:text-slate-400 px-1">Nombre del Proyecto</label>
+<input class="w-full h-14 px-4 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-base" placeholder="Ej. Crónicas del Futuro" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 dark:text-slate-400 px-1">Sinopsis / Descripción</label>
+<textarea class="w-full p-4 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-base resize-none" placeholder="Describe de qué trata tu proyecto editorial..." rows="4"></textarea>
+</div>
+</div>
+</section>
+<!-- Section: Index Builder -->
+<section class="mb-24">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">account_tree</span>
+<h2 class="text-xl font-bold">Estructura del Índice</h2>
+</div>
+<button class="flex items-center gap-1 text-primary text-sm font-bold bg-primary/10 px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+                    Añadir
+                </button>
+</div>
+<p class="text-sm text-slate-500 mb-6 px-1">Arrastra las secciones para reorganizar el orden del contenido.</p>
+<div class="space-y-3">
+<!-- Index Item 1 -->
+<div class="flex items-center gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl ios-shadow border border-slate-100 dark:border-slate-800">
+<div class="flex-shrink-0 text-slate-400">
+<span class="material-symbols-outlined">drag_indicator</span>
+</div>
+<div class="flex-1">
+<h4 class="font-semibold text-slate-800 dark:text-slate-200">Introducción</h4>
+<p class="text-xs text-slate-500">2,400 palabras aprox.</p>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined" style="font-size: 20px;">more_vert</span>
+</button>
+</div>
+<!-- Index Item 2 -->
+<div class="flex items-center gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl ios-shadow border border-slate-100 dark:border-slate-800">
+<div class="flex-shrink-0 text-slate-400">
+<span class="material-symbols-outlined">drag_indicator</span>
+</div>
+<div class="flex-1">
+<h4 class="font-semibold text-slate-800 dark:text-slate-200">Capítulo 1: El Despertar</h4>
+<p class="text-xs text-slate-500">Planificado</p>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined" style="font-size: 20px;">more_vert</span>
+</button>
+</div>
+<!-- Index Item 3 -->
+<div class="flex items-center gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl ios-shadow border border-slate-100 dark:border-slate-800">
+<div class="flex-shrink-0 text-slate-400">
+<span class="material-symbols-outlined">drag_indicator</span>
+</div>
+<div class="flex-1">
+<h4 class="font-semibold text-slate-800 dark:text-slate-200">Capítulo 2: Vientos de Cambio</h4>
+<p class="text-xs text-slate-500">Borrador inicial</p>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined" style="font-size: 20px;">more_vert</span>
+</button>
+</div>
+<!-- Empty/Placeholder State -->
+<button class="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-400 hover:text-primary hover:border-primary transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-medium text-sm">Nueva sección o capítulo</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Sticky Bottom Footer -->
+<footer class="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800">
+<div class="max-w-lg mx-auto">
+<button class="w-full bg-primary text-white h-14 rounded-xl font-bold text-lg shadow-lg shadow-primary/30 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+<span>Siguiente: Asignar Equipo</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</footer>
+</body></html>

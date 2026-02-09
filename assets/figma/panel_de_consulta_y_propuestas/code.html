@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Panel de Consulta y Propuestas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#196ee6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .bottom-sheet {
+            box-shadow: 0 -4px 20px -5px rgba(0, 0, 0, 0.1);
+        }
+        .ios-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .ios-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#0e131b] dark:text-slate-100 font-display">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<!-- TopAppBar -->
+<header class="flex items-center bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 pb-2 justify-between z-20">
+<div class="text-[#0e131b] dark:text-slate-100 flex size-10 shrink-0 items-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<div class="flex-1 text-center px-2">
+<h2 class="text-[#0e131b] dark:text-white text-base font-bold leading-tight truncate">Cien Años de Soledad - Rev. 4</h2>
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Espacio: Editorial Sudamericana</p>
+</div>
+<div class="flex w-10 items-center justify-end">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-transparent text-[#0e131b] dark:text-slate-100">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</header>
+<!-- Document Reading Area -->
+<main class="flex-1 overflow-y-auto ios-scrollbar pb-64 px-6 pt-6 bg-white dark:bg-slate-900">
+<article class="max-w-2xl mx-auto space-y-6">
+<p class="text-lg leading-relaxed text-slate-800 dark:text-slate-200">
+                    Muchos años después, frente al pelotón de fusilamiento, el coronel Aureliano Buendía había de recordar aquella tarde remota en que su padre lo llevó a conocer el hielo.
+                </p>
+<p class="text-lg leading-relaxed text-slate-800 dark:text-slate-200 bg-primary/10 border-l-4 border-primary p-2 -mx-2 rounded-r-md">
+                    Macondo era entonces una aldea de veinte casas de barro y cañabrava construidas a la orilla de un río de aguas diáfanas que se precipitaban por un lecho de piedras pulidas, blancas y enormes como huevos prehistóricos.
+                </p>
+<!-- Floating Action Button Contextual -->
+<div class="relative flex justify-center py-4">
+<button class="flex items-center gap-2 bg-primary text-white px-5 py-3 rounded-full shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">add_comment</span>
+<span class="text-sm font-bold tracking-tight">Crear Propuesta</span>
+</button>
+</div>
+<p class="text-lg leading-relaxed text-slate-800 dark:text-slate-200">
+                    El mundo era tan reciente, que muchas cosas carecían de nombre, y para mencionarlas había que señalarlas con el dedo. Todos los años, por el mes de marzo, una familia de gitanos desarrapados plantaba su carpa cerca de la aldea, y con un grande alboroto de pitos y timbales daban a conocer los nuevos inventos.
+                </p>
+<p class="text-lg leading-relaxed text-slate-800 dark:text-slate-200">
+                    Primero llevaron el imán. Un gitano corpulento, de barba montaraz y manos de gorrión, que se presentó con el nombre de Melquíades, hizo una truculenta demostración pública de lo que él mismo calificaba como la octava maravilla de los sabios alquimistas de Macedonia. 
+                </p>
+<p class="text-lg leading-relaxed text-slate-800 dark:text-slate-200">
+                    Fue de casa en casa arrastrando dos lingotes metálicos, y todo el mundo se espantó al ver que los calderos, las pailas, las tenazas y los anafe se caían de su sitio, y las maderas crujían por la desesperación de los clavos y los tornillos tratando de desenclavarse.
+                </p>
+</article>
+</main>
+<!-- Proposals Bottom Sheet -->
+<div class="bottom-sheet absolute bottom-0 left-0 right-0 bg-background-light dark:bg-slate-800 rounded-t-xl border-t border-slate-200 dark:border-slate-700 h-[320px] z-30 transition-transform duration-300">
+<!-- Drag Handle -->
+<div class="flex justify-center p-3">
+<div class="w-10 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
+</div>
+<!-- Sheet Header -->
+<div class="px-5 pb-3 flex justify-between items-center">
+<h3 class="text-slate-900 dark:text-white font-bold text-lg">Propuestas de Cambio</h3>
+<span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded-full">3 Activas</span>
+</div>
+<!-- Proposals List -->
+<div class="overflow-y-auto h-[220px] px-5 pb-5 space-y-4 ios-scrollbar">
+<!-- Proposal Card 1 -->
+<div class="bg-white dark:bg-slate-700 p-4 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-full overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="Profile picture of a male editor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ9MHq6uwA8ZC3jaWXtAxaOwpEf92hPcDuYoKvogEJAOYizGkXG4rj-ht00Xc4X0LXpKgxmetr1nPC_nzPS_QRIljgTX9k88P_Nd3e4s1x8ozCEiC8WzGcYXCPPV8BUjISuRoU5X0Fn6_FYSnUq613Om1WhS8izQ_XAlAYV67FEDPVbpIdkgoisuD1woCwJuvlbTxFTkKeFq1EZC7Pffe8t1BEqHoimR7E8zuXbq5EOm7Ky-YpdclbJm20Gb4WU_GuUZCuRrx8oIs"/>
+</div>
+<div>
+<h4 class="text-sm font-bold dark:text-white">Carlos Ruiz</h4>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Editor Principal</p>
+</div>
+</div>
+<span class="text-[10px] px-2 py-1 rounded-md font-bold bg-amber-100 text-amber-700 uppercase">En Discusión</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-300 italic mb-2 border-l-2 border-slate-200 pl-3">
+                        "Macondo era entonces una aldea..."
+                    </p>
+<p class="text-sm text-slate-800 dark:text-slate-100">
+                        ¿Deberíamos especificar la ubicación geográfica exacta en esta frase?
+                    </p>
+<div class="mt-3 flex gap-2">
+<button class="text-xs font-bold text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">chat_bubble</span>
+                            4 Comentarios
+                        </button>
+</div>
+</div>
+<!-- Proposal Card 2 -->
+<div class="bg-white dark:bg-slate-700 p-4 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-full overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="Profile picture of a female consultant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8o7meHIL-0H6e-Wd37eP2M24vMbhJSSYViyIwQkEFgPD6kkj9osrySg-xYI5nhGL6wnmWprrOmIleuLwvYf0UxAGNAonFnzkFeM-P50UF7-Dxp60d0jtiyDOEVBAgGC5FzuhnKoibkMnkJ-Mz6MnYtnz15zef-xdkWhc9QYNOp5C8oagu8e5F99HONU4OLtQ_NVtGB6eGDtiD2zT1XuhQ6YrTr6VEI106p_-zX-AIPxLUhiRtogxa-Vgi5L6RdV3QREeka3in3NA"/>
+</div>
+<div>
+<h4 class="text-sm font-bold dark:text-white">Elena M.</h4>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Consultor Externo</p>
+</div>
+</div>
+<span class="text-[10px] px-2 py-1 rounded-md font-bold bg-green-100 text-green-700 uppercase">Pendiente</span>
+</div>
+<p class="text-sm text-slate-800 dark:text-slate-100">
+                        Verificar la terminología técnica de "sabios alquimistas" según el contexto histórico de la época.
+                    </p>
+</div>
+</div>
+</div>
+<!-- Navigation Bar (iOS Style) -->
+<nav class="absolute bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex justify-around items-center pt-2 pb-8 z-40">
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="text-[10px] font-medium">Documento</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">reviews</span>
+<span class="text-[10px] font-bold">Consulta</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-medium">Equipo</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Ajustes</span>
+</div>
+</nav>
+</div>
+</body></html>

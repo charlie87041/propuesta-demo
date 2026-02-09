@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Detalle del Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#196ee6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- TopAppBar Navigation -->
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center p-4 pb-2 justify-between">
+<button class="text-primary flex size-10 shrink-0 items-center justify-start focus:outline-none">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios</span>
+</button>
+<h2 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center">Editorial Primavera</h2>
+<div class="flex w-12 items-center justify-end gap-3">
+<button class="text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">edit</span>
+</button>
+</div>
+</div>
+<!-- Tabs Segmented Control -->
+<div class="flex px-4 py-3">
+<div class="flex h-10 flex-1 items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-800 p-1">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-slate-700 has-[:checked]:shadow-sm has-[:checked]:text-primary text-slate-500 dark:text-slate-400 text-sm font-semibold transition-all">
+<span class="truncate">Proyectos</span>
+<input checked="" class="invisible w-0" name="view-toggle" type="radio" value="proyectos"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-slate-700 has-[:checked]:shadow-sm has-[:checked]:text-primary text-slate-500 dark:text-slate-400 text-sm font-semibold transition-all">
+<span class="truncate">Equipo</span>
+<input class="invisible w-0" name="view-toggle" type="radio" value="equipo"/>
+</label>
+</div>
+</div>
+</header>
+<main class="flex-1 w-full max-w-md mx-auto">
+<!-- Search Bar -->
+<div class="px-4 py-4">
+<label class="flex flex-col min-w-40 h-10 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full shadow-sm">
+<div class="text-slate-400 flex border-none bg-white dark:bg-slate-800 items-center justify-center pl-4 rounded-l-xl">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-xl text-slate-900 dark:text-white focus:outline-0 focus:ring-0 border-none bg-white dark:bg-slate-800 placeholder:text-slate-400 px-3 text-sm font-normal" placeholder="Buscar en el workspace" value=""/>
+</div>
+</label>
+</div>
+<!-- Projects Section Title & Action -->
+<div class="flex items-center justify-between px-4 pb-2 pt-2">
+<h3 class="text-slate-900 dark:text-white text-xl font-bold">Proyectos</h3>
+<button class="bg-primary text-white rounded-full size-8 flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-xl">add</span>
+</button>
+</div>
+<!-- Projects List -->
+<div class="flex flex-col space-y-px mt-2">
+<!-- Project Item 1 (Draft) -->
+<div class="flex items-center gap-4 bg-white dark:bg-slate-900/50 px-4 py-4 border-b border-slate-100 dark:border-slate-800 justify-between">
+<div class="flex items-center gap-4">
+<div class="bg-slate-200 dark:bg-slate-700 bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-14 flex items-center justify-center" data-alt="Cover of a modern minimalist magazine" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAP2bvY2aD5meSUDbzGWekz2mcPYKtKaU5ZyiO946VPaFdWZ8KJYkJJTBVNhvRRh7ZD1iY74DQrT7mfAQ05xF1QoQs7ldeJbIJwAEGxEiRCPXvUJKGm5ZJpF7p9bBde0ygn9aHpZX-Ln4lrYrCBbNvpMUqL9J_ZOnqc90KygsQxWrglwWsta-wh_-ciRw0fSfLZTKnO397LYqBO9ehanjJazb209XiTGSqtOsV6IanOjAqNMStQxs4i7GbtwBMkpY5Azl8V92Tx69o");'>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-slate-900 dark:text-white text-base font-semibold leading-tight line-clamp-1">Revista Mensual Mayo</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider">Borrador</span>
+</div>
+</div>
+</div>
+<button class="text-red-500 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors">
+<span class="material-symbols-outlined text-2xl">delete</span>
+</button>
+</div>
+<!-- Project Item 2 (In Consultation) -->
+<div class="flex items-center gap-4 bg-white dark:bg-slate-900/50 px-4 py-4 border-b border-slate-100 dark:border-slate-800 justify-between">
+<div class="flex items-center gap-4">
+<div class="bg-slate-200 dark:bg-slate-700 bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-14" data-alt="Pile of hardcover aesthetic books" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDaYfKg-PuYEvLyQcfGREIGsZQO9pIJBgv7zSY0lxzV5IM6sifNqpZXxUO2aUBx64nPXczu7JFwJaf9OA9RbRHoTbFvIPZnOpgdPYyLAlrsWD7SvUVTwe8PAAWTFNDW_bzefTqBZKKaBj5rs0JcaJZJ1n9fRI7oGROJqmGFLsidIzs_G_-hn05yjybDYWQuAgNhtShfjNrxwXqG8MpIOfBVuO3c_SskpdD5bARZo-Yvq6QFNte3XcoaxaZpIcFcqoWIXdaRl9M6R7Q");'>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-slate-900 dark:text-white text-base font-semibold leading-tight line-clamp-1">Antología Poesía</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider">Consulta</span>
+</div>
+</div>
+</div>
+<div class="text-slate-400 p-2">
+<span class="material-symbols-outlined text-2xl">chevron_right</span>
+</div>
+</div>
+<!-- Project Item 3 (Published) -->
+<div class="flex items-center gap-4 bg-white dark:bg-slate-900/50 px-4 py-4 border-b border-slate-100 dark:border-slate-800 justify-between">
+<div class="flex items-center gap-4">
+<div class="bg-slate-200 dark:bg-slate-700 bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-14" data-alt="Newspaper layout on a desk" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDgLrRMk5O5n6EJ0t-xGvqyB_cbfu2a_XtbdG6InAGlNlN3SaqaZmo_ZuMvEzmCNMHnduPDvCZxNYmNOXoyqNfXHp2-kTVVhJD3Mi6p6UywkdrbjSD1BebRGaUM4AmA24nkF3g-9-D1KcIhmE1Hkc-6wqZF5frcKEHauwYmgJg869BU7pBSRnGzpybeXiud5BhnUEhH1ZXeCxyWht8fGCXzD1M9RiGnopiiZS3BntsEQj1DukjtJo4xFcdKln3RjatPvr_v3Nr8RPw");'>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-slate-900 dark:text-white text-base font-semibold leading-tight line-clamp-1">Edición Especial: Clima</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">Publicado</span>
+</div>
+</div>
+</div>
+<div class="text-slate-400 p-2">
+<span class="material-symbols-outlined text-2xl">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Team Preview (Section hidden by toggle logic in real app, shown here for design completeness) -->
+<div class="mt-8">
+<div class="flex items-center justify-between px-4 pb-2 pt-2">
+<h3 class="text-slate-900 dark:text-white text-xl font-bold">Equipo</h3>
+<button class="bg-primary/10 text-primary px-4 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">person_add</span>
+                        Invitar
+                    </button>
+</div>
+<div class="flex flex-col space-y-px mt-2 mb-20">
+<!-- Member 1 -->
+<div class="flex items-center gap-4 bg-white dark:bg-slate-900/50 px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+<div class="bg-slate-200 dark:bg-slate-700 rounded-full size-12 overflow-hidden bg-cover bg-center" data-alt="Portrait of a female editor" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBW6uOxe7PWVYVYbDhDX5946pnUsLFscXW79xSX9AkU8O_boS5P_RPvH7ka8iYg6zdMiduopTIwovU4dN1cwpjoha6GdtmvflEnwlycSD4EnSnWnW5asoVVl7HkBQ4xNvSRUno4p4_Au8aZKNjIDRKvPzBHUqtDnh76dUBDDfRGnQhti0nLD-SsdQFi3632qd1yhFbLFC3dxfuxt9LYHUl38yK4KnPGy783Yv8JPabUiIsWtmoAeBbqBnhTvDxUkIi6KU8Lki4bJxg");'></div>
+<div class="flex-1">
+<p class="text-slate-900 dark:text-white text-sm font-semibold">Elena Martínez</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs uppercase font-medium">Editor Jefe</p>
+</div>
+<div class="text-slate-400">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</div>
+</div>
+<!-- Member 2 -->
+<div class="flex items-center gap-4 bg-white dark:bg-slate-900/50 px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+<div class="bg-slate-200 dark:bg-slate-700 rounded-full size-12 overflow-hidden bg-cover bg-center" data-alt="Portrait of a male author" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAee1N8XIiej_0Zl9RKnywaM5nvFjrplEBh-eLwGKTPMfZTcZt65xx79FPEuOrPDBOZzg9lBY5lNcJpJYQZQgwnxiyBomFB_uNNaE4cEats4CVUhMKAO8JmErW1_0xijquYRvzM84NYm_U5rT3KSG-DyArJzZkV9ddxNujlAN6Nqdn1vc-Xzlxjc53gYmfZL00-S3NOgD0b6x3hqff60hamN8RWgjyG3CLXFAVMScQ2mOYMTFYk8O3Bzg0uNMSvloAXxLBekwMd4TU");'></div>
+<div class="flex-1">
+<p class="text-slate-900 dark:text-white text-sm font-semibold">Julián Rivera</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs uppercase font-medium">Autor</p>
+</div>
+<div class="text-slate-400">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Action Bar (Floating Primary) -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-xs px-4">
+<button class="w-full bg-primary text-white h-14 rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 font-bold text-base">
+<span class="material-symbols-outlined">add_circle</span>
+                Nuevo Proyecto
+            </button>
+</div>
+</div>
+</body></html>

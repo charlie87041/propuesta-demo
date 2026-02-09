@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Centro de Actividad y Notificaciones</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#196ee6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#0e131b] dark:text-slate-100 min-h-screen">
+<div class="max-w-[480px] mx-auto min-h-screen bg-white dark:bg-[#111821] flex flex-col shadow-xl">
+<!-- Header -->
+<header class="sticky top-0 z-10 bg-white/80 dark:bg-[#111821]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center p-4 justify-between">
+<button class="text-[#0e131b] dark:text-slate-100 flex size-10 items-center justify-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</button>
+<h1 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">Actividad</h1>
+<div class="flex items-center justify-end">
+<button class="flex items-center justify-center h-10 w-10">
+<span class="material-symbols-outlined text-[#0e131b] dark:text-slate-100">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Segmented Tabs -->
+<div class="px-4 pb-2">
+<div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+<a class="flex-1 flex items-center justify-center py-2 px-1 bg-white dark:bg-slate-700 rounded-lg shadow-sm text-sm font-bold text-primary" href="#">
+                        Todo
+                    </a>
+<a class="flex-1 flex items-center justify-center py-2 px-1 text-sm font-medium text-[#4e6d97] dark:text-slate-400" href="#">
+                        Pendientes
+                    </a>
+<a class="flex-1 flex items-center justify-center py-2 px-1 text-sm font-medium text-[#4e6d97] dark:text-slate-400 relative" href="#">
+                        Invitaciones
+                        <span class="absolute top-1 right-2 flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+</a>
+</div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto">
+<!-- Invitations Section (Highlight) -->
+<div class="px-4 py-4">
+<h3 class="text-xs font-bold uppercase tracking-widest text-[#4e6d97] dark:text-slate-500 mb-3 px-1">Nuevas Invitaciones</h3>
+<div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-4 flex flex-col gap-4">
+<div class="flex gap-4">
+<div class="size-12 rounded-lg bg-primary flex items-center justify-center text-white shrink-0 font-bold text-lg">NY</div>
+<div class="flex flex-col">
+<p class="text-sm font-semibold leading-tight">
+<span class="text-primary">Sarah Miller</span> te invitó a colaborar en <span class="font-bold">The New York Times Workspace</span>
+</p>
+<p class="text-xs text-slate-500 mt-1">hace 10 minutos</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-white py-2 rounded-lg text-sm font-bold">Aceptar</button>
+<button class="flex-1 bg-slate-200 dark:bg-slate-700 text-[#0e131b] dark:text-slate-100 py-2 rounded-lg text-sm font-bold">Rechazar</button>
+</div>
+</div>
+</div>
+<!-- Grouped by Date: Today -->
+<section>
+<h3 class="text-lg font-bold px-4 pt-4 pb-2">Hoy</h3>
+<!-- Actionable Pending Item -->
+<div class="group flex items-start gap-4 px-4 py-4 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 shrink-0 size-11">
+<span class="material-symbols-outlined">assignment_late</span>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<div class="flex justify-between items-start">
+<p class="text-sm font-medium leading-tight">
+                                Acción Requerida: <span class="font-bold">Aprobar Fusión</span> de cambios en <span class="text-primary underline">Reporte Trimestral Q4</span>
+</p>
+<span class="text-[10px] text-slate-400 whitespace-nowrap ml-2">2h</span>
+</div>
+<p class="text-xs text-[#4e6d97] dark:text-slate-400 italic">Workspace: Finanzas Corporativas</p>
+<div class="mt-2">
+<button class="text-xs font-bold text-primary flex items-center gap-1 border border-primary/20 rounded-full px-3 py-1 bg-primary/5">
+                                Revisar Propuesta <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Comment Notification -->
+<div class="flex items-center gap-4 px-4 py-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shrink-0 size-11">
+<span class="material-symbols-outlined">chat_bubble</span>
+</div>
+<div class="flex flex-col flex-1 justify-center">
+<p class="text-sm font-medium leading-normal">
+<span class="font-bold">Sofía</span> comentó en <span class="text-primary">Plan Editorial Q3</span>
+</p>
+<p class="text-xs text-[#4e6d97] dark:text-slate-400 mt-1 flex items-center gap-1">
+                            hace 5 min <span class="text-[8px] opacity-30">•</span> Editorial
+                        </p>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+<!-- Status Change Notification -->
+<div class="flex items-center gap-4 px-4 py-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 shrink-0 size-11">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="flex flex-col flex-1 justify-center">
+<p class="text-sm font-medium leading-normal">
+                            Estado de <span class="font-bold">Proyecto Delta</span> cambió a <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500 text-white uppercase tracking-wider">Publicado</span>
+</p>
+<p class="text-xs text-[#4e6d97] dark:text-slate-400 mt-1">hace 45 min</p>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+</section>
+<!-- Grouped by Date: Yesterday -->
+<section>
+<h3 class="text-lg font-bold px-4 pt-6 pb-2">Ayer</h3>
+<div class="flex items-center gap-4 px-4 py-4 border-b border-slate-100 dark:border-slate-800 grayscale">
+<div class="flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0 size-11">
+<span class="material-symbols-outlined">create_new_folder</span>
+</div>
+<div class="flex flex-col flex-1 justify-center">
+<p class="text-sm font-medium leading-normal">
+<span class="font-bold">Carlos</span> creó un nuevo proyecto: <span class="text-primary">Estrategia de Contenido 2025</span>
+</p>
+<p class="text-xs text-[#4e6d97] dark:text-slate-400 mt-1">Ayer, 14:20 • Workspace: Global Marketing</p>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+<!-- Another Mentioned Notification -->
+<div class="flex items-center gap-4 px-4 py-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 shrink-0 size-11">
+<span class="material-symbols-outlined">alternate_email</span>
+</div>
+<div class="flex flex-col flex-1 justify-center">
+<p class="text-sm font-medium leading-normal">
+<span class="font-bold">Miguel</span> te mencionó en un hilo de discusión
+                        </p>
+<p class="text-xs text-[#4e6d97] dark:text-slate-400 mt-1">Ayer, 11:05</p>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+</section>
+</main>
+<!-- Bottom Tab Bar (iOS Style) -->
+<nav class="bg-white/90 dark:bg-[#111821]/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 flex justify-around items-center pt-2 pb-6 px-4">
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">Inicio</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined">workspaces</span>
+<span class="text-[10px] font-medium">Workspaces</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="text-[10px] font-bold">Actividad</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Ajustes</span>
+</button>
+<button class="flex items-center justify-center size-8 rounded-full overflow-hidden border border-slate-200">
+<img alt="User Avatar" class="size-full object-cover" data-alt="Portrait of a professional user avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxAYHRK5Dblzf2sLvUoOYaP_7brvOKrXImGzocSLO75SWYNVmOWKDSOJwgPe5JiWQyPJ4CbCyGdFnBRpM5oHGu5P55LZmGAnxlPVspoApGMXrRcAw7FmkDgXZxKdAtOZAhrc9Hc71RByd789_m9hizpkzNggz2851W7D2MGwAU_bikYvU58D1CGT2LbD6i8wWvL5IcTOZdsd_6nTrAFZkD-Ue04jJT7L_z0Oe0cFRcqXqDb7YBa3soFPIF4AHxpvuC-t_r9VJvOgw"/>
+</button>
+</nav>
+</div>
+</body></html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Project Dashboard - Author View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#196ee6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-3">
+<button class="text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</button>
+<h2 class="text-lg font-bold leading-tight tracking-tight">Project Details</h2>
+</div>
+<button class="flex items-center justify-center h-10 w-10 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</header>
+<main class="max-w-md mx-auto pb-24">
+<!-- Project Title & Status -->
+<section class="p-4 pt-6">
+<div class="flex items-start justify-between gap-4">
+<div>
+<h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Q4 Market Analysis</h1>
+<p class="mt-1 text-slate-500 dark:text-slate-400 text-sm">Created Oct 12, 2023</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary/10 px-3 border border-primary/20">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<p class="text-primary text-xs font-bold uppercase tracking-wider">In Consultation</p>
+</div>
+</div>
+</section>
+<!-- Progress Stepper -->
+<section class="px-4 py-6">
+<div class="relative flex justify-between">
+<!-- Progress Line -->
+<div class="absolute top-4 left-0 w-full h-0.5 bg-slate-200 dark:bg-slate-800 -z-10"></div>
+<div class="absolute top-4 left-0 w-2/3 h-0.5 bg-primary -z-10"></div>
+<!-- Steps -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">Draft</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">Editing</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white ring-4 ring-background-light dark:ring-background-dark ring-offset-2 ring-primary/30">
+<span class="text-xs font-bold">3</span>
+</div>
+<span class="text-[10px] font-bold text-primary uppercase tracking-tighter">Consult</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-600 ring-4 ring-background-light dark:ring-background-dark">
+<span class="text-xs font-bold">4</span>
+</div>
+<span class="text-[10px] font-semibold text-slate-400 dark:text-slate-600 uppercase tracking-tighter">Publish</span>
+</div>
+</div>
+</section>
+<!-- Team Section -->
+<section class="p-4">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Collaborators</h3>
+<span class="text-xs text-primary font-medium">Manage Team</span>
+</div>
+<div class="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2">
+<div class="flex -space-x-3">
+<img alt="Sarah E." class="w-10 h-10 rounded-full border-2 border-background-light dark:border-background-dark object-cover" data-alt="Portrait of a female editor with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKCIpRf3FBGv4NmRga7mG3OvksaP0XguHH0t2HzZY7XomLEIsO6CCBppy7Rqhq-KZv7CZC_0DMWP2Zn9MMVKE6lGg75yKBANAI7Z2UTBI9zadzSGFuIZKgo1uMHYStmYy0hgkF6sfD1L1R0feH1uvGv_ugBTa3n0ZyKFXDdZBXZPAR7ioqRCM4LxkQuB03xj6UhMhAAHoT37HasUbzGz9cAa3y8pkKhorc9yQLlE3GfhU0D1jI-9wLcUeEOzufiHSq06SwfIvo4c4"/>
+<img alt="James L." class="w-10 h-10 rounded-full border-2 border-background-light dark:border-background-dark object-cover" data-alt="Portrait of a male consultant smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpScD61LWKy7xptTit7SXZyzmyzuuDieE0S15izfgd9A9vkakRiEpLqpfugbNdJ9JoATaQGTlrCpfdJYDYQePEosqpf-b_l5NwrsvDXEDFPQpn2FxqgOjgxMEhXhmJfXCZrj_gGk6S_wIXLpH-KWOB1NM_H9JqwLJwF85T1HHzpoNqROcAZ6Xqrz4hFEfLiQLpLIs0Do9Ezuu-dYCvs3ToG7Sp1q5xVOrj3P331Mr6HoXkjrPYizQB4a_qmGnNp8enMPXSGoJnJiU"/>
+<img alt="Elena R." class="w-10 h-10 rounded-full border-2 border-background-light dark:border-background-dark object-cover" data-alt="Professional female with dark hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0AGQNbiUMAbefuUpJkk1XwUGR28MRiv8S5NDdG0bNOVPewW5oXJCUTzQthX0FC_dFGK1kIw78ZGZFsBMMUZ6UbR3nx1xVOBedN_NhKxyhB7woQAx-wxFMZWxfu-uxCs1-ereyhwm32MrXGHbeWO4jjCHLhsZZwoalTcADr5OuQD5cuXgEFyyeQauk1amjNEWLYQfhGoP92LXhqKHc-RUMH14Md5THXRiN06jErJE9Sy_H2WDeG8qOyCQRLJkveYC8hXSic9THhaM"/>
+</div>
+<button class="w-10 h-10 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined text-lg">add</span>
+</button>
+<div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-800 mx-1"></div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-slate-900 dark:text-white leading-none">Sarah E.</span>
+<span class="text-[10px] text-slate-500 dark:text-slate-400">Chief Editor</span>
+</div>
+</div>
+</section>
+<!-- Project Index -->
+<section class="p-4">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Project Index</h3>
+<button class="text-primary">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+</div>
+<div class="space-y-3">
+<!-- Index Card 1 -->
+<div class="bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between group cursor-pointer hover:border-primary/50 transition-all shadow-sm">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-lg text-slate-400">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div>
+<h4 class="font-semibold text-slate-900 dark:text-white leading-tight">1. Introduction</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">1,240 words • Reviewed</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<!-- Index Card 2 -->
+<div class="bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between group cursor-pointer hover:border-primary/50 transition-all shadow-sm">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-lg text-slate-400">
+<span class="material-symbols-outlined">query_stats</span>
+</div>
+<div>
+<h4 class="font-semibold text-slate-900 dark:text-white leading-tight">2. Methodology</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">850 words • Pending review</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<!-- Index Card 3 -->
+<div class="bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-primary/30 flex items-center justify-between group cursor-pointer hover:border-primary/50 transition-all shadow-sm">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">monitoring</span>
+</div>
+<div>
+<h4 class="font-semibold text-slate-900 dark:text-white leading-tight">3. Data Visualization</h4>
+<p class="text-xs text-primary font-medium mt-0.5 italic">Currently editing</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<!-- Index Card 4 -->
+<div class="bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between group cursor-pointer hover:border-primary/50 transition-all shadow-sm">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-lg text-slate-400">
+<span class="material-symbols-outlined">summarize</span>
+</div>
+<div>
+<h4 class="font-semibold text-slate-900 dark:text-white leading-tight">4. Market Forecast</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Drafting stage</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Primary Action -->
+<footer class="fixed bottom-0 left-0 right-0 p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 flex items-center justify-center z-50">
+<button class="w-full max-w-md h-14 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-95 transition-transform">
+            Transition to Next Stage
+            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</footer>
+</body></html>

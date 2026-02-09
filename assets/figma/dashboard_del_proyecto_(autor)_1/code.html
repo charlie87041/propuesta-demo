@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard del Proyecto - Autor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#196ee6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header / TopAppBar -->
+<header class="sticky top-0 z-10 flex items-center bg-white dark:bg-background-dark border-b border-slate-200 dark:border-slate-800 px-4 py-3 justify-between">
+<div class="flex items-center gap-3">
+<button class="text-slate-900 dark:text-slate-100 p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined block">arrow_back_ios_new</span>
+</button>
+<h2 class="text-lg font-bold leading-tight tracking-tight">Proyecto Editorial</h2>
+</div>
+<div class="flex items-center">
+<button class="p-2 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined block">more_horiz</span>
+</button>
+</div>
+</header>
+<main class="flex-1 pb-24">
+<!-- Project Hero Section -->
+<div class="p-4">
+<div class="relative flex flex-col justify-end overflow-hidden rounded-xl min-h-[180px] bg-slate-200 dark:bg-slate-800 bg-cover bg-center shadow-sm" data-alt="Futuristic digital planet and stars representation" style='background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAXxbU74XCgI_ROpHX1vyMp22FL8IRDVvtgjl_as7NJvuya1bJkpA1oxNyfNuxyAElGnrYwZqzOGSqmsHRHkcaLeCZMOwgaznyjHGHEimU9Z4ymSeiHEyviWt7fN3TY66yRQlAUufeFwKRY_cdjuVlfjaZj6pcF_G7ffvO-gCHahs79WwkJI_4NLax_e-6qPZHIj7drzhSYC5LL-yfDDVB_skleuEe7qTqS8g-qvbO2yvXAeFJ2AYD2r4v7TeaM_PFoRxb6JcKHYHQ");'>
+<div class="p-4">
+<span class="inline-block px-2 py-0.5 mb-2 bg-primary text-white text-[10px] font-bold uppercase tracking-wider rounded">CIENCIA FICCIÓN</span>
+<h1 class="text-white text-2xl font-bold leading-tight">Crónicas del Futuro</h1>
+</div>
+</div>
+</div>
+<!-- Description & Status -->
+<div class="px-4 pb-4">
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                    Novela de ciencia ficción sobre la colonización de Marte y los desafíos éticos del primer contacto en un sistema solar dividido.
+                </p>
+<div class="flex flex-col gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-0.5">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Estado Actual</span>
+<p class="text-primary font-bold text-lg">En Edición</p>
+</div>
+<span class="material-symbols-outlined text-primary text-3xl">edit_note</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm leading-snug">
+                        El manuscrito está siendo revisado por el equipo editorial para ajustes de estructura y ritmo.
+                    </p>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg bg-primary py-3 px-4 text-white text-sm font-bold shadow-md active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-base">swap_horiz</span>
+<span>Cambiar Estado del Proyecto</span>
+</button>
+</div>
+</div>
+<!-- Team Members -->
+<section class="px-4 py-4">
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold uppercase tracking-widest mb-3">Equipo del Proyecto</h3>
+<div class="flex flex-col gap-3">
+<!-- Editor -->
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+<div>
+<p class="text-sm font-bold">Ana Gómez</p>
+<p class="text-xs text-slate-500 font-medium">Editora Principal</p>
+</div>
+</div>
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chat_bubble</span>
+</button>
+</div>
+<!-- Consultant -->
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center border border-green-500/20">
+<span class="material-symbols-outlined text-green-600">science</span>
+</div>
+<div>
+<p class="text-sm font-bold">Dr. Aris Vance</p>
+<p class="text-xs text-slate-500 font-medium">Consultor Científico</p>
+</div>
+</div>
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chat_bubble</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Table of Contents (Índice) -->
+<section class="px-4 py-4">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold uppercase tracking-widest">Índice de Contenidos</h3>
+<button class="text-primary text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">add</span>
+                        Capítulo
+                    </button>
+</div>
+<div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm divide-y divide-slate-100 dark:divide-slate-800">
+<div class="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold text-slate-400 w-5">01</span>
+<p class="text-sm font-medium">Introducción: El Ocaso de la Tierra</p>
+</div>
+<span class="material-symbols-outlined text-green-500 text-base">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors bg-slate-50 dark:bg-slate-800/20">
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold text-slate-400 w-5">02</span>
+<p class="text-sm font-semibold text-primary">Capítulo 1: El Desembarco en Ares</p>
+</div>
+<span class="material-symbols-outlined text-primary text-base">pending</span>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold text-slate-400 w-5">03</span>
+<p class="text-sm font-medium">Capítulo 2: Primer Contacto</p>
+</div>
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-700 text-base">circle</span>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold text-slate-400 w-5">04</span>
+<p class="text-sm font-medium">Capítulo 3: La Paradoja de Fermi</p>
+</div>
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-700 text-base">circle</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Fixed Bottom Navigation (iOS style) -->
+<nav class="fixed bottom-0 left-0 right-0 z-20 bg-white/80 dark:bg-background-dark/80 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 py-2 flex justify-between items-center safe-area-bottom">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Proyecto</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="text-[10px] font-medium">Lector</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">forum</span>
+<span class="text-[10px] font-medium">Chats</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Ajustes</span>
+</button>
+</nav>
+</div>
+</body></html>

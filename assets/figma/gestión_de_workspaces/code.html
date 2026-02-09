@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestión de Workspaces</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#337de6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0e131b] dark:text-gray-100 min-h-screen">
+<!-- Top AppBar Container -->
+<div class="sticky top-0 z-20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center justify-between px-4 h-14">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="User profile avatar with professional look" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDf1LVsCqApNEoq6YZG70pg0A9cH5yog2NciWiP0N8oSgmpxqC_j4MZ9kmIJqiC1L8P9nwNMox3ebNvj4qFCxmFEbs8ZVii6H1ihiPctSluZhOnXkW6KxPi_VdfW9vVDpVH9fpbMhDpCr4AiqhBHw8RwDJyQPoyeLyZhkK5ICO8kN2tiH1GUwOyv3_aT3ZHoFiNDdeAxHhX8zp9BZlDGrlX5BbWDUv07UFTg8OSAc_1e_QdPSDESUDd9lNirHYMc_0V2a9pfv_dt9o"/>
+</div>
+<span class="font-semibold text-sm">Editor App</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+</button>
+</div>
+</div>
+<div class="px-4 pb-3">
+<h1 class="text-3xl font-bold tracking-tight">Workspaces</h1>
+</div>
+</div>
+<!-- Main Content Area -->
+<main class="p-4 space-y-4 pb-24">
+<!-- Workspace Card: Legal Dept -->
+<div class="bg-white dark:bg-[#1a232e] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden group active:scale-[0.98] transition-transform">
+<div class="p-4">
+<div class="flex justify-between items-start mb-4">
+<div class="h-12 w-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">gavel</span>
+</div>
+<button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div>
+<h3 class="text-lg font-bold leading-tight">Legal Dept</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Corporate compliance and contracts</p>
+</div>
+</div>
+<div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between border-t border-gray-100 dark:border-gray-700">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-sm">folder</span>
+<span>12 Projects</span>
+</div>
+<div class="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-sm">group</span>
+<span>5 Members</span>
+</div>
+</div>
+<div class="flex -space-x-2">
+<img class="size-6 rounded-full border-2 border-white dark:border-gray-800" data-alt="Small user avatar circular icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqK007vLeUw5SM5-9Z2twh4nDX3VUV0YGQjuQ-19_Lnj98cmOCFD6G6j1KjLYJqCIyzcmpd42D9sefqc1dTIl89AR5zGTDFTy9hZLxyNqUWbkm6-8JV4KAPa6DUXS-Cr8YkBvZkLJ97dGYBvFV7I009BXVfnEIDxwhbz45jGdaPBnvNQt9tBJsmH27pZ2jjYWU8DVrS5OEqePRch7fzpkEGGtmll0pPS10XT78PU5sShGB6QLs5SHlGS0mjlph4CMlwdrglFT6fIU"/>
+<img class="size-6 rounded-full border-2 border-white dark:border-gray-800" data-alt="Small user avatar circular icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTqvM20jxkI08eUSrZj-ITQMYyrirDZUA3WvZfvNN62LjJeBxLuZMxkJePp1CtjqkWF_rD5TWA3QXuX2yB6lcOlHMzMtSPTvnd-7BsN0fxkdS2GJ3HMArnh5Ntw2pS7YaQ_99-XgRWBryG_m3BdSx-22g0pc1nfSEaI4eS_0Neo3TqxaBC_MZuQNBoERIguR6Abe908MN2Iu5FxV2MGaowLiWs18__mK2Ilr8YdYfdc6G5_wRaK2pWTf-cp5Ft4I52vwqqLUJeb5M"/>
+<div class="size-6 rounded-full border-2 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[8px] font-bold">+3</div>
+</div>
+</div>
+</div>
+<!-- Workspace Card: Marketing -->
+<div class="bg-white dark:bg-[#1a232e] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden group active:scale-[0.98] transition-transform">
+<div class="p-4">
+<div class="flex justify-between items-start mb-4">
+<div class="h-12 w-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
+<span class="material-symbols-outlined text-3xl">campaign</span>
+</div>
+<button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div>
+<h3 class="text-lg font-bold leading-tight">Marketing</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Social media and brand assets</p>
+</div>
+</div>
+<div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between border-t border-gray-100 dark:border-gray-700">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-sm">folder</span>
+<span>8 Projects</span>
+</div>
+<div class="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-sm">group</span>
+<span>14 Members</span>
+</div>
+</div>
+<div class="flex -space-x-2">
+<img class="size-6 rounded-full border-2 border-white dark:border-gray-800" data-alt="Small user avatar circular icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz8gQYMH5Sw0pmJZBIvHAWh_VLaGhQ84vAk7q27n642IXpCWqzMaeHh650__Q956ZOeFKghYsqj0hp9jP_Y94UMhyTKlvPBzkhoC9sYU3DgKEYas2F5VP7U5KSjpRDyGJY-qVChUk3AQGxYnbCdzBOwAOMBr3WTtCIs72_w46FLcuIQq0lnQIIR7rlhaZ2tclv_VQ_XsuNLzyBz0tWHJppVLtzXdmZV_ZPYSFW7P7VfB5Hpl99L9Qh_EO85_vq8Pjt87VZ9du5qhU"/>
+<img class="size-6 rounded-full border-2 border-white dark:border-gray-800" data-alt="Small user avatar circular icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgYg5E8kqVVf8GET2oiZbDGOP0BsAvLCCVSLTupjyQHypp75edrjo8rmKKbXGWOiMQJZJsxCUAbam-OHY6v0BeAj0nMZaIzBO9BCowFyCvRUOfKi6-n78X_waETFoG_NXvYCJx5V5XuVONfuPkoimH5ufYvR2vjM4F-XIjfYescMKo_Dy8mG49NdL3RwYBFNqqHf12puwchNnr02pJDOTz8W2w1gawRYMmk0W-t7lQeZ9NUYbHfkGPZ8pLu_KAx5lkhOHcWpzQmoc"/>
+<div class="size-6 rounded-full border-2 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[8px] font-bold">+12</div>
+</div>
+</div>
+</div>
+<!-- Workspace Card: Editorial Board -->
+<div class="bg-white dark:bg-[#1a232e] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden group active:scale-[0.98] transition-transform">
+<div class="p-4">
+<div class="flex justify-between items-start mb-4">
+<div class="h-12 w-12 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600">
+<span class="material-symbols-outlined text-3xl">edit_note</span>
+</div>
+<button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div>
+<h3 class="text-lg font-bold leading-tight">Editorial Board</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Review cycle and publications</p>
+</div>
+</div>
+<div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between border-t border-gray-100 dark:border-gray-700">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-sm">folder</span>
+<span>4 Projects</span>
+</div>
+<div class="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-sm">group</span>
+<span>3 Members</span>
+</div>
+</div>
+<div class="flex -space-x-2">
+<img class="size-6 rounded-full border-2 border-white dark:border-gray-800" data-alt="Small user avatar circular icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr3mGe391w5stKVuuj5s9BjEgOMqhQ9QW2s_aej2m1sF6UvNjsfZBZtizjgFuopDY_Dmz3CNaVOzZCUrRGhwE3j1nbFMhr0QIuD4olPZLO76eDbKO53kVzXAEHsKKcY4qkU9xKCvqSlGJ79lMvlZghjwA6w3Ud5P0hvPTuIEF7JGMy0SesOoKGGd9nxvkH66UVyoNkNZIqgc5egEAji3v5Py8sWYtGQ25xT_nLs9OYgiqDoUxeb5GZv1T8qZc3o7fw_-xNNYYaulg"/>
+<img class="size-6 rounded-full border-2 border-white dark:border-gray-800" data-alt="Small user avatar circular icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFLB8vf2TtAv_Y7ZfPuvhLDkvzt6dupC_TqdFduG7EPcKir42Q4D4U_j8Fk-Hwvlx8hBkefJ4uPo-xq2-ANqEJsIsAsT_dECES4yW5r6iaB1diEroyK5qNCzF_Zns0KAOp14fMfvGMYyPo91_J96s-N-g4cwED_GlZaFInPnLRLYlyN3cmrpMQRsOwSztNXhgwThTEp2Z6lYODwsdUq8aYgpWZ67n2eB-0jd5zjVovqqGrq0xsPB204nIoOA0cYay7CqNIOH5r9ZM"/>
+<img class="size-6 rounded-full border-2 border-white dark:border-gray-800" data-alt="Small user avatar circular icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9Fw2zFVsmtiRaWtYLjjcydJ4vLvP2Kj_f26yMUzZOoG9TwZ1fB7klKs6r97WvsHy1YG1Xp7wHBZVEZM_rSJnmbi6zfG9hQaiErRDxJ2Mg3mYB0PwKoZrs40-rR31QAPDkJbpvxaGf_1b2jSoC9TQrJZAL-CGMi74cFlzP0Mdn9ACIHdH_kbtYeaSh3jEwzH3xmf_OJ9HI7u_I_Iy_4wmgHZcEfezXH0PIJGijN1PNQF8iR1s7o_Ha7hJh2sf26axVjh3PD9WhNX0"/>
+</div>
+</div>
+</div>
+<!-- Workspace Card: Archives (Variant) -->
+<div class="bg-white dark:bg-[#1a232e] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden group opacity-60">
+<div class="p-4">
+<div class="flex justify-between items-start mb-4">
+<div class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500">
+<span class="material-symbols-outlined text-3xl">archive</span>
+</div>
+<button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div>
+<h3 class="text-lg font-bold leading-tight">Project Archives</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Closed initiatives and backups</p>
+</div>
+</div>
+<div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between border-t border-gray-100 dark:border-gray-700">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-sm">folder</span>
+<span>42 Projects</span>
+</div>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Read Only</span>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-6 right-6 size-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform z-30">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<!-- Bottom Tab Bar (iOS Style) -->
+<div class="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 flex justify-around items-center h-20 pb-4 px-6 z-20">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[24px]">grid_view</span>
+<span class="text-[10px] font-medium">Workspaces</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
+<span class="material-symbols-outlined text-[24px]">assignment</span>
+<span class="text-[10px] font-medium">Recent</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+<span class="text-[10px] font-medium">Alerts</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
+<span class="material-symbols-outlined text-[24px]">account_circle</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+<!-- Context Menu Placeholder (for Visual reference of Edit/Delete) -->
+<!-- This would normally be hidden and shown on long press or icon click -->
+<!-- 
+    <div class="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-40 flex items-center justify-center p-6">
+        <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl w-full max-w-xs shadow-2xl overflow-hidden divide-y divide-gray-200 dark:divide-gray-700">
+            <button class="w-full px-4 py-4 flex items-center justify-between text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700">
+                <span class="font-medium">Edit Workspace</span>
+                <span class="material-symbols-outlined">edit</span>
+            </button>
+            <button class="w-full px-4 py-4 flex items-center justify-between text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
+                <span class="font-medium">Delete Workspace</span>
+                <span class="material-symbols-outlined">delete</span>
+            </button>
+        </div>
+    </div>
+    -->
+</body></html>

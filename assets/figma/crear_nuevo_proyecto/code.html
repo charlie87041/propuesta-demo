@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Crear Nuevo Proyecto</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#196ee6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<!-- Top Navigation Bar -->
+<div class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center p-4 justify-between max-w-lg mx-auto">
+<div class="text-slate-600 dark:text-slate-400 flex size-10 items-center justify-start cursor-pointer">
+<span class="material-symbols-outlined">close</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center">Crear Nuevo Proyecto</h2>
+<div class="flex w-10 items-center justify-end">
+<!-- Empty placeholder to balance the header -->
+</div>
+</div>
+</div>
+<main class="max-w-lg mx-auto pb-32">
+<!-- Section: General Details -->
+<section class="px-4 py-6">
+<h3 class="text-slate-900 dark:text-white text-sm font-bold uppercase tracking-wider mb-4 opacity-60">Detalles del Proyecto</h3>
+<div class="space-y-4">
+<label class="flex flex-col gap-2">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Nombre del Proyecto</span>
+<input class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-12 px-4 text-base" placeholder="Ej. Crónicas de Invierno" type="text"/>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Descripción</span>
+<textarea class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:border-primary focus:ring-primary min-h-[120px] p-4 text-base resize-none" placeholder="Breve resumen del enfoque editorial..."></textarea>
+</label>
+</div>
+</section>
+<!-- Section: Initial Index -->
+<section class="px-4 py-6 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-slate-900 dark:text-white text-sm font-bold uppercase tracking-wider opacity-60">Índice Inicial</h3>
+<span class="text-xs text-slate-500">Opcional</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 text-lg">drag_indicator</span>
+<input class="flex-1 rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-11 px-4 text-sm" placeholder="Nombre del capítulo" type="text" value="Introducción"/>
+<button class="text-slate-400 hover:text-red-500">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 text-lg">drag_indicator</span>
+<input class="flex-1 rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-11 px-4 text-sm" placeholder="Siguiente capítulo..." type="text"/>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<button class="mt-4 flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-primary/10 text-primary font-semibold text-sm hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+                Añadir Sección
+            </button>
+</section>
+<!-- Section: Team Setup -->
+<section class="px-4 py-6 border-t border-slate-200 dark:border-slate-800">
+<h3 class="text-slate-900 dark:text-white text-sm font-bold uppercase tracking-wider mb-4 opacity-60">Equipo de Trabajo</h3>
+<!-- Search Member -->
+<div class="relative mb-6">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-11 pl-10 pr-4 text-sm" placeholder="Buscar miembros del workspace..." type="text"/>
+</div>
+<!-- Added Members List -->
+<div class="space-y-4">
+<!-- Member 1 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-3">
+<img alt="Avatar" class="size-10 rounded-full bg-slate-100" data-alt="User avatar with a friendly face" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI_wi_ebi-HH2Lrtgs4WKDId-6rpRH4DV2IXI6kMBMcdmjjEcG6CHsqLlWbxaa-iDpFlYb7-qYLOk7ZJqHNDGLtD-vTrBAgl4_6oSmqRvLsnb-RK4Trd5cww32LwfsGVEjjA9A0HYqh_wmmLYcnYHYBgjs0QS_BWuptfG-fvfEf-G0AqhsZ_kdJ6XAh1flctLyG48E67WW4Y2dnOnrosVXXVHs0kp8pFbPg_P-yIK1YlaSiVrItvJL5t4CfWGiaNQUvP1MYO-SoEA"/>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white leading-none">Félix Aranda</p>
+<p class="text-xs text-slate-500 mt-1">felix@editorial.com</p>
+</div>
+</div>
+<select class="bg-primary/5 text-primary border-none rounded-lg text-xs font-bold py-1 pl-2 pr-8 focus:ring-0">
+<option>Editor</option>
+<option>Consultor</option>
+</select>
+</div>
+<!-- Member 2 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-3">
+<img alt="Avatar" class="size-10 rounded-full bg-slate-100" data-alt="User avatar with a professional look" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOnbMHjZiWGqn5QBGmtjLmGg7YCYFyg5LWPRGSusARxId3y93rURjoUrjNY8nCB4QiMZV1fDsvBSquddWyMSPYGo-su8EVyV-T8gZa720nXokUJ4sN_n9CBlZG2XIIleijvMpHBP6DBUzjE-gSh7tUQQVg9u_LTzn-FfWosPEHteH79NPij_E_pAVHwkjnRpiLC-B3lyKQqPAxMXxStL468fB5b1fBODd3DKwK3k51JgeQPZZqY3eyWNBXdoH2FvKmI4fTyj9rUz4"/>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white leading-none">Elena Morales</p>
+<p class="text-xs text-slate-500 mt-1">elena.m@editorial.com</p>
+</div>
+</div>
+<select class="bg-primary/5 text-primary border-none rounded-lg text-xs font-bold py-1 pl-2 pr-8 focus:ring-0">
+<option>Consultor</option>
+<option>Editor</option>
+</select>
+</div>
+</div>
+<p class="mt-4 text-center text-xs text-slate-400 italic">Los miembros invitados recibirán una notificación.</p>
+</section>
+</main>
+<!-- Bottom Action Bar -->
+<div class="fixed bottom-0 inset-x-0 p-4 bg-white/90 dark:bg-background-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800">
+<div class="max-w-lg mx-auto flex gap-3">
+<button class="flex-1 bg-primary text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all active:scale-[0.98]">
+                Crear Proyecto
+            </button>
+</div>
+<!-- iOS Home Indicator Space -->
+<div class="h-4"></div>
+</div>
+</body></html>

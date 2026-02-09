@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vista de Proyecto Publicado</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#196ee6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Newsreader", "serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Newsreader', serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<!-- Top Navigation Bar (iOS Style) -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between px-4 h-14">
+<div class="flex items-center gap-2">
+<button class="text-primary p-1 -ml-2">
+<span class="material-symbols-outlined text-[28px]">chevron_left</span>
+</button>
+</div>
+<div class="flex flex-col items-center">
+<h2 class="text-sm font-bold leading-tight tracking-tight">Version 1.0 - Published</h2>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-sans">Oct 24, 2023</p>
+</div>
+<div class="flex items-center gap-1">
+<button class="text-primary p-2">
+<span class="material-symbols-outlined">ios_share</span>
+</button>
+</div>
+</div>
+<!-- Reading Progress Bar -->
+<div class="w-full h-[2px] bg-slate-200 dark:bg-slate-800">
+<div class="h-full bg-primary" style="width: 35%;"></div>
+</div>
+</header>
+<main class="max-w-2xl mx-auto px-6 py-10">
+<!-- Article Header -->
+<header class="mb-10">
+<div class="mb-4 inline-flex items-center px-2 py-1 rounded bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider font-sans">
+                Official Report
+            </div>
+<h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-6 text-slate-900 dark:text-white">
+                The Future of Editorial Collaboration
+            </h1>
+<div class="flex items-center gap-4 border-y border-slate-100 dark:border-slate-800 py-4 mb-8">
+<div class="size-10 rounded-full bg-slate-200 overflow-hidden shrink-0">
+<img alt="Author headshot profile picture" class="w-full h-full object-cover" data-alt="Portrait of a professional editor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyZgmfRHMCVmSoGot4XIfN0Ff2sPQpiYGXhgb58PZXaerRbDBnUmcjJ9oSexhVmuUdsyTAMLllMC5zT1DyzsL4RWmyawdiL0JcdSUe3HuztlcyBvpRZ_AdOQCJunQ91a0c0jZITS-W88AYJW0i08uuju2rNHTgLy5Ui24GTVwWvQnM1AbsLJzaOiymidzK7jvFsRX0k50yedYa9n_dcL-P9qxCEjQZMo6mqt7afiz0djmgGPupNW-RXEU43ZeOrjG-09Q0bbX4erg"/>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-800 dark:text-slate-200 font-sans">Elena Rodriguez</p>
+<p class="text-xs text-slate-500 font-sans italic">Chief Editor &amp; Strategist</p>
+</div>
+<div class="ml-auto text-xs text-slate-400 font-sans">
+                    12 min read
+                </div>
+</div>
+</header>
+<!-- Article Content -->
+<article class="prose prose-slate dark:prose-invert max-w-none">
+<p class="text-xl leading-relaxed mb-8 first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left first-letter:text-primary">
+                In the rapidly evolving landscape of digital media, the way we create, curate, and publish content has undergone a seismic shift. This report explores the nuances of collaborative editorial workflows and the technologies driving the next generation of professional publishing.
+            </p>
+<h2 class="text-2xl font-bold mt-12 mb-4 text-slate-900 dark:text-white">The Digital Paradigm Shift</h2>
+<p class="text-lg leading-relaxed mb-6 text-slate-700 dark:text-slate-300">
+                The transition from traditional print-centric cycles to "digital-first" real-time collaboration has redefined the roles within the newsroom. Today, an editor is not just a gatekeeper of grammar but a conductor of a multi-sensory symphony involving data visualizers, social media strategists, and remote contributors.
+            </p>
+<blockquote class="border-l-4 border-primary pl-6 my-10 italic text-2xl text-slate-800 dark:text-slate-200">
+                "The toolset no longer dictates the quality; rather, the synergy between the team and their shared workspace defines the impact of the story."
+            </blockquote>
+<div class="my-10 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800">
+<img alt="Modern collaborative office space" class="w-full aspect-video object-cover" data-alt="Modern collaborative workspace with team working on laptops" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQRbCvPEZjJlhvmn9pjbXCXDVJWWqBM-NLBleMV8Igomt-WRccFbyikly4pcDGRdTlscqsLamhc7tdszBsFHWZsL_vCljFqKqO4sati45jX8iVBXIEC9dERP5uYOcHPE7rbGH7Q80z7SimDpGLcrJwctKDcBYhX5d6-IfTJoQ9l05n0Tn4LqlDMLzjiOR5r_CBhoBNivaZTvGMWDj9Roaa2FhDx4wJ6cdiNX3tlUtE1LMb3dUewDiK1EEYZ0CRdJGP5Vj3KSSvRLI"/>
+<div class="p-3 bg-white dark:bg-slate-900 text-xs text-center text-slate-500 italic">
+                    Figure 1: The architecture of modern synchronous workspaces.
+                </div>
+</div>
+<h2 class="text-2xl font-bold mt-12 mb-4 text-slate-900 dark:text-white">Synchronous Workflows</h2>
+<p class="text-lg leading-relaxed mb-6 text-slate-700 dark:text-slate-300">
+                One of the most significant breakthroughs has been the widespread adoption of synchronous editing. Previously, versioning was a linear process—often plagued by conflicting copies. With the introduction of operational transformation algorithms, teams can now witness edits in real-time, reducing production overhead by nearly 40%.
+            </p>
+<p class="text-lg leading-relaxed mb-6 text-slate-700 dark:text-slate-300">
+                However, this speed brings new challenges. The "Reviewer's Fatigue" is a documented phenomenon where the constant stream of updates can lead to oversight. To counter this, advanced editorial platforms are implementing "Snapshot Governance," allowing teams to pause for significant milestone reviews without halting the creative flow.
+            </p>
+</article>
+<!-- Document Footer Information -->
+<footer class="mt-20 pt-10 border-t border-slate-200 dark:border-slate-800">
+<div class="grid grid-cols-2 gap-8 mb-10">
+<div>
+<h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 font-sans">Metadata</h4>
+<dl class="space-y-2 text-sm">
+<div class="flex justify-between">
+<dt class="text-slate-500">ID</dt>
+<dd class="font-mono text-slate-800 dark:text-slate-200">#PRJ-1024-X</dd>
+</div>
+<div class="flex justify-between">
+<dt class="text-slate-500">License</dt>
+<dd class="text-slate-800 dark:text-slate-200">Internal Use Only</dd>
+</div>
+</dl>
+</div>
+<div>
+<h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 font-sans">Keywords</h4>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded text-xs text-slate-600 dark:text-slate-400">Editorial</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded text-xs text-slate-600 dark:text-slate-400">SaaS</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded text-xs text-slate-600 dark:text-slate-400">UI/UX</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<button class="flex items-center justify-center gap-2 w-full py-4 bg-primary text-white font-bold rounded-xl shadow-md">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+                    Export as PDF
+                </button>
+<button class="flex items-center justify-center gap-2 w-full py-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold rounded-xl">
+<span class="material-symbols-outlined">link</span>
+                    Copy Shareable Link
+                </button>
+</div>
+</footer>
+</main>
+<!-- Floating Navigation Button -->
+<div class="fixed bottom-6 right-6 z-40">
+<button class="size-14 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl rounded-full flex items-center justify-center text-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[30px]">list_alt</span>
+</button>
+</div>
+<!-- Mobile Navigation Sheet (Visual Representation) -->
+<div class="fixed inset-0 z-[60] bg-black/40 hidden">
+<div class="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-3xl p-6">
+<div class="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-6"></div>
+<h3 class="text-xl font-bold mb-6 px-2">Table of Contents</h3>
+<nav class="space-y-1">
+<a class="flex items-center gap-4 p-4 rounded-xl bg-primary/10 text-primary font-bold" href="#">
+<span class="text-sm">01</span>
+<span class="flex-1">Introduction</span>
+<span class="material-symbols-outlined">check_circle</span>
+</a>
+<a class="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800" href="#">
+<span class="text-sm text-slate-400">02</span>
+<span class="flex-1">The Digital Paradigm Shift</span>
+</a>
+<a class="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800" href="#">
+<span class="text-sm text-slate-400">03</span>
+<span class="flex-1">Synchronous Workflows</span>
+</a>
+<a class="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800" href="#">
+<span class="text-sm text-slate-400">04</span>
+<span class="flex-1">Conclusion &amp; Future Outlook</span>
+</a>
+</nav>
+</div>
+</div>
+</body></html>

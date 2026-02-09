@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mezcla de Propuestas - Consultores</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#196ee6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#0e131b] dark:text-slate-100 font-display">
+<div class="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto bg-white dark:bg-background-dark shadow-2xl">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between px-4 pt-6 pb-2 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-20">
+<div class="text-[#0e131b] dark:text-white flex size-10 shrink-0 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined">close</span>
+</div>
+<h1 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center">Mezcla de Propuestas</h1>
+<div class="flex size-10 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-primary">info</span>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto pb-32">
+<!-- Comparison Section -->
+<div class="px-4 pt-4">
+<h2 class="text-base font-bold mb-4">Comparar Propuestas</h2>
+<div class="flex overflow-x-auto gap-3 hide-scrollbar snap-x snap-mandatory">
+<!-- My Proposal Card -->
+<div class="flex-none w-72 snap-start bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
+<div class="w-full h-32 bg-slate-200 dark:bg-slate-700 rounded-lg mb-3 flex items-center justify-center bg-cover bg-center" data-alt="Abstract gradient showing initial editorial proposal draft" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCWqlvolX1dPm8zbP2zK34tCrV0dRb4SDnm8WzqblMLhVBWUZ2TaqnJDT5sey2o5FP0fAniGbqf2WawBTNkn3nJmKpslBkToLz1mgYbfNFJ2W1HvLU1jYC7RO37jEKMFYaUbCoKiL5S5WMuuP7IhhyPLthDdcQAdtRkwivzO65CnxfAjfQ1aiu2Slmo5xtT6nuBVY_5Ge5_LWQY9bePNUdbdMHF_GsWvNYW5LiHrFYhyCPeQQAHkH1bvaPuWYEJ4lRj9bpctK3TWF8')">
+</div>
+<span class="inline-block px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase mb-2">Mi Propuesta</span>
+<h3 class="text-sm font-bold mb-1">Enfoque Narrativa Histórica</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">
+                            Priorizar el contexto social de la época para dar mayor profundidad a los personajes secundarios...
+                        </p>
+</div>
+<!-- Peer Proposal Card -->
+<div class="flex-none w-72 snap-start bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
+<div class="w-full h-32 bg-slate-200 dark:bg-slate-700 rounded-lg mb-3 flex items-center justify-center bg-cover bg-center" data-alt="Abstract gradient showing peer consultant editorial proposal" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAe4Gpj-rX36JL3MHmTBbVndcjGUgMMoeilt72AJU9a22W0Q7wthxdnGOaPkL0rDlLX5ZsXLh_Xx3v1fHiOECs9Z1AgIINERmm1CPWlhCmVQq-1PEc_MN-oLGdO1ih2l--w4XcgMhqAOtGvvh4hNvjD0ONYmjVU8bAgIJGOOJ-UbHQTlsy6rWO710FLJmkDeXyBn7umMaAzN770Uj0R2lqBwSmvYV23-QMwFrMmBhnfi1tmrMyBEINsvv_j7JIWAJa8s9BikFZygSg')">
+</div>
+<span class="inline-block px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-bold rounded uppercase mb-2">Propuesta de Peer</span>
+<h3 class="text-sm font-bold mb-1">Análisis Técnico y Estructural</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">
+                            Ajustar la estructura de los capítulos para mejorar el ritmo de lectura y el impacto comercial...
+                        </p>
+</div>
+</div>
+</div>
+<!-- Status Indicator -->
+<div class="p-4">
+<div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<p class="text-sm font-bold">Estado: Nueva Propuesta</p>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400">Esperando borrador final para enviar solicitud.</p>
+</div>
+<label class="relative flex h-7 w-12 cursor-pointer items-center rounded-full bg-slate-200 dark:bg-slate-700 transition-colors has-[:checked]:bg-primary">
+<div class="absolute left-1 h-5 w-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-5"></div>
+<input checked="" class="peer sr-only" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Merged Version Editor -->
+<div class="px-4 pb-4">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-base font-bold">Versión Combinada</h2>
+<span class="text-xs text-slate-400">Auto-guardado 12:45 PM</span>
+</div>
+<!-- Simple Text Editor UI -->
+<div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900">
+<!-- Editor Toolbar -->
+<div class="flex items-center gap-4 px-3 py-2 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 overflow-x-auto hide-scrollbar">
+<span class="material-symbols-outlined text-sm cursor-pointer hover:text-primary">format_bold</span>
+<span class="material-symbols-outlined text-sm cursor-pointer hover:text-primary">format_italic</span>
+<span class="material-symbols-outlined text-sm cursor-pointer hover:text-primary">format_list_bulleted</span>
+<div class="h-4 w-[1px] bg-slate-300 dark:bg-slate-600"></div>
+<span class="material-symbols-outlined text-sm cursor-pointer hover:text-primary">link</span>
+<span class="material-symbols-outlined text-sm cursor-pointer hover:text-primary">image</span>
+</div>
+<!-- Editor Content -->
+<textarea class="w-full min-h-[250px] p-4 text-sm bg-transparent border-none focus:ring-0 resize-none text-slate-700 dark:text-slate-300 leading-relaxed" placeholder="Escribe aquí la versión final combinada...">En esta propuesta integrada, mantendremos la profundidad de los personajes históricos sugerida por el equipo editorial original, pero adoptaremos la estructura de 12 capítulos para optimizar el ritmo narrativo.
+
+Los puntos clave de esta unión son:
+1. Contexto histórico enriquecido.
+2. Ritmo técnico acelerado.
+3. Mayor impacto en el mercado joven.</textarea>
+</div>
+</div>
+</main>
+<!-- Bottom Actions -->
+<footer class="absolute bottom-0 left-0 w-full p-4 pb-8 bg-white/90 dark:bg-background-dark/90 border-t border-slate-100 dark:border-slate-800 backdrop-blur-md">
+<div class="flex flex-col gap-3">
+<button class="w-full h-14 bg-primary text-white rounded-xl font-bold text-base flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">send</span>
+                    Solicitar Mezcla
+                </button>
+<button class="w-full h-12 bg-transparent text-slate-500 dark:text-slate-400 rounded-xl font-medium text-sm flex items-center justify-center active:bg-slate-100 dark:active:bg-slate-800 transition-colors">
+                    Cancelar Edición
+                </button>
+</div>
+</footer>
+</div>
+</body></html>
