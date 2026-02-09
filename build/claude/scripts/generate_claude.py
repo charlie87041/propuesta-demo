@@ -14,6 +14,7 @@ class ClaudeConfigGenerator:
     def __init__(self, output_dir: str = ".claude"):
         self.output_dir = Path(output_dir)
         self.templates_dir = Path(__file__).resolve().parent.parent / "stubs"
+        self.repo_root = Path(__file__).resolve().parents[3]
         
     def generate(self, project_name: str, language: str, framework: str = None, 
                  build_tool: str = None):
@@ -43,11 +44,14 @@ class ClaudeConfigGenerator:
     def _create_directory_structure(self):
         """Crea estructura de directorios"""
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        stub_dirs = [".claude", ".claude-plugin"]
-        for stub_dir in stub_dirs:
+        stub_destinations = {
+            ".claude": self.output_dir,
+            ".claude-plugin": self.output_dir.parent / ".claude-plugin"
+        }
+        for stub_dir, destination_dir in stub_destinations.items():
             source_dir = self.templates_dir / stub_dir
             if source_dir.is_dir():
-                destination_dir = self.output_dir / stub_dir
+                destination_dir.mkdir(parents=True, exist_ok=True)
                 shutil.copytree(source_dir, destination_dir, dirs_exist_ok=True)
                 print(f"  ✅ {destination_dir}")
 
@@ -56,7 +60,7 @@ class ClaudeConfigGenerator:
             'commands',
             'contexts',
             'skills',
-            'rules/common',
+            'rules',
             'hooks',
             'schemas',
             'scripts/ci',
@@ -65,8 +69,14 @@ class ClaudeConfigGenerator:
         
         for dir_name in dirs:
             dir_path = self.output_dir / dir_name
-            dir_path.mkdir(parents=True, exist_ok=True)
-            print(f"  📁 {dir_path}")
+            source_dir = self.repo_root / dir_name
+            if source_dir.is_dir():
+                dir_path.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copytree(source_dir, dir_path, dirs_exist_ok=True)
+                print(f"  ✅ {dir_path}")
+            else:
+                dir_path.mkdir(parents=True, exist_ok=True)
+                print(f"  📁 {dir_path}")
     
     def _copy_config_json(self):
         """Copia claude_config.json desde los templates"""
