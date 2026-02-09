@@ -1,0 +1,236 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude.ai/schemas/config.schema.json",
+  "title": "Claude Code Configuration",
+  "description": "Schema for Claude Code project configuration",
+  "type": "object",
+  "required": ["version", "project"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Reference to this schema file"
+    },
+    "version": {
+      "type": "string",
+      "description": "Configuration version",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "project": {
+      "type": "object",
+      "description": "Project metadata",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Project name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Project description"
+        },
+        "language": {
+          "type": "string",
+          "description": "Primary programming language",
+          "enum": ["javascript", "typescript","java", "other"]
+        },
+        "framework": {
+          "type": "string",
+          "description": "Primary framework"
+        },
+        "buildTool": {
+          "type": "string",
+          "description": "Build tool used",
+          "enum": ["npm", "yarn", "gradle", "maven",  "other"]
+        }
+      }
+    },
+    "agents": {
+      "type": "object",
+      "description": "Agent configuration",
+      "properties": {
+        "default": {
+          "type": "string",
+          "description": "Default agent to use"
+        },
+        "available": {
+          "type": "array",
+          "description": "List of available agents",
+          "items": {
+            "type": "string"
+          }
+        },
+        "autoSelect": {
+          "type": "boolean",
+          "description": "Auto-select appropriate agent based on context",
+          "default": true
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "description": "Skills configuration",
+      "properties": {
+        "enabled": {
+          "type": "array",
+          "description": "List of enabled skills",
+          "items": {
+            "type": "string"
+          }
+        },
+        "autoLoad": {
+          "type": "boolean",
+          "description": "Automatically load relevant skills",
+          "default": true
+        }
+      }
+    },
+    "contexts": {
+      "type": "object",
+      "description": "Context configuration",
+      "properties": {
+        "available": {
+          "type": "array",
+          "description": "Available contexts",
+          "items": {
+            "type": "string"
+          }
+        },
+        "default": {
+          "type": "string",
+          "description": "Default context"
+        }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "description": "Rules configuration",
+      "properties": {
+        "enabled": {
+          "type": "array",
+          "description": "Enabled rules",
+          "items": {
+            "type": "string"
+          }
+        },
+        "strict": {
+          "type": "boolean",
+          "description": "Strict mode for rule enforcement",
+          "default": false
+        }
+      }
+    },
+    "commands": {
+      "type": "object",
+      "description": "Command configuration",
+      "properties": {
+        "aliases": {
+          "type": "object",
+          "description": "Command aliases",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "workflows": {
+      "type": "object",
+      "description": "Predefined workflows",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": ["steps"]
+      }
+    },
+    "integrations": {
+      "type": "object",
+      "description": "External integrations",
+      "properties": {
+        "mcp": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "configPath": {
+              "type": "string"
+            }
+          }
+        },
+        "hooks": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "configPath": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "features": {
+      "type": "object",
+      "description": "Feature flags",
+      "properties": {
+        "continuousLearning": {
+          "type": "boolean",
+          "default": false
+        },
+        "strategicCompact": {
+          "type": "boolean",
+          "default": false
+        },
+        "autoDocumentation": {
+          "type": "boolean",
+          "default": false
+        },
+        "codeGeneration": {
+          "type": "boolean",
+          "default": true
+        },
+        "testGeneration": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "preferences": {
+      "type": "object",
+      "description": "User preferences",
+      "properties": {
+        "verbosity": {
+          "type": "string",
+          "enum": ["quiet", "normal", "verbose", "debug"],
+          "default": "normal"
+        },
+        "autoCommit": {
+          "type": "boolean",
+          "default": false
+        },
+        "formatOnSave": {
+          "type": "boolean",
+          "default": true
+        },
+        "lintOnSave": {
+          "type": "boolean",
+          "default": true
+        },
+        "testOnSave": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}
