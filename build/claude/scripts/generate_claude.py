@@ -12,6 +12,7 @@ from datetime import datetime
 class ClaudeConfigGenerator:
     def __init__(self, output_dir: str = ".claude"):
         self.output_dir = Path(output_dir)
+        self.templates_dir = Path(__file__).resolve().parent.parent
         
     def generate(self, project_name: str, language: str, framework: str = None, 
                  build_tool: str = None):
@@ -22,8 +23,8 @@ class ClaudeConfigGenerator:
         self._create_directory_structure()
         
         # Generar archivos de configuración
-        self._generate_config_json(project_name, language, framework, build_tool)
-        self._generate_claude_md(project_name, language, framework)
+        self._copy_config_json()
+        self._copy_claude_md_files()
         self._generate_package_manager_json(build_tool or self._infer_build_tool(language))
         
       
@@ -57,181 +58,26 @@ class ClaudeConfigGenerator:
             dir_path.mkdir(parents=True, exist_ok=True)
             print(f"  📁 {dir_path}")
     
-    def _generate_config_json(self, project_name: str, language: str, 
-                             framework: str, build_tool: str):
-        """Genera claude_config.json"""
-        
-        # Determinar skills según lenguaje/framework
-        skills = self._get_recommended_skills(language, framework)
-        
-        # Determinar agentes recomendados
-        agents = self._get_recommended_agents(language, framework)
-        
-        config = {
-            "$schema": "./schemas/config.schema.json",
-            "version": "1.0.0",
-            "project": {
-                "name": project_name,
-                "description": f"Proyecto {project_name}",
-                "language": language
-            },
-            "agents": {
-                "default": "planner",
-                "available": agents,
-                "autoSelect": True
-            },
-            "skills": {
-                "enabled": skills,
-                "autoLoad": True
-            },
-            "contexts": {
-                "available": ["dev", "review", "research"],
-                "default": "dev"
-            },
-            "rules": {
-                "enabled": [
-                    "common/coding-style",
-                    "common/security",
-                    "common/testing"
-                ],
-                "strict": True
-            },
-            "commands": {
-                "aliases": {
-                    "t": "tdd",
-                    "p": "plan",
-                    "r": "code-review"
-                }
-            },
-            "workflows": {
-                "development": {
-                    "steps": ["plan", "tdd", "code-review", "verify"]
-                }
-            },
-            "integrations": {
-                "hooks": {
-                    "enabled": True,
-                    "configPath": "hooks/hooks.json"
-                }
-            },
-            "features": {
-                "continuousLearning": True,
-                "autoDocumentation": True,
-                "codeGeneration": True,
-                "testGeneration": True
-            },
-            "preferences": {
-                "verbosity": "normal",
-                "formatOnSave": True,
-                "lintOnSave": True
-            }
-        }
-        
-        if framework:
-            config["project"]["framework"] = framework
-        if build_tool:
-            config["project"]["buildTool"] = build_tool
-        
+    def _copy_config_json(self):
+        """Copia claude_config.json desde los templates"""
+        source_file = self.templates_dir / "config.json"
         config_file = self.output_dir / "claude_config.json"
-        with open(config_file, 'w') as f:
-            json.dump(config, f, indent=2)
-        
+        config_file.write_text(source_file.read_text())
         print(f"  ✅ {config_file}")
-    
-    def _generate_claude_md(self, project_name: str, language: str, framework: str):
-        """Genera CLAUDE.md"""
-        
-        framework_text = f" con {framework}" if framework else ""
-        
-        content = f"""
-## Project Overview
 
-Proyecto **{project_name}** desarrollado en {language}{framework_text}.
+    def _copy_claude_md_files(self):
+        """Copia CLAUDE.MD y user-CLAUDE.MD desde los templates"""
+        source_claude_md = self.templates_dir / "CLAUDE.md"
+        source_user_claude_md = self.templates_dir / "user-CLAUDE.md"
 
-## Critical Rules
+        claude_md_file = self.output_dir / "CLAUDE.MD"
+        user_claude_md_file = self.output_dir / "user-CLAUDE.MD"
 
-### 1. Code Organization
+        claude_md_file.write_text(source_claude_md.read_text())
+        user_claude_md_file.write_text(source_user_claude_md.read_text())
 
-- Código organizado y modular
-- Alta cohesión, bajo acoplamiento
-- Archivos pequeños y enfocados (200-400 líneas típico, 800 máx)
-
-### 2. Code Style
-
-- Sin emojis en código o comentarios
-- Inmutabilidad preferida
-- Manejo apropiado de errores
-- Validación de inputs
-
-### 3. Testing
-
-- TDD cuando sea apropiado
-- Mínimo 80% de cobertura
-- Tests unitarios, integración y E2E
-
-### 4. Security
-
-- Sin secrets hardcodeados
-- Variables de entorno para datos sensibles
-- Validación de todos los inputs
-- Queries parametrizadas
-
-## File Structure
-
-```
-{project_name}/
-├── src/
-├── tests/
-├── docs/
-└── .claude/
-```
-
-## Key Patterns
-
-### Error Handling
-
-```{language}
-// Manejar errores apropiadamente
-try {{
-  // código
-}} catch (error) {{
-  // manejo de error
-}}
-```
-
-## Available Commands
-
-- `/plan` - Crear plan de implementación
-- `/tdd` - Workflow de Test-Driven Development
-- `/code-review` - Revisar calidad del código
-- `/verify` - Verificar implementación
-
-## Git Workflow
-
-- Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`
-- Never commit to main directly
-- PRs requieren revisión
-- Todos los tests deben pasar antes de merge
-
-## Environment Variables
-
-```bash
-# Configurar según tu proyecto
-DATABASE_URL=
-API_KEY=
-DEBUG=false
-```
-
-## Notes
-
-Para información más detallada, revisar los archivos en `.claude/`
-"""
-        
-        claude_md_file = self.output_dir / "CLAUDE.md"
-        with open(claude_md_file, 'w') as f:
-            f.write(content.strip())
-        
         print(f"  ✅ {claude_md_file}")
+        print(f"  ✅ {user_claude_md_file}")
     
     def _generate_package_manager_json(self, build_tool: str):
         """Genera package-manager.json"""
