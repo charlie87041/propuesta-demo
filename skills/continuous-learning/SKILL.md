@@ -108,3 +108,24 @@ Homunculus v2 takes a more sophisticated approach:
 5. **Evolution path** - Cluster related instincts into skills/commands
 
 See: `/Users/affoon/Documents/tasks/12-continuous-learning-v2.md` for full spec.
+
+# Skill: continuous-learning
+
+## Purpose
+Extraer patrones al final de cada sesión y guardarlos como skills aprendidas.
+
+## When to Use
+- Cuando deseas aprendizaje automático basado en sesiones.
+- Para convertir resoluciones recurrentes en skills reutilizables.
+
+## Usage
+- Configura el hook `Stop` en `~/.claude/settings.json`.
+- Ajusta `config.json` para umbrales y tipos de patrones.
+
+## Examples
+- Guardar skills en `~/.claude/skills/learned/`.
+- Cambiar `min_session_length` para activar extracción.
+
+## Related Skills
+- continuous-learning-v2
+- strategic-compact

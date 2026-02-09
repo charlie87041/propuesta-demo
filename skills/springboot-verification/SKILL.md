@@ -98,3 +98,24 @@ Issues to Fix:
 - Keep a short loop: `mvn -T 4 test` + spotbugs for quick feedback
 
 **Remember**: Fast feedback beats late surprises. Keep the gate strict—treat warnings as defects in production systems.
+
+# Skill: springboot-verification
+
+## Purpose
+Asegurar calidad en proyectos Spring Boot con builds, análisis estático, tests y scans.
+
+## When to Use
+- Antes de PRs o releases.
+- Después de cambios significativos en backend Java.
+
+## Usage
+- Ejecuta build, static analysis, tests y security scans.
+- Revisa diffs para detectar cambios no deseados.
+
+## Examples
+- `mvn -T 4 clean verify -DskipTests`.
+- `mvn jacoco:report` para cobertura.
+
+## Related Skills
+- springboot-tdd
+- springboot-security

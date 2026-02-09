@@ -155,3 +155,27 @@ class MarketBuilder {
 - Gradle: `./gradlew test jacocoTestReport`
 
 **Remember**: Keep tests fast, isolated, and deterministic. Test behavior, not implementation details.
+
+# Skill: springboot-tdd
+
+## Purpose
+Aplicar TDD en Spring Boot con JUnit 5, Mockito, MockMvc, Testcontainers y JaCoCo.
+
+## When to Use
+- Al crear endpoints, servicios o repositorios.
+- Cuando se corrigen bugs o se refactoriza.
+
+## Usage
+- Escribe tests unitarios, web e integración antes del código.
+- Usa Testcontainers para entornos reales.
+- Verifica cobertura con JaCoCo.
+
+## Examples
+- `@WebMvcTest` para controladores.
+- `@DataJpaTest` con Testcontainers.
+- `@SpringBootTest` para flujos completos.
+
+## Related Skills
+- springboot-patterns
+- springboot-verification
+- jpa-patterns

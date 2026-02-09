@@ -629,3 +629,26 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
 ```
 
 **Remember**: Modern frontend patterns enable maintainable, performant user interfaces. Choose patterns that fit your project complexity.
+
+# Skill: frontend-patterns
+
+## Purpose
+Ofrecer patrones de UI modernos en React/Next.js: composición, hooks, rendimiento y accesibilidad.
+
+## When to Use
+- Al construir componentes, formularios o flujos UI complejos.
+- Para mejorar performance con memoización o virtualización.
+
+## Usage
+- Prefiere composición y hooks reutilizables.
+- Aplica code-splitting y virtualización en listas largas.
+- Implementa errores y accesibilidad de forma explícita.
+
+## Examples
+- Crear `useDebounce` para búsquedas.
+- Usar `React.memo` para tarjetas de lista.
+- Implementar un `ErrorBoundary` global.
+
+## Related Skills
+- coding-standards
+- backend-patterns

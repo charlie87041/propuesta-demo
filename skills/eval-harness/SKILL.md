@@ -225,3 +225,25 @@ Capability: 5/5 passed (pass@3: 100%)
 Regression: 3/3 passed (pass^3: 100%)
 Status: SHIP IT
 ```
+
+# Skill: eval-harness
+
+## Purpose
+Implementar Eval-Driven Development con definiciones de evals, graders y reportes.
+
+## When to Use
+- Al definir criterios de éxito antes de programar.
+- Para prevenir regresiones y medir pass@k.
+
+## Usage
+- Define capability/regression evals antes de codificar.
+- Ejecuta `/eval check` y `/eval report`.
+- Guarda resultados y métricas en `.claude/evals/`.
+
+## Examples
+- Crear un eval para autenticación con criterios claros.
+- Reportar pass@1 y pass@3 en un feature.
+
+## Related Skills
+- verification-loop
+- tdd-workflow

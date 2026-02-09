@@ -163,3 +163,26 @@ For native tool integration, use the MCP server instead of curl:
 - [Full API Docs](https://www.nutrient.io/guides/dws-processor/)
 - [Agent Skill Repo](https://github.com/PSPDFKit-labs/nutrient-agent-skill)
 - [npm MCP Server](https://www.npmjs.com/package/@nutrient-sdk/dws-mcp-server)
+
+# Skill: nutrient-document-processing
+
+## Purpose
+Procesar documentos con la API de Nutrient DWS: convertir formatos, OCR, extracción de texto/tablas, redacción, firmas y formularios.
+
+## When to Use
+- Conversión entre PDF, DOCX, XLSX, PPTX, HTML o imágenes.
+- Necesitas OCR, extracción de datos o redacción de PII.
+- Requieres firmar documentos o completar formularios PDF.
+
+## Usage
+- Configura `NUTRIENT_API_KEY`.
+- Envía requests multipart a `https://api.nutrient.io/build`.
+- Usa `instructions` para definir acciones (convert, ocr, redaction, sign, fillForm).
+
+## Examples
+- Convertir `document.docx` a PDF con curl.
+- Ejecutar OCR sobre un PDF escaneado.
+- Redactar emails y SSN con presets o regex.
+
+## Related Skills
+- security-review

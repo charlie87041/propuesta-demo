@@ -139,3 +139,25 @@ spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 - Assert SQL efficiency using logs: set `logging.level.org.hibernate.SQL=DEBUG` and `logging.level.org.hibernate.orm.jdbc.bind=TRACE` for parameter values
 
 **Remember**: Keep entities lean, queries intentional, and transactions short. Prevent N+1 with fetch strategies and projections, and index for your read/write paths.
+
+# Skill: jpa-patterns
+
+## Purpose
+Guiar el diseño de entidades JPA/Hibernate, relaciones y performance.
+
+## When to Use
+- Al modelar entidades, repositorios y transacciones.
+- Para evitar N+1 y optimizar queries.
+
+## Usage
+- Define índices y estrategias de fetch.
+- Usa `@Transactional` con lectura optimizada.
+- Añade tests con `@DataJpaTest`.
+
+## Examples
+- Crear entidad con índices y auditing.
+- Usar `JOIN FETCH` para evitar N+1.
+
+## Related Skills
+- springboot-patterns
+- postgres-patterns

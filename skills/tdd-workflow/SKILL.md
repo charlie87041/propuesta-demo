@@ -407,3 +407,27 @@ npm test && npm run lint
 ---
 
 **Remember**: Tests are not optional. They are the safety net that enables confident refactoring, rapid development, and production reliability.
+
+# Skill: tdd-workflow
+
+## Purpose
+Aplicar Test-Driven Development con cobertura 80%+ incluyendo unit, integración y E2E.
+
+## When to Use
+- Al desarrollar features nuevas, fixes o refactors.
+- Al crear endpoints o componentes con lógica crítica.
+
+## Usage
+- Define user journeys y casos de prueba.
+- Escribe tests primero, implementa mínimo, refactoriza.
+- Ejecuta cobertura y corrige gaps.
+
+## Examples
+- Unit test con React Testing Library.
+- Integration test de un endpoint.
+- E2E con Playwright para flujos críticos.
+
+## Related Skills
+- tdd-milestone-planning
+- verification-loop
+- springboot-tdd

@@ -518,3 +518,27 @@ setTimeout(callback, DEBOUNCE_DELAY_MS)
 ```
 
 **Remember**: Code quality is not negotiable. Clear, maintainable code enables rapid development and confident refactoring.
+
+# Skill: coding-standards
+
+## Purpose
+Establecer estándares generales de calidad y estilo para TS/JS/React/Node.
+
+## When to Use
+- En cualquier trabajo de frontend o backend JavaScript/TypeScript.
+- Cuando necesitas consistencia en naming, APIs y estructura.
+
+## Usage
+- Prioriza legibilidad y simplicidad (KISS/DRY/YAGNI).
+- Mantén inmutabilidad con spread y tipos explícitos.
+- Sigue convenciones de API y validación de entradas.
+
+## Examples
+- Usar `useCallback`/`useMemo` para rendimiento.
+- Definir un esquema Zod para validar requests.
+- Estructurar responses con `success`, `data` y `error`.
+
+## Related Skills
+- frontend-patterns
+- backend-patterns
+- security-review

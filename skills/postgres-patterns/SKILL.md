@@ -144,3 +144,28 @@ SELECT pg_reload_conf();
 ---
 
 *Based on [Supabase Agent Skills](https://github.com/supabase/agent-skills) (MIT License)*
+
+# Skill: postgres-patterns
+
+## Purpose
+Proveer patrones de diseño y optimización para PostgreSQL: índices, tipos de datos, RLS y tuning básico.
+
+## When to Use
+- Al escribir consultas SQL o migraciones.
+- Al definir esquemas e índices para rendimiento.
+- Cuando hay problemas de latencia o bloqueos.
+
+## Usage
+- Sigue el cheat sheet de índices y tipos de datos.
+- Aplica patrones comunes (UPSERT, paginación por cursor, SKIP LOCKED).
+- Ejecuta consultas de diagnóstico para encontrar anti-patrones.
+
+## Examples
+- Crear un índice parcial para filas activas.
+- Usar paginación por cursor en lugar de OFFSET.
+- Configurar `pg_stat_statements` para monitoreo.
+
+## Related Skills
+- clickhouse-io
+- backend-patterns
+- jpa-patterns
