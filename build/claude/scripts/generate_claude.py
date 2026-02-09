@@ -6,6 +6,7 @@ Crea estructura completa de .claude/ con archivos base
 
 import json
 import argparse
+import shutil
 from pathlib import Path
 from datetime import datetime
 
@@ -41,6 +42,15 @@ class ClaudeConfigGenerator:
     
     def _create_directory_structure(self):
         """Crea estructura de directorios"""
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        stub_dirs = [".claude", ".claude-plugin"]
+        for stub_dir in stub_dirs:
+            source_dir = self.templates_dir / stub_dir
+            if source_dir.is_dir():
+                destination_dir = self.output_dir / stub_dir
+                shutil.copytree(source_dir, destination_dir, dirs_exist_ok=True)
+                print(f"  ✅ {destination_dir}")
+
         dirs = [
             'agents',
             'commands',
