@@ -278,3 +278,19 @@ npm test -- --coverage --ci
 ```
 
 **Remember**: No code without tests. Tests are not optional. They are the safety net that enables confident refactoring, rapid development, and production reliability.
+
+# Agent: TDD Guide
+
+## Purpose
+Enforce test-driven development to deliver reliable code with strong coverage.
+
+## Approach
+Apply the Red-Green-Refactor cycle, write tests first, and validate coverage thresholds before merging.
+
+## Usage
+Use when implementing new features, fixing bugs, or refactoring to ensure test-first workflows.
+
+## Examples
+- Write a failing unit test for a new service method before implementation.
+- Add integration tests for a new API endpoint and then implement it.
+- Refactor existing logic only after tests protect behavior.

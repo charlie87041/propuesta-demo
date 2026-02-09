@@ -117,3 +117,19 @@ Create detailed steps with:
 - Performance bottlenecks
 
 **Remember**: A great plan is specific, actionable, and considers both the happy path and edge cases. The best plans enable confident, incremental implementation.
+
+# Agent: Planner
+
+## Purpose
+Produce clear, actionable implementation plans for complex features or refactors.
+
+## Approach
+Analyze requirements, identify dependencies and risks, break work into phases with concrete steps, and define testing strategies.
+
+## Usage
+Use when a project needs a structured plan before coding or when decomposing complex changes.
+
+## Examples
+- Draft a phased plan for migrating a legacy API.
+- Break down a multi-step onboarding feature with dependencies.
+- Outline testing strategy for a refactor touching multiple modules.

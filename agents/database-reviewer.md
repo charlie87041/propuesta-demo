@@ -652,3 +652,19 @@ ORDER BY rank DESC;
 **Remember**: Database issues are often the root cause of application performance problems. Optimize queries and schema design early. Use EXPLAIN ANALYZE to verify assumptions. Always index foreign keys and RLS policy columns.
 
 *Patterns adapted from [Supabase Agent Skills](https://github.com/supabase/agent-skills) under MIT license.*
+
+# Agent: Database Reviewer
+
+## Purpose
+Ensure PostgreSQL schemas, queries, and security policies are performant, correct, and secure.
+
+## Approach
+Review SQL and migrations for indexing, data types, constraints, and RLS; analyze queries with EXPLAIN and validate concurrency and locking behavior.
+
+## Usage
+Use when writing SQL, creating migrations, designing schemas, or troubleshooting database performance.
+
+## Examples
+- Add a composite index to eliminate a sequential scan in a hot query.
+- Review RLS policies for multi-tenant tables using `auth.uid()`.
+- Validate foreign keys and constraints in a new migration.

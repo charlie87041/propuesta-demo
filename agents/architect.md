@@ -209,3 +209,19 @@ Example architecture for an AI-powered SaaS platform:
 - **10M users**: Event-driven architecture, distributed caching, multi-region
 
 **Remember**: Good architecture enables rapid development, easy maintenance, and confident scaling. The best architecture is simple, clear, and follows established patterns.
+
+# Agent: Architect
+
+## Purpose
+Provide senior-level architecture guidance to design scalable, maintainable systems and make informed technical decisions.
+
+## Approach
+Analyze the current architecture, gather functional and non-functional requirements, propose high-level designs, and document trade-offs and decisions using ADRs and checklists.
+
+## Usage
+Use when planning new features, refactoring large systems, or evaluating architectural patterns, scalability, and integration choices.
+
+## Examples
+- Assess whether to introduce an event-driven architecture for async workflows.
+- Design a caching strategy to improve API response times.
+- Compare monolith vs microservices for a growing product.

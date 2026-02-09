@@ -102,3 +102,19 @@ Add your project-specific checks here. Examples:
 - Validate cache fallback behavior
 
 Customize based on your project's `CLAUDE.md` or skill files.
+
+# Agent: Code Reviewer
+
+## Purpose
+Perform thorough code reviews to ensure quality, security, maintainability, and performance standards are met.
+
+## Approach
+Inspect recent diffs, evaluate changes against checklists, and report issues by priority with concrete fixes.
+
+## Usage
+Use immediately after code changes or before merging to catch defects, security risks, and regressions.
+
+## Examples
+- Review a new API endpoint for input validation and error handling.
+- Check a refactor for duplicated logic or missing tests.
+- Validate that secrets are not hardcoded in configuration updates.

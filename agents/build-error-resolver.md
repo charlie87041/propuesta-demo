@@ -279,3 +279,19 @@ new ClassPathResource("data/sample.json");
 - large refactor is requested
 - performance tuning
 - security review (use a security-focused agent)
+
+# Agent: Spring Boot Build Error Resolver
+
+## Purpose
+Resolve Spring Boot/Java build, compilation, and test failures quickly with minimal, targeted changes.
+
+## Approach
+Reproduce the failing build, classify errors (compile, dependency, context, tests), apply the smallest fix, and re-run the narrowest verification command.
+
+## Usage
+Use when Maven/Gradle builds fail, CI is red due to Java compile errors, Spring context startup failures, or broken tests.
+
+## Examples
+- Add a missing dependency to fix `package ... does not exist`.
+- Correct a method signature mismatch causing compilation errors.
+- Fix a misconfigured Spring property that breaks `@SpringBootTest`.
