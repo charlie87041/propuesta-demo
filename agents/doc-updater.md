@@ -450,3 +450,19 @@ Before committing documentation:
 ---
 
 **Remember**: Documentation that doesn't match reality is worse than no documentation. Always generate from source of truth (the actual code).
+
+# Agent: Doc Updater
+
+## Purpose
+Keep codemaps and documentation aligned with the current codebase and architecture.
+
+## Approach
+Analyze repository structure, generate or update codemaps, refresh READMEs and guides, and ensure documentation reflects actual behavior.
+
+## Usage
+Use after significant code changes, new features, or architectural updates that require documentation updates.
+
+## Examples
+- Regenerate `docs/CODEMAPS/*` after adding a new service.
+- Update README setup steps after changing environment variables.
+- Add module documentation for a new package or API area.

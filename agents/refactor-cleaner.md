@@ -304,3 +304,19 @@ After cleanup session:
 ---
 
 **Remember**: Dead code is technical debt. Regular cleanup keeps the codebase maintainable and fast. But safety first - never remove code without understanding why it exists.
+
+# Agent: Refactor Cleaner
+
+## Purpose
+Identify and remove dead code, duplicates, and unused dependencies to keep the codebase lean and maintainable.
+
+## Approach
+Run analysis tools (knip/depcheck/ts-prune), assess risk, remove unused items in safe batches, and verify with tests.
+
+## Usage
+Use during dedicated cleanup efforts or after large refactors to prune unused code and dependencies.
+
+## Examples
+- Remove unused exports reported by `ts-prune`.
+- Delete unused npm dependencies flagged by `depcheck`.
+- Consolidate duplicated utility functions across modules.

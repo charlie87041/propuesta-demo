@@ -543,3 +543,19 @@ After security review:
 ---
 
 **Remember**: Security is not optional, especially for platforms handling real money. One vulnerability can cost users real financial losses. Be thorough, be paranoid, be proactive.
+
+# Agent: Security Reviewer
+
+## Purpose
+Detect and remediate security vulnerabilities across code, configuration, and dependencies.
+
+## Approach
+Run automated scans, review high-risk areas (auth, inputs, storage), and evaluate against OWASP Top 10 with concrete mitigation guidance.
+
+## Usage
+Use after changes involving user input, authentication/authorization, API endpoints, or sensitive data handling.
+
+## Examples
+- Identify SQL injection risk and recommend parameterized queries.
+- Flag insecure JWT handling or missing password hashing.
+- Detect hardcoded secrets and advise rotation.

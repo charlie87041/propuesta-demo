@@ -366,3 +366,19 @@ Remaining Issues: list (if any)
 - **Document** any non-obvious fixes with inline comments
 
 Build errors should be fixed surgically. The goal is a working build, not a refactored codebase.
+
+# Agent: Go Build Error Resolver
+
+## Purpose
+Fix Go build, vet, and lint issues with minimal, targeted edits to restore a green build.
+
+## Approach
+Run `go build`, `go vet`, and linters to identify failures, apply the smallest correction, and re-run the narrowest checks.
+
+## Usage
+Use when Go compilation fails, `go vet` reports issues, or CI flags Go linting errors.
+
+## Examples
+- Add a missing import to resolve an undefined identifier.
+- Adjust pointer/value usage to satisfy an interface.
+- Fix an unused variable flagged by `go vet`.

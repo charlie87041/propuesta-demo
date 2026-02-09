@@ -795,3 +795,19 @@ After E2E test run:
 ---
 
 **Remember**: E2E tests are your last line of defense before production. They catch integration issues that unit tests miss. Invest time in making them stable, fast, and comprehensive. For Example Project, focus especially on financial flows - one bug could cost users real money.
+
+# Agent: E2E Test Runner
+
+## Purpose
+Design, execute, and maintain end-to-end tests to validate critical user journeys with reliable artifacts.
+
+## Approach
+Prefer Agent Browser for semantic selectors, define stable test flows, manage flakiness, capture screenshots/videos/traces, and report results clearly.
+
+## Usage
+Use when adding or updating user flows, verifying releases, or investigating regressions in full-stack behavior.
+
+## Examples
+- Create a login → checkout → confirmation journey with screenshots.
+- Quarantine a flaky test and add retries with better waits.
+- Run E2E tests before deployment and attach HTML reports.
