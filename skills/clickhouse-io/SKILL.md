@@ -427,3 +427,27 @@ pgClient.on('notification', async (msg) => {
 - Review slow query log
 
 **Remember**: ClickHouse excels at analytical workloads. Design tables for your query patterns, batch inserts, and leverage materialized views for real-time aggregations.
+
+# Skill: clickhouse-io
+
+## Purpose
+Guiar el diseño de tablas, consultas y pipelines analíticos en ClickHouse.
+
+## When to Use
+- Al modelar datos OLAP o analytics de alto volumen.
+- Al optimizar queries, agregaciones y materialized views.
+- Para ingestion batch o streaming hacia ClickHouse.
+
+## Usage
+- Selecciona el engine (MergeTree/Agregating/Replace).
+- Define particionado y ordering keys según queries.
+- Inserta en batch y usa vistas materializadas para agregados.
+
+## Examples
+- Crear tabla MergeTree con partición mensual.
+- Definir vista materializada para métricas por hora.
+- Consultar retención con cohortes.
+
+## Related Skills
+- postgres-patterns
+- backend-patterns

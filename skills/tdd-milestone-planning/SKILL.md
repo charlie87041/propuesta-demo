@@ -315,3 +315,25 @@ Cuando implementes una tarea:
 - **Property-Based Testing**: "Property-Based Testing with PropEr, Erlang, and Elixir"
 - **Clean Code**: Robert C. Martin - "Clean Code"
 - **Documentation**: "Docs as Code" methodology
+
+# Skill: tdd-milestone-planning
+
+## Purpose
+Planificar milestones e issues con TDD estricto y property-based testing.
+
+## When to Use
+- Al descomponer proyectos grandes en milestones.
+- Para definir issues con criterios de aceptación claros.
+
+## Usage
+- Sigue la estructura de issue propuesta.
+- Mapea properties a property tests con 100+ iteraciones.
+- Incluye documentación en cada tarea.
+
+## Examples
+- Milestone de "User Management" con issues por entidad/servicio/controlador.
+- Checklist de aceptación con cobertura > 80%.
+
+## Related Skills
+- tdd-workflow
+- springboot-tdd

@@ -136,3 +136,25 @@ log.error("failed_fetch_market slug={}", slug, ex);
 - Favor deterministic tests; no hidden sleeps
 
 **Remember**: Keep code intentional, typed, and observable. Optimize for maintainability over micro-optimizations unless proven necessary.
+
+# Skill: java-coding-standards
+
+## Purpose
+Estandarizar el código Java en servicios Spring Boot: naming, inmutabilidad, Optional y excepciones.
+
+## When to Use
+- Al escribir o revisar código Java (17+) en backend.
+- Cuando se definan DTOs, servicios o repositorios.
+
+## Usage
+- Prefiere records y campos `final`.
+- Usa `Optional` correctamente y excepciones de dominio.
+- Mantén estructura de paquetes consistente.
+
+## Examples
+- Definir un `record` para DTOs inmutables.
+- Usar `Optional.map` y `orElseThrow` en repositorios.
+
+## Related Skills
+- springboot-patterns
+- springboot-tdd

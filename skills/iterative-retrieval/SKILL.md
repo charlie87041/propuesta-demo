@@ -200,3 +200,24 @@ When retrieving context for this task:
 - [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) - Subagent orchestration section
 - `continuous-learning` skill - For patterns that improve over time
 - Agent definitions in `~/.claude/agents/`
+
+# Skill: iterative-retrieval
+
+## Purpose
+Resolver el problema de contexto en subagentes mediante refinamiento iterativo.
+
+## When to Use
+- Cuando el subagente no conoce los archivos relevantes.
+- Para tareas grandes con contexto incierto.
+
+## Usage
+- Ejecuta el loop DISPATCH → EVALUATE → REFINE → LOOP.
+- Limita a 3 ciclos y conserva archivos de alta relevancia.
+
+## Examples
+- Buscar errores de expiración de tokens con keywords refinadas.
+- Encontrar puntos de rate limiting en un API.
+
+## Related Skills
+- strategic-compact
+- continuous-learning-v2
