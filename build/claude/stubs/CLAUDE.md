@@ -16,10 +16,10 @@ Este sistema implementa una plataforma colaborativa de gestión de documentos ut
 ### 2. Code Style
 
 - No emojis in code, comments, or documentation
-- Immutability always - never mutate objects or arrays
-- No console.log in production code
-- Proper error handling with try/catch
-- Input validation with Zod or similar
+- Immutability always - prefer records and final fields
+- No System.out.println in production code (use SLF4J/Logback)
+- Proper exception handling with domain-specific exceptions
+- Input validation with Bean Validation (JSR-380): `@NotNull`, `@NotBlank`, `@Valid`
 
 ### 3. Testing
 
@@ -39,7 +39,20 @@ Este sistema implementa una plataforma colaborativa de gestión de documentos ut
 
 ## File Structure
 
-Follow the Spring boot convention
+Follow the standard Spring Boot layered architecture:
+
+```
+src/main/java/com/example/app/
+  config/       # Configuration classes
+  controller/   # REST controllers
+  service/      # Business logic
+  repository/   # Data access (JPA)
+  domain/       # Entities and value objects
+  dto/          # Request/Response DTOs
+  exception/    # Custom exceptions
+```
+
+**Skills**: For detailed patterns, load `springboot-patterns` and `java-coding-standards` skills.
 
 ## Key Patterns
 
@@ -47,13 +60,11 @@ Follow the Spring boot convention
 
 ```json
 {
-  "success": "True on sucess, false otherwise"
-  "data": "Response data, if not error"
-  "error": "Error data if any, null otherwise"
+  "success": true,
+  "data": { },
+  "error": null
 }
 ```
-
-
 
 ## Environment Variables
 
@@ -82,4 +93,4 @@ DEBUG=false
 
 ## IMPORTANT
 
-users-CLAUDE.md gathers more grained information about how to handle any request. Please refer to it
+user-CLAUDE.md gathers more grained information about how to handle any request. Please refer to it
