@@ -17,6 +17,13 @@ When creating implementation plans, refer to these example artifacts for structu
 
 These files demonstrate the expected format, level of detail, and organization for spec documents. 
 
+## Prototype Inputs (Images Only)
+
+When prototypes are provided, treat the image files in `assets/figma` as the source of truth.
+Only use image-based prototypes for extraction (ignore HTML exports unless explicitly requested).
+The goal is to consolidate the existing `assets/specs` content with new findings from the images,
+ensuring no contradictions and clearly documenting any newly inferred requirements.
+
 ## Your Mission
 
 Create detailed implementation plans organized into milestones and issues that strictly follow TDD principles:
@@ -40,6 +47,13 @@ When given a project description or requirements:
    - Extract any correctness properties from design documents
    - Each property MUST have a corresponding property test
    - Note which properties apply to which components
+
+3. **Image Prototype Extraction** (if `assets/figma` is present):
+   - Enumerate screens and their primary user goals.
+   - Identify UI actions, required fields, states, and error conditions.
+   - Convert UI observations into user stories and acceptance criteria
+     using the requirements template format.
+   - Reconcile with `assets/specs` by merging overlaps and flagging gaps.
 
 ## Milestone Organization
 

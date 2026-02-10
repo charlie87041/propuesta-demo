@@ -58,7 +58,6 @@ class ClaudeConfigGenerator:
         dirs = [
             'agents',
             'commands',
-            'contexts',
             'skills',
             'rules',
             'hooks',

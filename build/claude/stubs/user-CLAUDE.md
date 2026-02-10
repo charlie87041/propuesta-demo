@@ -72,37 +72,7 @@ Located in `~/.claude/agents/`:
 
 ---
 
-## Editor Integration
-
-I use Zed as my primary editor:
-- Agent Panel for file tracking
-- CMD+Shift+R for command palette
-- Vim mode enabled
-
----
-
-## 🛠️ Activation & Orchestration Logic
-
-To maintain the **Agent-First** philosophy, you must follow these triggers to decide when to use a specific skill or agent:
-
-### 1. Agent Trigger Matrix
-| If the task is... | Invoke Agent(@agents)... | Load Rule Context(@rules/common)... | Context(@contexts)...
-| :--- | :--- | :--- |
-| **Starting a new feature** | `planner-tdd` | `patterns.md`, `testing.md` | `planner-tdd.md`  | 
-| **Designing API/System** | `architect` | `patterns.md` | `research.md`  | 
-| **Implementing logic** | `tdd-guide` | `coding-style.md`, `testing.md` |`dev.md`  | 
-| **Fixing a broken build** | `build-error-resolver`| `performance.md` |`dev.md`  | 
-| **Finalizing a PR** | `code-reviewer` | `git-workflow.md`, `coding-style.md` |`review.md`  | 
-| **Handling Auth/Data** | `security-reviewer` | `security.md` |`review.md`  | 
-| **UI/Flow validation** | `e2e-runner` | `hooks.md` |
-
-### 2. Skill Execution Rules
-* **Discovery Skill**: Always use `ls`, `grep`, and `find` to map the project before proposing changes. Do not ask for file locations.
-* **Planning Skill**: For any task involving >3 files, you **must** use `Plan Mode` and write the plan to a temporary `TODO.md` before executing.
-* **Parallelism**: If a task requires writing tests and implementing logic simultaneously, use the `Task` tool to spawn `tdd-guide` and `code-reviewer` in parallel.
-* **Verification Skill**: After any implementation, automatically run the relevant test suite defined in `testing.md`. Do not wait for user confirmation to verify your own code.
-
-### 3. Context Loading Protocol
+### Context Loading Protocol
 * **Pre-flight**: Before the first edit of any session, run `cat` on `.claude/rules/coding-style.md` to refresh active memory.
 * **Conflict Resolution**: If a requirement in a specialized rule (e.g., `security.md`) conflicts with a general preference, the **specialized rule** always takes precedence.
 
@@ -120,27 +90,6 @@ Whenever I start a request with `DEBUG:`, you must NOT execute any file edits or
 4. **Planned Chain of Thought**: Step-by-step logic of what you *would* do.
 5. **Agent Delegation**: Which specialized agents you would have spawned.
 5. **Skills**: Which skills are you going to apply.
-
-## 🧠 Reasoning & Justification Standards (The "Why")
-
-When in **DEBUG** or **PLAN** mode, or whenever I ask "Why?", you must provide a **Decision Log** using the following criteria:
-
-### 1. Context Selection Logic
-For every file included or excluded, justify:
-- **Inclusion**: "I read `X.md` because the keyword 'Auth' triggered the `security.md` rule."
-- **Exclusion**: "I ignored `Y.ts` because its last modified date or size suggested it was irrelevant to the current logic, prioritizing token efficiency."
-
-### 2. Rule-Based Justification
-When you propose a code change, link it to a specific rule:
-- *Example*: "I am choosing a `const` with `...spread` instead of `push()` **because** `coding-style.md` mandates immutability."
-
-### 3. Agent Delegation Logic
-Explain why a specific agent was chosen over doing it yourself:
-- *Example*: "I'm delegating to `build-error-resolver` because the error trace is >50 lines, and its specialized skill for log analysis is more efficient than my current context window."
-
-### 4. Alternative Consideration
-Briefly mention what you **didn't** do:
-- "I considered using a Class, but rejected it to stay consistent with the Functional Core principle in `patterns.md`."
 
 ## Success Metrics
 
