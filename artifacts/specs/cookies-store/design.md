@@ -82,6 +82,8 @@ cookies-store/
 │   │   └── build.gradle
 │   ├── security-common/
 │   │   └── build.gradle
+│   ├── authorization-common/          # NEW: Domain-Ability-Permission
+│   │   └── build.gradle
 │   └── common-utils/
 │       └── build.gradle
 ├── catalog-module/
@@ -107,13 +109,41 @@ cookies-store/
     └── src/main/java/com/cookies/CookiesStoreApplication.java
 ```
 
+### Authorization Module Structure
+
+```
+authorization-common/
+└── src/main/java/com/cookies/authorization/
+    ├── domain/
+    │   ├── Domain.java
+    │   ├── Ability.java
+    │   ├── Permission.java
+    │   ├── UserDomainAbility.java
+    │   └── UserDomainPermissionOverride.java
+    ├── repository/
+    │   ├── DomainRepository.java
+    │   ├── AbilityRepository.java
+    │   ├── PermissionRepository.java
+    │   ├── UserDomainAbilityRepository.java
+    │   └── UserDomainPermissionOverrideRepository.java
+    ├── service/
+    │   └── DomainAuthorizationService.java
+    ├── annotation/
+    │   ├── RequiresPermission.java
+    │   └── RequiresAbility.java
+    ├── evaluator/
+    │   └── DomainAuthorizationEvaluator.java
+    └── config/
+        └── AuthorizationConfig.java
+```
+
 ### Technology Stack
 
 | Layer | Technology |
 |-------|------------|
 | Framework | Spring Boot 3.2.x |
 | Build Tool | Gradle 8.x |
-| Language | Java 17+ |
+| Language | Java 21+ |
 | Database | PostgreSQL 15+ |
 | Cache | Redis 7+ |
 | ORM | Spring Data JPA / Hibernate |

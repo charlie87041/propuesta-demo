@@ -4,7 +4,7 @@
 
 Este plan de implementación sigue un enfoque **Test-Driven Development (TDD)** estricto, donde cada tarea sigue el ciclo Red-Green-Refactor. Las tareas están organizadas en milestones lógicos que construyen el sistema incrementalmente.
 
-**Tecnologías**: Spring Boot 3.2.x, Java 17+, Gradle 8.x, PostgreSQL 15+, Redis 7+, jqwik, JUnit 5, Mockito, TestContainers
+**Tecnologías**: Spring Boot 3.2.x, Java 21+, Gradle 8.x, PostgreSQL 15+, Redis 7+, jqwik, JUnit 5, Mockito, TestContainers
 
 **Principios TDD**:
 1. **Red Phase**: Escribir tests que fallen primero
@@ -26,7 +26,7 @@ Este plan de implementación sigue un enfoque **Test-Driven Development (TDD)** 
    
 2. **Green Phase**:
    - Crear estructura: `common/`, `catalog-module/`, `cart-module/`, `customer-module/`, `order-module/`, `payment-module/`, `admin-module/`, `application/`
-   - Crear `build.gradle` raíz con Spring Boot 3.2.x, Java 17
+   - Crear `build.gradle` raíz con Spring Boot 3.2.x, Java 21
    - Crear `settings.gradle` con todos los módulos
 
 3. **Refactor Phase**:
@@ -165,6 +165,135 @@ Este plan de implementación sigue un enfoque **Test-Driven Development (TDD)** 
 - [ ] Errores de validación incluyen detalles por campo
 
 **Related Requirements**: R11
+
+---
+
+### Task 2.4: Implement Domain-Ability-Permission Entities (authorization-common)
+
+**Descripción**: Entidades para el modelo de autorización jerárquico.
+
+**Enfoque TDD**:
+1. **Red Phase**:
+   - Test crear Domain persiste correctamente
+   - Test crear Ability con permissions
+   - Test crear Permission con resource:action
+   - Test UserDomainAbility grant/revoke
+   - Test UserDomainPermissionOverride
+
+2. **Green Phase**:
+   - Crear entidad `Domain`
+   - Crear entidad `Ability` con relación M:N a Permission
+   - Crear entidad `Permission`
+   - Crear entidad `UserDomainAbility`
+   - Crear entidad `UserDomainPermissionOverride`
+   - Crear repositories
+
+3. **Refactor Phase**:
+   - Agregar índices para lookups rápidos
+   - Documentar relaciones
+
+**Acceptance Criteria**:
+- [ ] Todas las entidades persisten correctamente
+- [ ] Relaciones M:N funcionan (Ability ↔ Permission)
+- [ ] Constraints únicos funcionan (user + domain + ability)
+- [ ] Índices creados para performance
+
+**Related Requirements**: R11
+
+**Reference**: See [authorization.md](authorization.md) for full schema.
+
+---
+
+### Task 2.5: Implement DomainAuthorizationService (authorization-common)
+
+**Descripción**: Servicio de autorización con lógica de resolución de permisos.
+
+**Enfoque TDD**:
+1. **Red Phase**:
+   - Test `hasPermission` retorna true cuando ability lo incluye
+   - Test `hasPermission` retorna false cuando no hay ability
+   - Test `hasPermission` retorna false cuando domain diferente
+   - Test override deny toma precedencia sobre ability grant
+   - Test override allow agrega permiso sin ability
+   - Test `hasAbility` funciona correctamente
+   - Test `hasDomainAccess` funciona correctamente
+   - Test `getPermissions` retorna set completo con overrides aplicados
+
+2. **Green Phase**:
+   - Crear `DomainAuthorizationService`
+   - Implementar resolución: override → ability → deny
+
+3. **Refactor Phase**:
+   - Agregar caching de permisos por usuario/dominio
+   - Optimizar queries con proyecciones
+
+**Acceptance Criteria**:
+- [ ] Resolución de permisos correcta
+- [ ] Overrides funcionan (deny y allow)
+- [ ] Domain isolation funciona
+- [ ] Performance < 10ms para hasPermission
+
+**Related Requirements**: R11
+
+---
+
+### Task 2.6: Implement Authorization Annotations (authorization-common)
+
+**Descripción**: Anotaciones `@RequiresPermission` y `@RequiresAbility` con evaluador SpEL.
+
+**Enfoque TDD**:
+1. **Red Phase**:
+   - Test `@RequiresPermission` permite acceso con permiso
+   - Test `@RequiresPermission` retorna 403 sin permiso
+   - Test `@RequiresPermission` retorna 403 en domain incorrecto
+   - Test `@RequiresAbility` funciona correctamente
+   - Test usuario no autenticado retorna 401
+
+2. **Green Phase**:
+   - Crear anotación `@RequiresPermission`
+   - Crear anotación `@RequiresAbility`
+   - Crear `DomainAuthorizationEvaluator` (@Component)
+   - Integrar con `@PreAuthorize`
+
+3. **Refactor Phase**:
+   - Agregar soporte para domainCode desde path variable
+   - Documentar uso
+
+**Acceptance Criteria**:
+- [ ] Anotaciones funcionan en controllers
+- [ ] Domain extraído automáticamente de path
+- [ ] 401 para no autenticados, 403 para sin permiso
+- [ ] SpEL expressions funcionan
+
+**Related Requirements**: R11
+
+---
+
+### Task 2.7: Seed Authorization Data
+
+**Descripción**: Datos iniciales de domains, abilities y permissions.
+
+**Enfoque TDD**:
+1. **Red Phase**:
+   - Test domain "main-store" existe después de seed
+   - Test todas las abilities definidas existen
+   - Test todas las permissions definidas existen
+   - Test mappings ability→permission correctos
+
+2. **Green Phase**:
+   - Crear `DataSeeder` con `@PostConstruct` o Flyway migration
+   - Insertar domain, abilities, permissions
+   - Mapear abilities a permissions
+
+**Acceptance Criteria**:
+- [ ] Domain "main-store" creado
+- [ ] 13 abilities creadas
+- [ ] 40+ permissions creadas
+- [ ] Mappings correctos
+
+**Related Requirements**: R11
+
+**Reference**: See [authorization.md](authorization.md) for seed data.
 
 ---
 
@@ -397,16 +526,23 @@ Este plan de implementación sigue un enfoque **Test-Driven Development (TDD)** 
    - Test POST /api/auth/login
    - Test GET /api/customers/me
    - Test CRUD /api/customers/me/addresses
+   - **Authorization tests**:
+     - Test GET /api/customers/me sin auth retorna 401
+     - Test GET /api/customers/me/addresses sin auth retorna 401
+     - Test customer solo puede ver sus propias addresses (ownership)
 
 2. **Green Phase**:
    - Crear `AuthController`
    - Crear `CustomerController`
+   - Agregar `@RequiresPermission` annotations
 
 **Acceptance Criteria**:
 - [ ] Registro y login funcionan
 - [ ] Perfil y addresses CRUD completo
+- [ ] 401 para endpoints protegidos sin auth
+- [ ] Ownership validation para addresses
 
-**Related Requirements**: R4, R5
+**Related Requirements**: R4, R5, R11
 
 ---
 
@@ -493,15 +629,24 @@ Este plan de implementación sigue un enfoque **Test-Driven Development (TDD)** 
    - Test POST /api/cart/items
    - Test PUT /api/cart/items/{id}
    - Test DELETE /api/cart/items/{id}
+   - **Authorization tests**:
+     - Test guest puede acceder cart con sessionId
+     - Test customer puede acceder su propio cart
+     - Test customer no puede acceder cart de otro (403)
+     - Test modificar item de otro cart retorna 403
 
 2. **Green Phase**:
    - Crear `CartController`
+   - Agregar `@RequiresPermission` para cart operations
+   - Implementar ownership validation
 
 **Acceptance Criteria**:
 - [ ] CRUD endpoints funcionan
 - [ ] Soporta auth y guest
+- [ ] Ownership validation para cart items
+- [ ] 403 al acceder cart de otro usuario
 
-**Related Requirements**: R3
+**Related Requirements**: R3, R11
 
 ---
 
@@ -610,16 +755,27 @@ Este plan de implementación sigue un enfoque **Test-Driven Development (TDD)** 
    - Test GET /api/orders
    - Test GET /api/orders/{orderNumber}
    - Test POST /api/orders/{orderNumber}/cancel
+   - **Authorization tests**:
+     - Test checkout sin auth retorna 401
+     - Test GET /api/orders solo retorna órdenes propias
+     - Test GET /api/orders/{orderNumber} de otro usuario retorna 403
+     - Test cancelar orden de otro usuario retorna 403
+     - Test customer sin permiso `orders:cancel-own` no puede cancelar
 
 2. **Green Phase**:
    - Crear `CheckoutController`
    - Crear `OrderController`
+   - Agregar `@RequiresPermission` annotations
+   - Implementar ownership validation
 
 **Acceptance Criteria**:
 - [ ] Checkout flow completo
 - [ ] Order management endpoints
+- [ ] 401 para endpoints sin auth
+- [ ] 403 para acceso a órdenes de otros
+- [ ] Ownership validation funciona
 
-**Related Requirements**: R6, R8
+**Related Requirements**: R6, R8, R11
 
 ---
 
@@ -726,16 +882,27 @@ Este plan de implementación sigue un enfoque **Test-Driven Development (TDD)** 
    - Test actualizar producto
    - Test actualizar stock
    - Test toggle active status
-   
+   - **Authorization tests (Domain-Ability-Permission)**:
+     - Test sin auth retorna 401
+     - Test customer sin ability retorna 403
+     - Test user con `manage-inventory` ability puede crear producto
+     - Test user con `view-inventory` ability NO puede crear producto (403)
+     - Test user con permiso en domain diferente retorna 403
+     - Test `products:create` permission requerido para POST
+     - Test `inventory:update-stock` permission requerido para stock update
+
 2. **Green Phase**:
    - Crear `AdminProductService`
-   - Crear `AdminProductController`
+   - Crear `AdminProductController` con path `/api/domains/{domainCode}/admin/products`
+   - Agregar `@RequiresPermission` annotations por endpoint
 
 **Acceptance Criteria**:
-- [ ] Solo admins acceden
+- [ ] Solo usuarios con permisos apropiados acceden
 - [ ] CRUD completo de productos
+- [ ] Domain isolation funciona
+- [ ] 401/403 responses correctos
 
-**Related Requirements**: R9
+**Related Requirements**: R9, R11
 
 ---
 
@@ -748,16 +915,29 @@ Este plan de implementación sigue un enfoque **Test-Driven Development (TDD)** 
    - Test listar órdenes pendientes
    - Test actualizar estado
    - Test agregar tracking number
-   
+   - **Authorization tests (Domain-Ability-Permission)**:
+     - Test sin auth retorna 401
+     - Test customer sin ability retorna 403
+     - Test user con `process-orders` ability puede ver y actualizar estado
+     - Test user con `process-orders` NO puede cancelar/refundar (403)
+     - Test user con `manage-orders` ability puede cancelar y refundar
+     - Test `orders:update-status` permission requerido para cambiar estado
+     - Test `orders:refund` permission requerido para refunds
+     - Test domain isolation (403 para domain incorrecto)
+
 2. **Green Phase**:
    - Crear `AdminOrderService`
-   - Crear `AdminOrderController`
+   - Crear `AdminOrderController` con path `/api/domains/{domainCode}/admin/orders`
+   - Agregar `@RequiresPermission` annotations por endpoint
 
 **Acceptance Criteria**:
 - [ ] Fulfillment workflow completo
 - [ ] Tracking integrado
+- [ ] Permission-based access control
+- [ ] Domain isolation funciona
+- [ ] 401/403 responses correctos
 
-**Related Requirements**: R10
+**Related Requirements**: R10, R11
 
 ---
 
@@ -883,7 +1063,7 @@ Este plan de implementación sigue un enfoque **Test-Driven Development (TDD)** 
 | Milestone | Tasks | Focus |
 |-----------|-------|-------|
 | 1 | 1.1-1.3 | Infrastructure |
-| 2 | 2.1-2.3 | Common Modules |
+| 2 | 2.1-2.7 | Common Modules + **Authorization** |
 | 3 | 3.1-3.5 | Catalog |
 | 4 | 4.1-4.5 | Customer |
 | 5 | 5.1-5.4 | Cart |
@@ -893,5 +1073,26 @@ Este plan de implementación sigue un enfoque **Test-Driven Development (TDD)** 
 | 9 | 9.1-9.5 | Frontend |
 | 10 | 10.1-10.3 | Security & Perf |
 
-**Total Tasks**: 38
-**Estimated Duration**: 6-8 weeks for MVP
+**Total Tasks**: 42 (4 new authorization tasks)
+**Estimated Duration**: 7-9 weeks for MVP
+
+### Authorization Tasks Added (Milestone 2)
+
+| Task | Description | Effort |
+|------|-------------|--------|
+| 2.4 | Domain-Ability-Permission Entities | 1 day |
+| 2.5 | DomainAuthorizationService | 1.5 days |
+| 2.6 | Authorization Annotations | 1 day |
+| 2.7 | Seed Authorization Data | 0.5 days |
+
+### Authorization Tests Added to Existing Tasks
+
+| Task | Authorization Tests Added |
+|------|--------------------------|
+| 4.5 | Customer profile ownership validation |
+| 5.4 | Cart ownership validation |
+| 6.5 | Order ownership + permission checks |
+| 8.1 | Admin product domain-ability-permission tests |
+| 8.2 | Admin order domain-ability-permission tests |
+
+**Reference**: See [authorization.md](authorization.md) for full authorization architecture.

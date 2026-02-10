@@ -25,6 +25,7 @@ node_modules/
 # Personal configs (if any)
 personal/
 private/
+docker/
 
 # Session templates (not committed)
 examples/sessions/*.tmp

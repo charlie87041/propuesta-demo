@@ -25,20 +25,19 @@ This command creates a complete implementation plan following TDD principles and
 
 When you run `/plan-tdd <description>`:
 
-1. **Loads Context**: Automatically includes `planner-tdd.md` context with template references
 
-2. **Delegate to planner-tdd agent**:
+1. **Delegate to planner-tdd agent**:
    ```
    @planner-tdd create implementation plan for: <description>
    ```
 
-3. **Agent will analyze**:
+2. **Agent will analyze**:
    - Identify entities, services, APIs
    - Extract correctness properties from design docs
    - Organize into milestones (Infrastructure → Core → Domain → Advanced)
    - Break into granular issues with TDD structure
 
-4. **Agent will output**:
+3. **Agent will output**:
    - Complete milestone breakdown
    - Issues with Red-Green-Refactor phases
    - Property test mappings
@@ -50,7 +49,7 @@ When you run `/plan-tdd <description>`:
 
 Convert the plan into a Product Requirements Document (PRD):
 
-1. **Create PRD file** (`prds/<feature-name>.md`):
+1. **Create PRD file** (`artifacts/specs/<project-name>/prds/<feature-name>.md`):
    ```markdown
    # <Feature Name> PRD
    
@@ -123,7 +122,7 @@ For each issue:
 # Each with detailed TDD tasks
 
 # 2. Create PRD from plan
-# (manually copy plan to prds/user-auth.md)
+# (PRD generated at artifacts/specs/user-auth/prds/user-auth.md)
 
 # 3. Generate GitHub issues
 /pm:prd-new user-auth

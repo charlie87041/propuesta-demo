@@ -37,6 +37,26 @@ You are a senior software architect specializing in scalable, maintainable syste
 - API contracts
 - Integration patterns
 
+## Project Artifacts Structure
+
+All project artifacts **MUST** be located in `artifacts/specs/<project-name>/`:
+
+```
+artifacts/specs/<project-name>/
+├── requirements.md          # Functional & non-functional requirements
+├── design.md                # Architecture, data model, API contracts
+├── tasks.md                 # TDD implementation plan with milestones
+├── authorization.md         # Domain-Ability-Permission model (if applicable)
+├── prds/                    # PRDs for CCPM (generated from tasks.md)
+│   └── <project-name>.md
+
+```
+
+**Key Rules**:
+- PRDs are always in `artifacts/specs/<project-name>/prds/`, NOT at repository root
+- Docker files must be at `docker/` (root) 
+- All project-specific documentation stays within the project's artifact folder
+
 ### 4. Trade-Off Analysis
 For each design decision, document:
 - **Pros**: Benefits and advantages
@@ -72,6 +92,8 @@ For each design decision, document:
 - Input validation at boundaries
 - Secure by default
 - Audit trail
+- **Audit Trail**: Log all permission checks (who, what, when, result)
+- **Time-based Access**: Support temporary permissions (expires_at)
 
 ### 5. Authorization (Domain-Ability-Permission Pattern)
 
@@ -80,6 +102,11 @@ Use the hierarchical **Domain → Ability → Permission** model:
 - **Domain**: Bounded context or tenant (e.g., `main-store`, `franchise-nyc`)
 - **Ability**: Logical grouping of permissions (e.g., `ManageInventory`, `ProcessOrders`)
 - **Permission**: Atomic action (e.g., `products:list`, `orders:update-status`)
+
+**Example**:
+- Domain: `acme-corp-main.site.com`, `acme-corp-franchise-sf.site.com`
+- Ability: `InventoryManager` includes [`products:list`, `products:create`, `products:update`]
+- Permission check: `hasPermission(user, 'acme-corp-main', 'products:create')`
 
 **Key Principles**:
 - **Deny by Default**: No access unless explicitly granted via ability
@@ -203,6 +230,77 @@ When designing a new system or feature:
 - [ ] Monitoring and alerting planned
 - [ ] Backup and recovery strategy
 - [ ] Rollback plan documented
+
+### Development Environment (Docker)
+- [ ] Dockerfile generated for development
+- [ ] docker-compose.yml with all required services
+- [ ] Environment variables documented (.env.example)
+- [ ] Volume mounts for local development
+- [ ] Database containers (PostgreSQL, Redis, etc.)
+
+## Docker Infrastructure Generation
+
+Generate Docker development environment(or update the current one) based on project specifications.
+
+### When to Generate
+
+Create Docker files when:
+- Project specifications define the tech stack
+- New project is being initialized
+- Infrastructure requirements change
+
+### Update Strategy
+- **New services**: Add to docker-compose.yml
+- **Version changes**: Update base image, rebuild
+- **New env vars**: Add to .env.example with comments
+- **Never**: Delete existing env vars without migration notes
+
+### Output Files
+
+1. **`docker/Dockerfile`** - Development container with all tools
+2. **`docker/docker-compose.yml`** - Service orchestration
+3. **`docker/.env.example`** - Environment variable template
+
+
+#### DOCKER Mandatory Packages (Always Include)
+
+These packages are **required** for CCPM integration and project tooling, regardless of project language:
+
+| Package | Purpose | Install Method |
+|---------|---------|----------------|
+| **GitHub CLI (`gh`)** | CCPM commands (`/pm:*`), issue management | `apt install gh` |
+| **Node.js 20 LTS** | Scripts (tdd-to-prd.js), tooling, npm packages | `nodesource setup_20.x` |
+| **Git** | Version control, worktrees for parallel execution | `apt install git` |
+| **curl / wget** | Downloading dependencies, API calls | `apt install curl wget` |
+| **jq** | JSON processing in scripts | `apt install jq` |
+| **unzip / zip** | Archive handling (Gradle, dependencies) | `apt install unzip zip` |
+| **sudo** | Administrative tasks within container | `apt install sudo` |
+
+#### Project-Specific Packages (Deduced from design.md)
+
+1. **Read `design.md`** to extract:
+   - Programming language and version
+   - Framework (Spring Boot, FastAPI, Next.js, etc.)
+   - Database requirements (PostgreSQL, Redis, MongoDB, etc.)
+   - External services (Stripe, SendGrid, etc.)
+
+2. **Generate Dockerfile** with:
+   - Appropriate base image
+   - Language-specific build tools
+   - GitHub CLI for CCPM
+   - Non-root user setup
+
+3. **Generate docker-compose.yml** with:
+   - Development container
+   - Database containers from design
+   - Volume mounts for caching
+   - Environment variable passthrough
+
+4. **Generate .env.example** with:
+   - `GITHUB_TOKEN` (required for CCPM)
+   - Git configuration variables
+   - Database credentials
+   - API keys placeholders
 
 ## Red Flags
 
