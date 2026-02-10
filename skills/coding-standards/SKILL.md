@@ -522,21 +522,21 @@ setTimeout(callback, DEBOUNCE_DELAY_MS)
 # Skill: coding-standards
 
 ## Purpose
-Establecer estándares generales de calidad y estilo para TS/JS/React/Node.
+Establish general quality and style standards for TS/JS/React/Node.
 
 ## When to Use
-- En cualquier trabajo de frontend o backend JavaScript/TypeScript.
-- Cuando necesitas consistencia en naming, APIs y estructura.
+- In any JavaScript/TypeScript frontend or backend work.
+- When you need consistency in naming, APIs, and structure.
 
 ## Usage
-- Prioriza legibilidad y simplicidad (KISS/DRY/YAGNI).
-- Mantén inmutabilidad con spread y tipos explícitos.
-- Sigue convenciones de API y validación de entradas.
+- Prioritize readability and simplicity (KISS/DRY/YAGNI).
+- Maintain immutability with spread operators and explicit types.
+- Follow API conventions and input validation.
 
 ## Examples
-- Usar `useCallback`/`useMemo` para rendimiento.
-- Definir un esquema Zod para validar requests.
-- Estructurar responses con `success`, `data` y `error`.
+- Use `useCallback`/`useMemo` for performance.
+- Define a Zod schema to validate requests.
+- Structure responses with `success`, `data`, and `error`.
 
 ## Related Skills
 - frontend-patterns

@@ -102,3 +102,7 @@ You are successful when:
 ---
 
 **Philosophy**: Agent-first design, parallel execution, plan before action, test before code, security always.
+
+---
+
+**Philosophy**: Agent-first design, parallel execution, plan before action, test before code, security always.

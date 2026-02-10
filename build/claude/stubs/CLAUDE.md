@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Este sistema implementa una plataforma colaborativa de gestión de documentos utilizando Spring Boot con una arquitectura multi-módulo gestionada por Gradle.
+This system implements a collaborative document management platform using Spring Boot with a multi-module architecture managed by Gradle.
 
 ## Critical Rules
 

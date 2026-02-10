@@ -140,20 +140,20 @@ log.error("failed_fetch_market slug={}", slug, ex);
 # Skill: java-coding-standards
 
 ## Purpose
-Estandarizar el código Java en servicios Spring Boot: naming, inmutabilidad, Optional y excepciones.
+Standardize Java code in Spring Boot services: naming, immutability, Optional usage, and exceptions.
 
 ## When to Use
-- Al escribir o revisar código Java (17+) en backend.
-- Cuando se definan DTOs, servicios o repositorios.
+- When writing or reviewing Java (17+) backend code.
+- When defining DTOs, services, or repositories.
 
 ## Usage
-- Prefiere records y campos `final`.
-- Usa `Optional` correctamente y excepciones de dominio.
-- Mantén estructura de paquetes consistente.
+- Prefer records and `final` fields.
+- Use `Optional` correctly with domain exceptions.
+- Maintain consistent package structure.
 
 ## Examples
-- Definir un `record` para DTOs inmutables.
-- Usar `Optional.map` y `orElseThrow` en repositorios.
+- Define a `record` for immutable DTOs.
+- Use `Optional.map` and `orElseThrow` in repositories.
 
 ## Related Skills
 - springboot-patterns
