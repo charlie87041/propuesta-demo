@@ -93,4 +93,4 @@ DEBUG=false
 
 ## IMPORTANT
 
-user-CLAUDE.md gathers more grained information about how to handle any request. Please refer to it
+user-CLAUDE.md gathers more grained information you MUST keep in memory.
