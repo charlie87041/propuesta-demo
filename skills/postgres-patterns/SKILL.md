@@ -148,22 +148,22 @@ SELECT pg_reload_conf();
 # Skill: postgres-patterns
 
 ## Purpose
-Proveer patrones de diseño y optimización para PostgreSQL: índices, tipos de datos, RLS y tuning básico.
+Provide design and optimization patterns for PostgreSQL: indexes, data types, RLS, and basic tuning.
 
 ## When to Use
-- Al escribir consultas SQL o migraciones.
-- Al definir esquemas e índices para rendimiento.
-- Cuando hay problemas de latencia o bloqueos.
+- When writing SQL queries or migrations.
+- When defining schemas and indexes for performance.
+- When experiencing latency or locking issues.
 
 ## Usage
-- Sigue el cheat sheet de índices y tipos de datos.
-- Aplica patrones comunes (UPSERT, paginación por cursor, SKIP LOCKED).
-- Ejecuta consultas de diagnóstico para encontrar anti-patrones.
+- Follow the index and data type cheat sheet.
+- Apply common patterns (UPSERT, cursor pagination, SKIP LOCKED).
+- Run diagnostic queries to find anti-patterns.
 
 ## Examples
-- Crear un índice parcial para filas activas.
-- Usar paginación por cursor en lugar de OFFSET.
-- Configurar `pg_stat_statements` para monitoreo.
+- Create a partial index for active rows.
+- Use cursor pagination instead of OFFSET.
+- Configure `pg_stat_statements` for monitoring.
 
 ## Related Skills
 - clickhouse-io

@@ -143,20 +143,20 @@ spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 # Skill: jpa-patterns
 
 ## Purpose
-Guiar el diseño de entidades JPA/Hibernate, relaciones y performance.
+Guide JPA/Hibernate entity design, relationships, and performance.
 
 ## When to Use
-- Al modelar entidades, repositorios y transacciones.
-- Para evitar N+1 y optimizar queries.
+- When modeling entities, repositories, and transactions.
+- To avoid N+1 and optimize queries.
 
 ## Usage
-- Define índices y estrategias de fetch.
-- Usa `@Transactional` con lectura optimizada.
-- Añade tests con `@DataJpaTest`.
+- Define indexes and fetch strategies.
+- Use `@Transactional` with optimized reads.
+- Add tests with `@DataJpaTest`.
 
 ## Examples
-- Crear entidad con índices y auditing.
-- Usar `JOIN FETCH` para evitar N+1.
+- Create an entity with indexes and auditing.
+- Use `JOIN FETCH` to avoid N+1.
 
 ## Related Skills
 - springboot-patterns

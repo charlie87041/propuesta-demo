@@ -306,22 +306,22 @@ Use Spring’s `@Scheduled` or integrate with queues (e.g., Kafka, SQS, RabbitMQ
 # Skill: springboot-patterns
 
 ## Purpose
-Guiar el diseño de servicios Spring Boot con patrones de arquitectura, API REST, servicios por capas, persistencia, cache, async y logging.
+Guide Spring Boot service design with architecture patterns, REST API, layered services, persistence, cache, async, and logging.
 
 ## When to Use
-- Al diseñar controladores REST, servicios y repositorios en Spring Boot.
-- Cuando necesites caching, jobs en background, paginación o resiliencia.
-- Para establecer estándares de observabilidad y manejo de errores.
+- When designing REST controllers, services, and repositories in Spring Boot.
+- When you need caching, background jobs, pagination, or resilience.
+- To establish observability and error handling standards.
 
 ## Usage
-- Define controladores delgados y servicios transaccionales.
-- Usa DTOs con validación, repositorios Spring Data y manejo centralizado de errores.
-- Aplica cache/async y filtros cuando el flujo lo requiera.
+- Define thin controllers and transactional services.
+- Use DTOs with validation, Spring Data repositories, and centralized error handling.
+- Apply cache/async and filters when the flow requires it.
 
 ## Examples
-- Crear un `@RestController` con validación y respuesta paginada.
-- Implementar un servicio con `@Transactional` y un repositorio JPA.
-- Añadir un filtro de logging o rate limiting con Bucket4j.
+- Create a `@RestController` with validation and paginated response.
+- Implement a service with `@Transactional` and a JPA repository.
+- Add a logging filter or rate limiting with Bucket4j.
 
 ## Related Skills
 - springboot-tdd

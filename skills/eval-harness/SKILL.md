@@ -229,20 +229,20 @@ Status: SHIP IT
 # Skill: eval-harness
 
 ## Purpose
-Implementar Eval-Driven Development con definiciones de evals, graders y reportes.
+Implement Eval-Driven Development with eval definitions, graders, and reports.
 
 ## When to Use
-- Al definir criterios de éxito antes de programar.
-- Para prevenir regresiones y medir pass@k.
+- When defining success criteria before coding.
+- To prevent regressions and measure pass@k.
 
 ## Usage
-- Define capability/regression evals antes de codificar.
-- Ejecuta `/eval check` y `/eval report`.
-- Guarda resultados y métricas en `.claude/evals/`.
+- Define capability/regression evals before coding.
+- Run `/eval check` and `/eval report`.
+- Save results and metrics in `.claude/evals/`.
 
 ## Examples
-- Crear un eval para autenticación con criterios claros.
-- Reportar pass@1 y pass@3 en un feature.
+- Create an authentication eval with clear criteria.
+- Report pass@1 and pass@3 for a feature.
 
 ## Related Skills
 - verification-loop

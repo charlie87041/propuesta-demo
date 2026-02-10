@@ -122,19 +122,19 @@ Hooks catch issues immediately; this skill provides comprehensive review.
 # Skill: verification-loop
 
 ## Purpose
-Ejecutar un ciclo de verificación (build, types, lint, tests, seguridad) antes de PR.
+Run a verification cycle (build, types, lint, tests, security) before PR.
 
 ## When to Use
-- Tras completar features o refactors.
-- Antes de crear un PR.
+- After completing features or refactors.
+- Before creating a PR.
 
 ## Usage
-- Ejecuta cada fase en orden y reporta resultados.
-- Detén la entrega si alguna fase crítica falla.
+- Run each phase in order and report results.
+- Stop delivery if any critical phase fails.
 
 ## Examples
-- `npm run build` seguido de `npm run lint`.
-- Revisar diffs con `git diff --stat`.
+- `npm run build` followed by `npm run lint`.
+- Review diffs with `git diff --stat`.
 
 ## Related Skills
 - springboot-verification

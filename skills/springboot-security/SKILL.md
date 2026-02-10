@@ -121,21 +121,21 @@ http
 # Skill: springboot-security
 
 ## Purpose
-Aplicar buenas prácticas de seguridad en Spring Boot: authn/authz, CSRF, headers, secrets y rate limiting.
+Apply security best practices in Spring Boot: authn/authz, CSRF, headers, secrets, and rate limiting.
 
 ## When to Use
-- Al implementar autenticación/autorización.
-- Al crear endpoints y validar inputs.
-- Cuando se manejan secretos o datos sensibles.
+- When implementing authentication/authorization.
+- When creating endpoints and validating inputs.
+- When handling secrets or sensitive data.
 
 ## Usage
-- Usa filtros de auth y `@PreAuthorize`.
-- Habilita validación con Bean Validation.
-- Configura headers de seguridad y políticas CSRF adecuadas.
+- Use auth filters and `@PreAuthorize`.
+- Enable validation with Bean Validation.
+- Configure security headers and appropriate CSRF policies.
 
 ## Examples
-- Implementar `JwtAuthFilter` con `OncePerRequestFilter`.
-- Configurar CSP y `SameSite` en headers.
+- Implement `JwtAuthFilter` with `OncePerRequestFilter`.
+- Configure CSP and `SameSite` in headers.
 
 ## Related Skills
 - springboot-patterns

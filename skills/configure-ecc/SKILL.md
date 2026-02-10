@@ -300,20 +300,20 @@ Then print a summary report:
 # Skill: configure-ecc
 
 ## Purpose
-Guiar la instalación interactiva de Everything Claude Code (skills y rules) a nivel usuario o proyecto.
+Guide the interactive installation of Everything Claude Code (skills and rules) at user or project level.
 
 ## When to Use
-- Cuando el usuario pide instalar o configurar ECC.
-- Para verificar y optimizar instalaciones existentes.
+- When the user asks to install or configure ECC.
+- To verify and optimize existing installations.
 
 ## Usage
-- Clona el repo en `/tmp` y define el nivel de instalación.
-- Selecciona categorías/skills/rules con `AskUserQuestion`.
-- Verifica rutas y referencias cruzadas, luego optimiza si aplica.
+- Clone the repo to `/tmp` and define the installation level.
+- Select categories/skills/rules with `AskUserQuestion`.
+- Verify paths and cross-references, then optimize if applicable.
 
 ## Examples
-- Instalar skills de Database y Workflow en `~/.claude/`.
-- Ejecutar verificación de paths y corregir referencias.
+- Install Database and Workflow skills in `~/.claude/`.
+- Run path verification and fix references.
 
 ## Related Skills
 - continuous-learning-v2

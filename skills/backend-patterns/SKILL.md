@@ -553,22 +553,22 @@ class MarketLoggingController {
 # Skill: backend-patterns
 
 ## Purpose
-Proveer patrones backend para APIs, servicios, repositorios, caching y observabilidad.
+Provide backend patterns for APIs, services, repositories, caching, and observability.
 
 ## When to Use
-- Al diseñar endpoints REST o middlewares.
-- Para optimizar consultas y manejar errores.
-- Al añadir autenticación, rate limiting o colas.
+- When designing REST endpoints or middlewares.
+- To optimize queries and handle errors.
+- When adding authentication, rate limiting, or queues.
 
 ## Usage
-- Separa capas (controller/service/repo).
-- Aplica cache-aside y manejo centralizado de errores.
-- Usa patrones de logging estructurado.
+- Separate layers (controller/service/repo).
+- Apply cache-aside and centralized error handling.
+- Use structured logging patterns.
 
 ## Examples
-- Implementar un `MarketService` con repositorio.
-- Añadir rate limiting por IP.
-- Usar un error handler con `ApiException`.
+- Implement a `MarketService` with a repository.
+- Add rate limiting by IP.
+- Use an error handler with `ApiException`.
 
 ## Related Skills
 - postgres-patterns

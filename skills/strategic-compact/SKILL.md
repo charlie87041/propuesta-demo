@@ -65,19 +65,19 @@ Environment variables:
 # Skill: strategic-compact
 
 ## Purpose
-Sugerir compacción manual en puntos lógicos para conservar contexto clave.
+Suggest manual compaction at logical points to preserve key context.
 
 ## When to Use
-- Sesiones largas con muchas herramientas.
-- Antes/después de cambios de fase (exploración → implementación).
+- Long sessions with many tool invocations.
+- Before/after phase changes (exploration → implementation).
 
 ## Usage
-- Instala el hook `PreToolUse` con `suggest-compact.sh`.
-- Ajusta `COMPACT_THRESHOLD` si necesitas más o menos frecuencia.
+- Install the `PreToolUse` hook with `suggest-compact.sh`.
+- Adjust `COMPACT_THRESHOLD` for more or less frequency.
 
 ## Examples
-- Configurar `~/.claude/settings.json` con el hook.
-- Compactar tras completar un milestone.
+- Configure `~/.claude/settings.json` with the hook.
+- Compact after completing a milestone.
 
 ## Related Skills
 - iterative-retrieval

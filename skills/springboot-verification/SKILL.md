@@ -102,19 +102,19 @@ Issues to Fix:
 # Skill: springboot-verification
 
 ## Purpose
-Asegurar calidad en proyectos Spring Boot con builds, análisis estático, tests y scans.
+Ensure quality in Spring Boot projects with builds, static analysis, tests, and scans.
 
 ## When to Use
-- Antes de PRs o releases.
-- Después de cambios significativos en backend Java.
+- Before PRs or releases.
+- After significant changes in Java backend.
 
 ## Usage
-- Ejecuta build, static analysis, tests y security scans.
-- Revisa diffs para detectar cambios no deseados.
+- Run build, static analysis, tests, and security scans.
+- Review diffs to detect unwanted changes.
 
 ## Examples
 - `mvn -T 4 clean verify -DskipTests`.
-- `mvn jacoco:report` para cobertura.
+- `mvn jacoco:report` for coverage.
 
 ## Related Skills
 - springboot-tdd

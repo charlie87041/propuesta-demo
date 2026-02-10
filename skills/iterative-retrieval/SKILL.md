@@ -204,19 +204,19 @@ When retrieving context for this task:
 # Skill: iterative-retrieval
 
 ## Purpose
-Resolver el problema de contexto en subagentes mediante refinamiento iterativo.
+Solve the context problem in subagents through iterative refinement.
 
 ## When to Use
-- Cuando el subagente no conoce los archivos relevantes.
-- Para tareas grandes con contexto incierto.
+- When the subagent doesn't know the relevant files.
+- For large tasks with uncertain context.
 
 ## Usage
-- Ejecuta el loop DISPATCH → EVALUATE → REFINE → LOOP.
-- Limita a 3 ciclos y conserva archivos de alta relevancia.
+- Execute the DISPATCH → EVALUATE → REFINE → LOOP cycle.
+- Limit to 3 cycles and retain high-relevance files.
 
 ## Examples
-- Buscar errores de expiración de tokens con keywords refinadas.
-- Encontrar puntos de rate limiting en un API.
+- Search for token expiration errors with refined keywords.
+- Find rate limiting points in an API.
 
 ## Related Skills
 - strategic-compact

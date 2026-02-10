@@ -1,38 +1,38 @@
 # Kiro Skills Repository
 
-Este directorio contiene skills (habilidades) para agentes de IA que definen pautas, metodologías y mejores prácticas para tareas específicas.
+This directory contains skills for AI agents that define guidelines, methodologies, and best practices for specific tasks.
 
 ## Available Skills
 
 ### tdd-milestone-planning.md
-**Purpose**: Definir pautas para crear milestones e issues de implementación siguiendo Test-Driven Development (TDD) estricto.
+**Purpose**: Define guidelines for creating milestones and implementation issues following strict Test-Driven Development (TDD).
 
 **Key Topics**:
-- Ciclo Red-Green-Refactor
-- Property-Based Testing con 100+ iteraciones
-- Organización de milestones por dependencias arquitectónicas
-- Estructura estándar de issues
-- Documentación continua (inline, API, architecture)
+- Red-Green-Refactor cycle
+- Property-Based Testing with 100+ iterations
+- Milestone organization by architectural dependencies
+- Standard issue structure
+- Continuous documentation (inline, API, architecture)
 - Testing infrastructure (TestContainers)
-- Quality gates y success metrics
+- Quality gates and success metrics
 
-**When to Use**: Al crear planes de implementación, milestones, o issues para proyectos de software que requieren alta corrección y cobertura de tests.
+**When to Use**: When creating implementation plans, milestones, or issues for software projects that require high correctness and test coverage.
 
 ## How to Use Skills
 
-Los skills están diseñados para ser leídos por agentes de IA antes de realizar tareas específicas. Contienen:
+Skills are designed to be read by AI agents before performing specific tasks. They contain:
 
-1. **Principios fundamentales**: Reglas y conceptos core
-2. **Pautas detalladas**: Instrucciones paso a paso
-3. **Ejemplos**: Casos de uso concretos
-4. **Anti-patterns**: Qué evitar
-5. **Success metrics**: Cómo medir éxito
+1. **Core principles**: Rules and core concepts
+2. **Detailed guidelines**: Step-by-step instructions
+3. **Examples**: Concrete use cases
+4. **Anti-patterns**: What to avoid
+5. **Success metrics**: How to measure success
 
 ## Contributing
 
-Para agregar un nuevo skill:
+To add a new skill:
 
-1. Crear archivo `.md` con nombre descriptivo en kebab-case
-2. Incluir secciones: Purpose, Core Principles, Detailed Guidelines, Examples, Anti-Patterns, Success Metrics
-3. Actualizar este README con descripción del skill
-4. Mantener formato consistente con skills existentes
+1. Create a `.md` file with a descriptive kebab-case name
+2. Include sections: Purpose, Core Principles, Detailed Guidelines, Examples, Anti-Patterns, Success Metrics
+3. Update this README with a skill description
+4. Maintain consistent formatting with existing skills

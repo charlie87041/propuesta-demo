@@ -454,22 +454,22 @@ try (Statement stmt = pgConnection.createStatement()) {
 # Skill: clickhouse-io
 
 ## Purpose
-Guiar el diseño de tablas, consultas y pipelines analíticos en ClickHouse.
+Guide table design, queries, and analytical pipelines in ClickHouse.
 
 ## When to Use
-- Al modelar datos OLAP o analytics de alto volumen.
-- Al optimizar queries, agregaciones y materialized views.
-- Para ingestion batch o streaming hacia ClickHouse.
+- When modeling OLAP or high-volume analytics data.
+- When optimizing queries, aggregations, and materialized views.
+- For batch or streaming ingestion to ClickHouse.
 
 ## Usage
-- Selecciona el engine (MergeTree/Agregating/Replace).
-- Define particionado y ordering keys según queries.
-- Inserta en batch y usa vistas materializadas para agregados.
+- Select the engine (MergeTree/Aggregating/Replacing).
+- Define partitioning and ordering keys based on queries.
+- Insert in batches and use materialized views for aggregates.
 
 ## Examples
-- Crear tabla MergeTree con partición mensual.
-- Definir vista materializada para métricas por hora.
-- Consultar retención con cohortes.
+- Create a MergeTree table with monthly partitioning.
+- Define a materialized view for hourly metrics.
+- Query retention with cohorts.
 
 ## Related Skills
 - postgres-patterns

@@ -159,21 +159,21 @@ class MarketBuilder {
 # Skill: springboot-tdd
 
 ## Purpose
-Aplicar TDD en Spring Boot con JUnit 5, Mockito, MockMvc, Testcontainers y JaCoCo.
+Apply TDD in Spring Boot with JUnit 5, Mockito, MockMvc, Testcontainers, and JaCoCo.
 
 ## When to Use
-- Al crear endpoints, servicios o repositorios.
-- Cuando se corrigen bugs o se refactoriza.
+- When creating endpoints, services, or repositories.
+- When fixing bugs or refactoring.
 
 ## Usage
-- Escribe tests unitarios, web e integración antes del código.
-- Usa Testcontainers para entornos reales.
-- Verifica cobertura con JaCoCo.
+- Write unit, web, and integration tests before code.
+- Use Testcontainers for real environments.
+- Verify coverage with JaCoCo.
 
 ## Examples
-- `@WebMvcTest` para controladores.
-- `@DataJpaTest` con Testcontainers.
-- `@SpringBootTest` para flujos completos.
+- `@WebMvcTest` for controllers.
+- `@DataJpaTest` with Testcontainers.
+- `@SpringBootTest` for complete flows.
 
 ## Related Skills
 - springboot-patterns

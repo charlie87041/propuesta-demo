@@ -112,19 +112,19 @@ See: `/Users/affoon/Documents/tasks/12-continuous-learning-v2.md` for full spec.
 # Skill: continuous-learning
 
 ## Purpose
-Extraer patrones al final de cada sesión y guardarlos como skills aprendidas.
+Extract patterns at the end of each session and save them as learned skills.
 
 ## When to Use
-- Cuando deseas aprendizaje automático basado en sesiones.
-- Para convertir resoluciones recurrentes en skills reutilizables.
+- When you want automatic learning based on sessions.
+- To convert recurring resolutions into reusable skills.
 
 ## Usage
-- Configura el hook `Stop` en `~/.claude/settings.json`.
-- Ajusta `config.json` para umbrales y tipos de patrones.
+- Configure the `Stop` hook in `~/.claude/settings.json`.
+- Adjust `config.json` for thresholds and pattern types.
 
 ## Examples
-- Guardar skills en `~/.claude/skills/learned/`.
-- Cambiar `min_session_length` para activar extracción.
+- Save skills in `~/.claude/skills/learned/`.
+- Change `min_session_length` to activate extraction.
 
 ## Related Skills
 - continuous-learning-v2

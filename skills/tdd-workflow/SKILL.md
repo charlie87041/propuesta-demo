@@ -411,21 +411,21 @@ npm test && npm run lint
 # Skill: tdd-workflow
 
 ## Purpose
-Aplicar Test-Driven Development con cobertura 80%+ incluyendo unit, integración y E2E.
+Apply Test-Driven Development with 80%+ coverage including unit, integration, and E2E tests.
 
 ## When to Use
-- Al desarrollar features nuevas, fixes o refactors.
-- Al crear endpoints o componentes con lógica crítica.
+- When developing new features, fixes, or refactors.
+- When creating endpoints or components with critical logic.
 
 ## Usage
-- Define user journeys y casos de prueba.
-- Escribe tests primero, implementa mínimo, refactoriza.
-- Ejecuta cobertura y corrige gaps.
+- Define user journeys and test cases.
+- Write tests first, implement minimally, refactor.
+- Run coverage and fix gaps.
 
 ## Examples
-- Unit test con React Testing Library.
-- Integration test de un endpoint.
-- E2E con Playwright para flujos críticos.
+- Unit test with React Testing Library.
+- Integration test for an endpoint.
+- E2E with Playwright for critical flows.
 
 ## Related Skills
 - tdd-milestone-planning

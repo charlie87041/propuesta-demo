@@ -286,20 +286,20 @@ v2 is fully compatible with v1:
 # Skill: continuous-learning-v2
 
 ## Purpose
-Capturar hábitos y patrones como “instincts” con hooks y evolucionarlos a skills/commands.
+Capture habits and patterns as "instincts" with hooks and evolve them into skills/commands.
 
 ## When to Use
-- Cuando quieres aprendizaje automático continuo en sesiones Claude Code.
-- Para generar skills a partir de observaciones reales.
+- When you want continuous automatic learning in Claude Code sessions.
+- To generate skills from real observations.
 
 ## Usage
-- Habilita hooks PreToolUse/PostToolUse.
-- Revisa instintos con `/instinct-status` y evoluciona con `/evolve`.
-- Configura rutas y thresholds en `config.json`.
+- Enable PreToolUse/PostToolUse hooks.
+- Review instincts with `/instinct-status` and evolve with `/evolve`.
+- Configure paths and thresholds in `config.json`.
 
 ## Examples
-- Crear `~/.claude/homunculus/observations.jsonl`.
-- Exportar instintos con `/instinct-export`.
+- Create `~/.claude/homunculus/observations.jsonl`.
+- Export instincts with `/instinct-export`.
 
 ## Related Skills
 - continuous-learning

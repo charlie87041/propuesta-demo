@@ -496,22 +496,22 @@ Before ANY production deployment:
 # Skill: security-review
 
 ## Purpose
-Checklist integral de seguridad para auth, inputs, secretos, endpoints y datos sensibles.
+Comprehensive security checklist for auth, inputs, secrets, endpoints, and sensitive data.
 
 ## When to Use
-- Al manejar autenticación, autorizaciones o pagos.
-- Cuando se reciben inputs de usuarios o archivos.
-- Antes de lanzar a producción o crear PRs sensibles.
+- When handling authentication, authorization, or payments.
+- When receiving user inputs or files.
+- Before deploying to production or creating sensitive PRs.
 
 ## Usage
-- Revisa cada sección (secrets, validation, SQLi, XSS, CSRF, rate limit).
-- Añade tests de seguridad y validaciones.
-- Aplica políticas de logging y error handling seguro.
+- Review each section (secrets, validation, SQLi, XSS, CSRF, rate limit).
+- Add security tests and validations.
+- Apply logging and secure error handling policies.
 
 ## Examples
-- Validar requests con Zod.
-- Usar cookies httpOnly para tokens.
-- Añadir rate limiting a endpoints costosos.
+- Validate requests with Zod.
+- Use httpOnly cookies for tokens.
+- Add rate limiting to expensive endpoints.
 
 ## Related Skills
 - springboot-security
