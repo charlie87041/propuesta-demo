@@ -36,11 +36,38 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 }
 ```
 
-## Authorization
+## Authorization (Domain-Ability-Permission Pattern)
 
-- Enable method security: `@EnableMethodSecurity`
-- Use `@PreAuthorize("hasRole('ADMIN')")` or `@PreAuthorize("@authz.canEdit(#id)")`
-- Deny by default; expose only required scopes
+Use the hierarchical **Domain → Ability → Permission** model for flexible, multi-tenant authorization.
+
+**See**: [domain-ability-authorization.md](domain-ability-authorization.md) for complete implementation.
+
+**Quick Reference**:
+- **Domain**: Tenant/context (e.g., `main-store`)
+- **Ability**: Permission bundle (e.g., `ManageInventory`)
+- **Permission**: Atomic action (e.g., `products:list`)
+
+```java
+// Enable method security
+@EnableMethodSecurity
+
+// Use custom annotations
+@RequiresPermission("products:list")
+public Page<Product> listProducts(@PathVariable String domainCode) { }
+
+@RequiresAbility("manage-inventory")
+public void updateStock(@PathVariable String domainCode, ...) { }
+
+// Or SpEL directly
+@PreAuthorize("@domainAuthz.check(#domainCode, 'products:create')")
+public Product createProduct(@PathVariable String domainCode, ...) { }
+```
+
+**Key Rules**:
+- Deny by default; no access unless ability grants permission
+- Include domain in API paths: `/api/domains/{domainCode}/products`
+- Explicit denials override ability grants
+- Combine with ownership checks for resource-level security
 
 ## Input Validation
 

@@ -78,6 +78,47 @@ Located in `.claude/agents/`:
 
 ---
 
+### Skill Discovery Protocol
+
+Before executing any agent command, automatically load relevant skills using these rules:
+
+#### Agent-to-Skill Mapping
+
+| Agent | Auto-load Skills |
+|-------|------------------|
+| architect | springboot-patterns, backend-patterns, jpa-patterns, postgres-patterns |
+| planner-tdd | tdd-workflow, tdd-milestone-planning, springboot-tdd |
+| tdd-guide | tdd-workflow, springboot-tdd, verification-loop |
+| code-reviewer | coding-standards, java-coding-standards, springboot-verification |
+| security-reviewer | security-review, springboot-security |
+| build-error-resolver | springboot-patterns, springboot-verification |
+| e2e-runner | frontend-patterns, verification-loop |
+| database-reviewer | postgres-patterns, jpa-patterns, clickhouse-io |
+| refactor-cleaner | coding-standards, strategic-compact |
+| doc-updater | coding-standards |
+
+#### Keyword-to-Skill Mapping
+
+| Keywords in Request | Load Skills |
+|---------------------|-------------|
+| database, schema, migration, SQL | postgres-patterns, jpa-patterns |
+| security, auth, JWT, OAuth | security-review, springboot-security |
+| test, TDD, coverage | tdd-workflow, springboot-tdd |
+| API, REST, endpoint | backend-patterns, springboot-patterns |
+| frontend, React, UI | frontend-patterns |
+| ClickHouse, analytics, OLAP | clickhouse-io |
+| PDF, document, Nutrient | nutrient-document-processing |
+| refactor, cleanup, optimize | strategic-compact, coding-standards |
+
+#### Discovery Procedure
+
+1. **Match Agent**: Load all skills mapped to the invoked agent
+2. **Scan Keywords**: Check request for keyword matches, load additional skills
+3. **Read Skills**: Run `cat` on each skill's main `.md` file to load into context
+4. **Report**: In DEBUG mode, list which skills were loaded and why
+
+---
+
 ### Debug & Reasoning Mode
 Whenever I start a request with `DEBUG:`, you must NOT execute any file edits or commands. Instead, provide a "Reasoning Trace" with this structure:
 

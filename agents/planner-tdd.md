@@ -42,6 +42,12 @@ When given a project description or requirements:
    - Correctness properties (if mentioned in design docs)
    - API endpoints
    - External integrations
+   - **Authorization requirements** (Domain-Ability-Permission):
+     - **Domains**: Tenants, organizational units, bounded contexts
+     - **Abilities**: Logical permission groupings (ManageInventory, ProcessOrders)
+     - **Permissions**: Atomic actions per endpoint (`resource:action`)
+     - Resource ownership validation
+     - Cross-domain access rules
 
 2. **Map Properties to Tests**:
    - Extract any correctness properties from design documents
@@ -65,7 +71,13 @@ Follow this architectural dependency order:
    - CI/CD pipeline basics
 
 2. **Shared Modules**
-   - Authentication & authorization
+   - Authentication (identity verification)
+   - **Authorization (Domain-Ability-Permission)**:
+     - Domain, Ability, Permission entities
+     - `DomainAuthorizationService` for permission checks
+     - `@RequiresPermission` / `@RequiresAbility` annotations
+     - Ownership validation utilities
+     - Standard abilities seed data
    - Common utilities
    - Security configurations
 
@@ -125,6 +137,13 @@ For each issue, use this structure:
 - Contract tests (for APIs):
   - [ ] [JSON format validation]
   - [ ] [Required fields validation]
+- **Authorization tests** (Domain-Ability-Permission):
+  - [ ] Unauthenticated access returns 401
+  - [ ] Missing permission in domain returns 403
+  - [ ] Permission in wrong domain returns 403
+  - [ ] Non-owner access returns 403 (if ownership applies)
+  - [ ] Granted ability with permission succeeds
+  - [ ] Explicit permission override (deny) returns 403
 
 **Green Phase** (Minimum Implementation):
 - [ ] Implement [Component name]

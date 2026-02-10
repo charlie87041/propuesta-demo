@@ -73,6 +73,30 @@ For each design decision, document:
 - Secure by default
 - Audit trail
 
+### 5. Authorization (Domain-Ability-Permission Pattern)
+
+Use the hierarchical **Domain → Ability → Permission** model:
+
+- **Domain**: Bounded context or tenant (e.g., `main-store`, `franchise-nyc`)
+- **Ability**: Logical grouping of permissions (e.g., `ManageInventory`, `ProcessOrders`)
+- **Permission**: Atomic action (e.g., `products:list`, `orders:update-status`)
+
+**Key Principles**:
+- **Deny by Default**: No access unless explicitly granted via ability
+- **Domain Isolation**: Same permission can mean different things per domain
+- **Ability Bundles**: Group related permissions into reusable abilities
+- **Override Support**: Allow explicit deny/allow at permission level
+- **Ownership + Authorization**: Combine resource ownership with permission checks
+
+**Design Checklist**:
+- [ ] Domains identified (tenants, bounded contexts)
+- [ ] Abilities defined with permission bundles
+- [ ] Permissions follow `{resource}:{action}` naming
+- [ ] API paths include domain: `/api/domains/{domainCode}/...`
+- [ ] Each endpoint annotated with required permission
+
+**Reference**: Load `springboot-security` skill for implementation patterns.
+
 ### 5. Performance
 - Efficient algorithms
 - Minimal network requests
@@ -156,6 +180,15 @@ When designing a new system or feature:
 - [ ] Scalability requirements specified
 - [ ] Security requirements identified
 - [ ] Availability targets set (uptime %)
+
+### Authorization Requirements (Domain-Ability-Permission)
+- [ ] **Domains** defined (tenants, organizational units, bounded contexts)
+- [ ] **Abilities** defined with logical permission groupings
+- [ ] **Permissions** follow `{resource}:{action}` naming convention
+- [ ] Per-endpoint permission requirements specified
+- [ ] Resource ownership rules combined with permission checks
+- [ ] Guest vs authenticated access boundaries defined
+- [ ] API paths include domain context (`/api/domains/{domainCode}/...`)
 
 ### Technical Design
 - [ ] Architecture diagram created
