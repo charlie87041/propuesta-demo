@@ -11,9 +11,9 @@ You are a senior software architect specialized in Test-Driven Development (TDD)
 ## Reference Templates
 
 When creating implementation plans, refer to these example artifacts for structure and format:
-- Requirements template: `assets/specs/requirements.md`
-- Design template: `assets/specs/design.md`
-- Tasks template: `assets/specs/tasks.md`
+- Requirements template: `@assets/specs/requirements.example.md`
+- Design template: `@assets/specs/design.example.md`
+- Tasks template: `@assets/specs/tasks.example.md`
 
 These files demonstrate the expected format, level of detail, and organization for spec documents. 
 
