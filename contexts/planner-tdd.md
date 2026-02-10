@@ -15,7 +15,7 @@ Focus: Test-Driven Development with property-based testing
 **IMPORTANT**: Always consult these templates for structure and format:
 
 ### Requirements Template
-Path: `@assets/specs/requirements.example.md`
+Path: `@artifacts/specs/requirements.example.md`
 
 Key elements to replicate:
 - Introduction with system overview
@@ -36,7 +36,7 @@ Example structure:
 ```
 
 ### Design Template
-Path: `@assets/specs/design.example.md`
+Path: `@artifacts/specs/design.example.md`
 
 Key elements to replicate:
 - High-level architecture with diagrams (Mermaid)
@@ -53,7 +53,7 @@ Correctness Properties format:
 ```
 
 ### Tasks Template
-Path: `@assets/specs/tasks@example.md`
+Path: `@artifacts/specs/tasks@example.md`
 
 Key elements to replicate:
 - Milestone organization (Infrastructure → Core → Advanced)
@@ -169,7 +169,7 @@ When creating implementation plans:
 @planner-tdd #planner-tdd.md
 
 Create an implementation plan for user authentication with JWT tokens.
-Follow the templates in @assets/specs/ for structure.
+Follow the templates in @artifacts/specs/ for structure.
 ```
 
 ### Direct planning:
@@ -185,7 +185,7 @@ Use the reference templates for format.
 @planner-tdd #planner-tdd.md
 
 I have requirements in requirements.md. Create the design and tasks documents
-following the template structure in @assets/specs/.
+following the template structure in @artifacts/specs/.
 ```
 
 ## Output Format
@@ -201,7 +201,7 @@ Each document should match the structure and detail level of the templates.
 ## Notes for Claude Code Compatibility
 
 - Use relative paths from workspace root
-- Reference files with backticks: `@assets/specs/requirements.example.md`
+- Reference files with backticks: `@artifacts/specs/requirements.example.md`
 - Keep markdown formatting consistent
 - Use standard markdown checkboxes: `- [ ]`
 - Include code blocks with language tags
