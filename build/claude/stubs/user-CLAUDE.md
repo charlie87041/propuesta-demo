@@ -143,3 +143,121 @@ You are successful when:
 ---
 
 **Philosophy**: Agent-first design, parallel execution, plan before action, test before code, security always.
+
+------
+
+# MEMORY
+
+Add your project-specific instructions here.
+
+## Docker Development Environment
+
+Development runs inside a Docker container with all dependencies pre-installed.
+
+### Start Container
+```bash
+cd docker
+GH_TOKEN=your_github_token docker compose up -d
+```
+
+### Execute Commands Inside Container
+```bash
+docker exec -w /workspace cookies-store-dev <command>
+```
+
+## CCPM - GitHub Issue Management
+
+This project uses **Claude Code Project Manager (CCPM)** for spec-driven development with GitHub issues.
+
+### Prerequisites
+1. Docker container running: `docker compose up -d`
+2. GitHub token with `repo` and `read:org` scopes set via `GH_TOKEN`
+3. CCPM plugin installed at `.claude/plugins/ccpm-main/`
+
+### Initialize CCPM
+```bash
+docker exec -w /workspace cookies-store-dev bash /workspace/.claude/plugins/ccpm-main/ccpm/scripts/pm/init.sh
+```
+
+### PRD Workflow
+
+1. **Create PRD** in `.claude/prds/<feature>.md` with frontmatter:
+   ```yaml
+   ---
+   name: feature-name
+   description: Brief description
+   status: backlog  # backlog, in-progress, implemented
+   created: 2026-02-10T00:00:00Z
+   ---
+   ```
+
+2. **List PRDs**:
+   ```bash
+   docker exec -w /workspace cookies-store-dev bash /workspace/.claude/plugins/ccpm-main/ccpm/scripts/pm/prd-list.sh
+   ```
+
+### Creating GitHub Issues
+
+#### Method 1: Epic with Sub-Issues (Recommended)
+
+1. **Create Epic Issue**:
+   ```bash
+   docker exec -w /workspace cookies-store-dev gh issue create \
+     --repo owner/repo \
+     --title "🍪 Epic: Feature Name" \
+     --body "Epic description with milestones" \
+     --label "epic"
+   ```
+
+2. **Create Sub-Issues** linked to Epic:
+   ```bash
+   docker exec -w /workspace cookies-store-dev gh sub-issue create \
+     --parent <epic_number> \
+     --repo owner/repo \
+     --title "[1.1] Task Title" \
+     --body "Task description with TDD approach" \
+     --label "milestone:m1" --label "backend"
+   ```
+
+3. **List Sub-Issues** of an Epic:
+   ```bash
+   docker exec -w /workspace cookies-store-dev gh sub-issue list <epic_number> -R owner/repo
+   ```
+
+#### Method 2: Batch Script
+
+Use `scripts/batch-issues.sh` for bulk creation:
+```bash
+docker exec -w /workspace cookies-store-dev bash /workspace/scripts/batch-issues.sh
+```
+
+### CCPM Slash Commands (via Claude Code)
+
+| Command | Description |
+|---------|-------------|
+| `/pm:init` | Initialize CCPM system |
+| `/pm:prd-new <name>` | Create new PRD interactively |
+| `/pm:prd-parse <name>` | Convert PRD to epic |
+| `/pm:epic-oneshot <name>` | Decompose + sync to GitHub |
+| `/pm:epic-status <name>` | Show epic progress |
+| `/pm:issue-start <num>` | Start working on issue |
+| `/pm:next` | Get next prioritized task |
+
+### Labels Convention
+
+| Label | Color | Purpose |
+|-------|-------|---------|
+| `epic` | #3E4B9E | Parent epic issue |
+| `epic:<name>` | #D4C5F9 | Links to specific epic |
+| `milestone:m1-m10` | varies | Milestone grouping |
+| `backend` | #0052CC | Backend tasks |
+| `frontend` | #1D76DB | Frontend tasks |
+| `security` | #D93F0B | Security-related |
+| `tdd` | #0E8A16 | TDD workflow |
+
+## Testing
+
+Always run tests before committing:
+- `npm test` or equivalent for your stack
+
+

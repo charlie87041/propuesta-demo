@@ -7,6 +7,46 @@ description: Create TDD-first implementation plan with property-based testing an
 
 This command creates a complete implementation plan following TDD principles and automatically generates GitHub issues.
 
+## Prerequisites Check
+
+Before executing CCPM commands, check if dependencies are available:
+
+### Docker Container Detection
+
+**Always check if the project Docker container is running first**:
+
+```bash
+# Check if container is running
+docker ps --filter "name=app_container_name" --format "{{.Names}}" 2>/dev/null | grep -q "cookies-store-dev"
+```
+
+**Execution Strategy**:
+1. If Docker container is running → Execute pm commands **inside the container**
+2. If no container but `gh` is available on host → Execute directly
+3. If neither → Prompt user to start Docker or install dependencies
+
+### Command Wrapper
+
+Use this pattern for all `/pm:*` commands:
+
+```bash
+# Check if dev container is running
+if docker ps --filter "name=-dev" --format "{{.Names}}" 2>/dev/null | grep -q "\-dev"; then
+    # Execute inside container
+    CONTAINER=$(docker ps --filter "name=-dev" --format "{{.Names}}" | head -1)
+    docker exec -it $CONTAINER bash -c "cd /workspace && bash .claude/plugins/ccpm-main/ccpm/scripts/pm/<command>.sh <args>"
+else
+    # Check if gh is available on host
+    if command -v gh &>/dev/null; then
+        bash .claude/plugins/ccpm-main/ccpm/scripts/pm/<command>.sh <args>
+    else
+        echo "❌ Docker container not running and gh not installed"
+        echo "   Run: cd docker && docker-compose up -d && docker-compose exec dev bash"
+        exit 1
+    fi
+fi
+```
+
 ## Usage
 
 ```bash

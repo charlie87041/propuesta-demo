@@ -2,15 +2,7 @@
 
 Docker-based development environment with all dependencies for Claude Code PM workflows.
 
-## Included Tools
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| Java | 21 (Temurin) | Spring Boot development |
-| Gradle | 8.5 | Build system |
-| Node.js | 20 LTS | Scripts and tooling |
-| GitHub CLI | Latest | CCPM GitHub integration |
-| Git | Latest | Version control |
 
 ## Prerequisites
 
@@ -23,7 +15,6 @@ Docker-based development environment with all dependencies for Claude Code PM wo
 ### Step 1: Generate Claude Code Project Structure
 
 Before using Docker, generate the Claude Code project structure:
-
 ```bash
 # From the repository root
 python build/claude/scripts/generate_claude.py --project-name Demo --language java
@@ -34,14 +25,16 @@ This creates:
 - `CLAUDE.md` project memory file
 - Required configuration files
 
-### Step 2: Build the Docker Image
+### Step 2: Run /architect in claude code for generating the project artifacts and docker files
+
+### Step 3: Build the Docker Image
 
 ```bash
 cd docker
 docker-compose build
 ```
 
-### Step 3: Configure Environment Variables
+### Step 4: Configure Environment Variables
 
 ```bash
 cp .env.example .env
@@ -61,19 +54,19 @@ GIT_COMMITTER_EMAIL=your.email@example.com
 
 > **Getting a GitHub Token**: Go to GitHub → Settings → Developer settings → Personal access tokens → Generate new token. Required scopes: `repo`, `read:org`, `workflow`.
 
-### Step 4: Start the Development Container
+### Step 5: Start the Development Container
 
 ```bash
 docker-compose up -d ccpm-dev
 ```
 
-### Step 5: Enter the Container
+### Step 6: Enter the Container
 
 ```bash
 docker-compose exec ccpm-dev bash
 ```
 
-### Step 6: Authenticate GitHub CLI (First Time Only)
+### Step 7: Authenticate GitHub CLI (First Time Only)
 
 Inside the container:
 
@@ -89,7 +82,7 @@ gh auth status
 gh extension install yahsan2/gh-sub-issue
 ```
 
-### Step 7: Initialize CCPM (`/pm:init`)
+### Step 8: Initialize CCPM (`/pm:init`)
 
 ```bash
 # Inside container
