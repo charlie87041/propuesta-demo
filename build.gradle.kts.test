@@ -1,0 +1,73 @@
+/**
+ * Build Verification Test
+ * Tests that validate Gradle project structure
+ */
+
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.*
+import java.nio.file.Files
+import java.nio.file.Paths
+
+class GradleProjectStructureTest {
+    
+    private val projectRoot = Paths.get(System.getProperty("user.dir"))
+    
+    @Test
+    fun `verify root build gradle kts exists`() {
+        val buildFile = projectRoot.resolve("build.gradle.kts")
+        assertTrue(Files.exists(buildFile), "Root build.gradle.kts must exist")
+    }
+    
+    @Test
+    fun `verify settings gradle kts exists`() {
+        val settingsFile = projectRoot.resolve("settings.gradle.kts")
+        assertTrue(Files.exists(settingsFile), "settings.gradle.kts must exist")
+    }
+    
+    @Test
+    fun `verify all required modules are included`() {
+        val settingsFile = projectRoot.resolve("settings.gradle.kts")
+        val content = Files.readString(settingsFile)
+        
+        val requiredModules = listOf(
+            "common",
+            "catalog-module",
+            "cart-module",
+            "customer-module",
+            "order-module",
+            "payment-module",
+            "admin-module",
+            "application"
+        )
+        
+        requiredModules.forEach { module ->
+            assertTrue(
+                content.contains("include(\":$module\")"),
+                "Module $module must be included in settings.gradle.kts"
+            )
+        }
+    }
+    
+    @Test
+    fun `verify each module has build gradle kts`() {
+        val modules = listOf(
+            "common", "catalog-module", "cart-module", 
+            "customer-module", "order-module", "payment-module",
+            "admin-module", "application"
+        )
+        
+        modules.forEach { module ->
+            val moduleBuildFile = projectRoot.resolve("$module/build.gradle.kts")
+            assertTrue(
+                Files.exists(moduleBuildFile),
+                "Module $module must have build.gradle.kts"
+            )
+        }
+    }
+    
+    @Test
+    fun `verify version catalog exists`() {
+        val versionCatalog = projectRoot.resolve("gradle/libs.versions.toml")
+        assertTrue(Files.exists(versionCatalog), "Version catalog must exist")
+    }
+}

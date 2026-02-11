@@ -26,6 +26,9 @@ node_modules/
 personal/
 private/
 docker/
+.claude/*
+.claude-plugin/*
+.claude-code-reference/*
 
 # Session templates (not committed)
 examples/sessions/*.tmp
