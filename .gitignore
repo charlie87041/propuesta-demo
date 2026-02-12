@@ -56,6 +56,8 @@ personal/
 private/
 docker/
 .claude/*
+!.claude/artifacts/
+!.claude/artifacts/specs/
 .claude-plugin/*
 .claude-code-reference/*
 
