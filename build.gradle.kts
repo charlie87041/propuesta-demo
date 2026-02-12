@@ -19,8 +19,9 @@ subprojects {
     apply(plugin = "io.spring.dependency-management")
     
     java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
     }
     
     dependencies {
@@ -31,5 +32,24 @@ subprojects {
     
     tasks.test {
         useJUnitPlatform()
+    }
+    
+    // Disable bootJar for library modules, enable jar
+    tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+        enabled = false
+    }
+    
+    tasks.named<Jar>("jar") {
+        enabled = true
+    }
+}
+
+// Enable bootJar only for the application module
+project(":application") {
+    tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+        enabled = true
+    }
+    tasks.named<Jar>("jar") {
+        enabled = false
     }
 }
