@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+  sql:
+    init:
+      mode: never
+  data:
+    redis:
+      # Host and port configured dynamically by TestContainers
+      timeout: 60000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+logging:
+  level:
+    org.testcontainers: INFO
+    com.cookiesstore: DEBUG
