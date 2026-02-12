@@ -1,0 +1,35 @@
+# Test profile for using external containers (devcontainer environment)
+# Activate with: ./gradlew test -Dspring.profiles.active=external
+# Or set environment variable: SPRING_PROFILES_ACTIVE=external
+
+spring:
+  datasource:
+    # Use gateway IP (172.18.0.1) to reach containers via exposed ports
+    # This works because postgres exposes 5432 and redis exposes 6379 to host
+    url: jdbc:postgresql://172.18.0.1:5432/cookies_store
+    username: core
+    password: secret
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+  data:
+    redis:
+      host: 172.18.0.1
+      port: 6379
+      timeout: 60000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+logging:
+  level:
+    org.springframework: INFO
+    com.cookiesstore: DEBUG

@@ -1,9 +1,12 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
+    # For devcontainer: use external postgres container
+    # url, username, password can be overridden via environment variables
+    # SPRING_DATASOURCE_URL, SPRING_DATASOURCE_USERNAME, SPRING_DATASOURCE_PASSWORD
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -14,7 +17,8 @@ spring:
       mode: never
   data:
     redis:
-      # Host and port configured dynamically by TestContainers
+      # Host and port configured dynamically by TestContainers or environment
+      # SPRING_DATA_REDIS_HOST, SPRING_DATA_REDIS_PORT
       timeout: 60000
       lettuce:
         pool:
