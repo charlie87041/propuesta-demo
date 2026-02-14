@@ -21,6 +21,9 @@ cookies-store/
 └── application/              # Main application (aggregates all modules)
 ```
 
+`application` acts as the composition root (runtime entrypoint).  
+Admin controllers, templates, and admin services belong in `admin-module`.
+
 ## Module Dependencies
 
 ```
