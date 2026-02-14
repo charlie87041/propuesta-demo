@@ -35,3 +35,10 @@ examples/sessions/*.tmp
 
 # Local drafts
 marketing/
+.gradle/*
+
+.gradle-home/*
+build/
+bin/
+.claude/*
+.codex/*
