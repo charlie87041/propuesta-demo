@@ -1,4 +1,4 @@
-package com.cookiesstore.common.authorization.service;
+package com.cookiesstore.common.authorization.seeder;
 
 import com.cookiesstore.common.authorization.domain.Ability;
 import com.cookiesstore.common.authorization.domain.Domain;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@org.springframework.context.annotation.Profile("test")
 public class AuthorizationDataSeeder implements CommandLineRunner {
 
     private final DomainRepository domainRepository;
@@ -35,17 +36,22 @@ public class AuthorizationDataSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        seedDomain();
+        seedDomains();
         seedPermissions();
         seedAbilitiesAndMappings();
     }
 
-    private void seedDomain() {
-        domainRepository.findByCode("main-store").orElseGet(() -> {
+    private void seedDomains() {
+        seedDomainIfMissing("main-store", "Main Cookie Store", "Primary e-commerce storefront");
+        seedDomainIfMissing("example.test", "Example Test Domain", "Temporary domain for admin user-management tests");
+    }
+
+    private void seedDomainIfMissing(String code, String name, String description) {
+        domainRepository.findByCode(code).orElseGet(() -> {
             Domain domain = new Domain();
-            domain.setCode("main-store");
-            domain.setName("Main Cookie Store");
-            domain.setDescription("Primary e-commerce storefront");
+            domain.setCode(code);
+            domain.setName(name);
+            domain.setDescription(description);
             return domainRepository.save(domain);
         });
     }
@@ -58,6 +64,7 @@ public class AuthorizationDataSeeder implements CommandLineRunner {
             "cart:view", "cart:add-item", "cart:update-item", "cart:remove-item", "cart:clear",
             "profile:read", "profile:update", "addresses:list", "addresses:create", "addresses:update", "addresses:delete",
             "customers:list", "customers:read", "customers:update", "customers:disable",
+            "users:list", "users:read", "users:create", "users:update", "users:delete", "users:assign-ability", "users:revoke-ability", "users:override-permission",
             "orders:list-own", "orders:read-own", "orders:cancel-own", "orders:list", "orders:read", "orders:update-status",
             "orders:add-tracking", "orders:cancel", "orders:refund",
             "checkout:initiate", "checkout:complete",
@@ -98,6 +105,7 @@ public class AuthorizationDataSeeder implements CommandLineRunner {
         mapping.put("process-orders", Set.of("orders:list", "orders:read", "orders:update-status", "orders:add-tracking"));
         mapping.put("manage-orders", Set.of("orders:list", "orders:read", "orders:update-status", "orders:add-tracking", "orders:cancel", "orders:refund", "payments:view", "payments:refund"));
         mapping.put("manage-customers", Set.of("customers:list", "customers:read", "customers:update", "customers:disable", "orders:list", "orders:read"));
+        mapping.put("manage-users", Set.of("users:list", "users:read", "users:create", "users:update", "users:delete", "users:assign-ability", "users:revoke-ability", "users:override-permission"));
         mapping.put("view-reports", Set.of("reports:sales", "reports:inventory", "reports:customers", "reports:export"));
         mapping.put("manage-settings", Set.of("settings:view", "settings:update", "audit:view"));
         mapping.put("super-admin", Set.of("*"));
