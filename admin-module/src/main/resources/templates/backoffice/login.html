@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login | CrumblyCookies</title>
+    <title th:text="#{admin.login.page.title}">Admin Login | CrumblyCookies</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,44 +27,44 @@
             <span class="text-3xl">C</span>
         </div>
         <h1 class="text-3xl font-extrabold text-[#8b4513] tracking-tight mb-1">CrumblyCookies</h1>
-        <p class="text-[#8b4513]/60 font-medium">Admin Backoffice</p>
+        <p class="text-[#8b4513]/60 font-medium" th:text="#{admin.login.subtitle}">Admin Backoffice</p>
     </div>
 
     <div class="bg-white p-8 rounded-xl shadow-xl border border-[#8b4513]/10">
         <div class="mb-6">
-            <h2 class="text-xl font-bold text-[#8b4513]">Welcome Back</h2>
-            <p class="text-sm text-gray-500 mt-1">Please enter your admin credentials to continue.</p>
+            <h2 class="text-xl font-bold text-[#8b4513]" th:text="#{admin.login.welcome}">Welcome Back</h2>
+            <p class="text-sm text-gray-500 mt-1" th:text="#{admin.login.prompt}">Please enter your admin credentials to continue.</p>
         </div>
 
-        <div th:if="${param.error}" class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div th:if="${param.error}" class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="#{admin.login.error}">
             Invalid credentials. Try again.
         </div>
-        <div th:if="${param.logout}" class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+        <div th:if="${param.logout}" class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700" th:text="#{admin.login.logout}">
             Session closed successfully.
         </div>
 
         <form action="/admin/login" method="post" class="space-y-5">
             <div class="space-y-2">
-                <label class="block text-sm font-semibold text-[#8b4513]" for="email">Email</label>
+                <label class="block text-sm font-semibold text-[#8b4513]" for="email" th:text="#{admin.login.email}">Email</label>
                 <input class="block w-full px-4 py-3 bg-[#f8f7f6] border border-[#8b4513]/10 rounded-lg text-[#8b4513] placeholder:text-[#8b4513]/30 focus:ring-2 focus:ring-[#8b4513]/20 focus:border-[#8b4513] transition-all outline-none"
-                       id="email" name="email" placeholder="admin@crumblycookies.com" required type="email"/>
+                       id="email" name="email" th:placeholder="#{admin.login.email.placeholder}" required type="email"/>
             </div>
 
             <div class="space-y-2">
-                <label class="block text-sm font-semibold text-[#8b4513]" for="password">Password</label>
+                <label class="block text-sm font-semibold text-[#8b4513]" for="password" th:text="#{admin.login.password}">Password</label>
                 <input class="block w-full px-4 py-3 bg-[#f8f7f6] border border-[#8b4513]/10 rounded-lg text-[#8b4513] placeholder:text-[#8b4513]/30 focus:ring-2 focus:ring-[#8b4513]/20 focus:border-[#8b4513] transition-all outline-none"
-                       id="password" name="password" placeholder="********" required type="password"/>
+                       id="password" name="password" th:placeholder="#{admin.login.password.placeholder}" required type="password"/>
             </div>
 
             <button class="w-full bg-[#8b4513] hover:bg-[#8b4513]/90 text-white font-bold py-3.5 px-4 rounded-lg shadow-lg shadow-[#8b4513]/20 transition-all active:scale-[0.98]"
-                    type="submit">
+                    type="submit" th:text="#{admin.login.submit}">
                 Login to Dashboard
             </button>
         </form>
     </div>
 
     <div class="mt-8 text-center">
-        <p class="text-[10px] text-[#8b4513]/30 leading-relaxed px-4">
+        <p class="text-[10px] text-[#8b4513]/30 leading-relaxed px-4" th:text="#{admin.login.notice}">
             This system is for authorized CrumblyCookies personnel only.
         </p>
     </div>

@@ -3,6 +3,7 @@ package com.cookiesstore.admin.web;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -87,6 +88,22 @@ class AdminAuthenticationIntegrationTest {
     }
 
     @Test
+    void loginPageUsesSpanishByDefault() throws Exception {
+        mockMvc.perform(get("/admin/login"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Bienvenido de nuevo")));
+    }
+
+    
+    @Test
+    void loginPageUsesEnglishWhenLocaleIsRequested() throws Exception {
+        mockMvc.perform(get("/admin/login").param("lang", "en"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Welcome Back")));
+    }
+
+    
+    @Test
     void adminPageRedirectsToLoginWhenUnauthenticated() throws Exception {
         mockMvc.perform(get("/admin"))
             .andExpect(status().is3xxRedirection())
@@ -139,6 +156,16 @@ class AdminAuthenticationIntegrationTest {
         mockMvc.perform(post("/admin/logout").cookie(authCookie))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/admin/login?logout"))
+            .andExpect(header().string("Set-Cookie", containsString("ADMIN_AUTH_TOKEN=")))
+            .andExpect(header().string("Set-Cookie", containsString("Max-Age=0")));
+    }
+
+    
+    @Test
+    void invalidCookieOnAdminPageRedirectsToLoginAndClearsCookie() throws Exception {
+        mockMvc.perform(get("/admin/users/new").cookie(new Cookie(AuthCookieNames.ADMIN_AUTH_TOKEN, "invalid-token")))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/admin/login?error"))
             .andExpect(header().string("Set-Cookie", containsString("ADMIN_AUTH_TOKEN=")))
             .andExpect(header().string("Set-Cookie", containsString("Max-Age=0")));
     }

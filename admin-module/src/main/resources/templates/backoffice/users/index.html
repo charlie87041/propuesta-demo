@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<th:block th:replace="~{backoffice/layout :: layout(${pageTitle}, ~{::headerActions}, ~{::content})}">
+<th:block th:replace="~{backoffice/layout :: layout(#{admin.users.title}, ~{::headerActions}, ~{::content})}">
     <th:block th:fragment="headerActions">
-        <a href="/admin/users/new" class="px-4 py-2 bg-[#8b4513] hover:bg-[#6f370f] text-white rounded-lg text-sm font-bold">
+        <a href="/admin/users/new" class="px-4 py-2 bg-[#8b4513] hover:bg-[#6f370f] text-white rounded-lg text-sm font-bold" th:text="#{admin.users.add}">
             Add New User
         </a>
     </th:block>
@@ -14,36 +14,36 @@
 
             <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
                 <header class="px-6 py-4 border-b border-[#e6dad1] flex items-center justify-between">
-                    <h3 class="font-bold">Internal Staff Directory</h3>
-                    <span class="text-sm text-[#956d50]" th:text="${#lists.size(users)} + ' active users - domain ' + ${domainCode}">0 active users</span>
+                    <h3 class="font-bold" th:text="#{admin.users.directory}">Internal Staff Directory</h3>
+                    <span class="text-sm text-[#956d50]" th:text="#{admin.users.activeCount(${#lists.size(users)}, ${domainCode})}">0 active users</span>
                 </header>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
                         <tr>
-                            <th class="px-6 py-3">User ID</th>
-                            <th class="px-6 py-3">Email</th>
-                            <th class="px-6 py-3">Role</th>
-                            <th class="px-6 py-3">Status</th>
-                            <th class="px-6 py-3">Created At</th>
-                            <th class="px-6 py-3 text-right">Actions</th>
+                            <th class="px-6 py-3" th:text="#{admin.users.col.id}">User ID</th>
+                            <th class="px-6 py-3" th:text="#{admin.users.col.email}">Email</th>
+                            <th class="px-6 py-3" th:text="#{admin.users.col.role}">Role</th>
+                            <th class="px-6 py-3" th:text="#{admin.users.col.status}">Status</th>
+                            <th class="px-6 py-3" th:text="#{admin.users.col.createdAt}">Created At</th>
+                            <th class="px-6 py-3 text-right" th:text="#{admin.users.col.actions}">Actions</th>
                         </tr>
                         </thead>
                         <tbody class="divide-y divide-[#f3ece8] text-sm">
                         <tr th:if="${#lists.isEmpty(users)}">
-                            <td colspan="6" class="px-6 py-8 text-center text-[#956d50]">No admin users found.</td>
+                            <td colspan="6" class="px-6 py-8 text-center text-[#956d50]" th:text="#{admin.users.empty}">No admin users found.</td>
                         </tr>
                         <tr th:each="user : ${users}">
                             <td class="px-6 py-4 font-semibold" th:text="${user.id}">1</td>
                             <td class="px-6 py-4 text-[#956d50]" th:text="${user.email}">admin@crumbly.com</td>
                             <td class="px-6 py-4 text-[#956d50]" th:text="${userRoles[user.id]} ?: '-'">manage-users</td>
-                            <td class="px-6 py-4 text-green-700 font-semibold" th:text="${user.active} ? 'Active' : 'Inactive'">Active</td>
+                            <td class="px-6 py-4 text-green-700 font-semibold" th:text="${user.active} ? #{admin.users.status.active} : #{admin.users.status.inactive}">Active</td>
                             <td class="px-6 py-4 text-[#956d50]" th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 10:00</td>
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-4">
-                                    <a th:href="@{'/admin/users/' + ${user.id} + '/edit'}" class="text-[#8b4513] font-semibold hover:underline">Edit</a>
+                                    <a th:href="@{'/admin/users/' + ${user.id} + '/edit'}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.users.action.edit}">Edit</a>
                                     <form th:action="@{'/admin/users/' + ${user.id} + '/deactivate'}" method="post" class="inline">
-                                        <button type="submit" class="text-red-700 font-semibold hover:underline">Deactivate</button>
+                                        <button type="submit" class="text-red-700 font-semibold hover:underline" th:text="#{admin.users.action.deactivate}">Deactivate</button>
                                     </form>
                                 </div>
                             </td>
