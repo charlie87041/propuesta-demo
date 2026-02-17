@@ -77,3 +77,30 @@
 
 ## Próximo paso recomendado
 1. Implementar en `admin-module` únicamente Task 8.4/8.5/8.6 (entidad/repo, servicio y controllers de admin users) con TDD y ABAC.
+
+---
+
+## Update
+- Fecha: 2026-02-17
+
+## Rama y commit actual
+- Rama activa: `feature/issue-8.6-admin-user-rest-controllers`
+- HEAD previo al commit final: `6f1b6b3`
+
+## Trabajo realizado en esta sesión
+- Se ajustó la lógica de asignación de abilities/roles en admin users:
+  - `admin-module/src/main/java/com/cookiesstore/admin/service/AdminUserService.java`
+  - `admin-module/src/main/java/com/cookiesstore/admin/web/AdminUserController.java`
+- Cambio funcional principal:
+  - Se removió la validación estricta `ensureActorCanAssignRole(...)` en `AdminUserService` para creación/edición con rol.
+  - En `AdminUserController` se permite asignar `super-admin` aun cuando el actor no tenga esa ability específica, manteniendo la validación para otras abilities.
+
+## Validaciones ejecutadas
+- `./gradlew :admin-module:test --no-daemon` ✅
+
+## Estado de issue
+- Issue objetivo de Milestone 8.6: `#72`
+- Estado al cierre de esta actualización: listo para cerrar tras push final.
+
+## Notas operativas
+- Se presentó lock de Gradle por `bootRun` activo en otro contenedor (`cookies-store-dev`), se liberó deteniendo procesos Java/Gradle antes de correr tests.
