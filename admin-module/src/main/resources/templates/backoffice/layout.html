@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(pageTitle, headerActions, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Admin Backoffice</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "Plus Jakarta Sans", sans-serif; }
+    </style>
+</head>
+<body class="bg-[#f8f7f6] text-[#1b130e]">
+<div class="flex min-h-screen">
+    <aside class="hidden lg:flex w-72 flex-col border-r border-[#e6dad1] bg-white">
+        <div class="p-6 border-b border-[#e6dad1]">
+            <h1 class="font-extrabold text-lg text-[#8b4513]">CrumblyCookies</h1>
+            <p class="text-xs text-[#956d50] font-semibold uppercase">Admin Backoffice</p>
+        </div>
+        <nav class="p-4 space-y-1">
+            <a href="/admin/users" class="block px-3 py-2 rounded-lg bg-[#8b4513]/10 text-[#8b4513] font-bold text-sm">Users</a>
+        </nav>
+    </aside>
+
+    <main class="flex-1">
+        <header class="h-16 px-6 lg:px-8 border-b border-[#e6dad1] bg-white flex items-center justify-between">
+            <h2 class="font-extrabold text-xl" th:text="${pageTitle}">Admin Backoffice</h2>
+            <div class="flex items-center gap-3">
+                <div th:replace="${headerActions}"></div>
+                <form action="/admin/logout" method="post">
+                    <button type="submit" class="inline-flex items-center rounded-lg border border-[#e6dad1] px-3 py-2 text-sm font-semibold text-[#8b4513] hover:bg-[#8b4513]/10">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </header>
+
+        <div th:replace="${content}"></div>
+    </main>
+</div>
+</body>
+</html>

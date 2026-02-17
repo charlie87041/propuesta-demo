@@ -48,6 +48,18 @@ public class AdminAbilityAssignmentService {
         userDomainAbilityRepository.save(assignment);
     }
 
+    public void setSingleRole(Long actorUserId, Long targetUserId, String domainCode, String abilityCode) {
+        for (UserDomainAbility assignment : userDomainAbilityRepository.findByUserIdAndDomainCodeAndGrantedTrue(targetUserId, domainCode)) {
+            if (!assignment.getAbility().getCode().equals(abilityCode)) {
+                assignment.setGranted(false);
+                assignment.setGrantedBy(actorUserId);
+                userDomainAbilityRepository.save(assignment);
+            }
+        }
+
+        assignAbility(actorUserId, targetUserId, domainCode, abilityCode);
+    }
+
     public void revokeAbility(Long actorUserId, Long targetUserId, String domainCode, String abilityCode) {
         UserDomainAbility assignment = userDomainAbilityRepository
             .findByUserIdAndDomainCodeAndAbilityCode(targetUserId, domainCode, abilityCode)

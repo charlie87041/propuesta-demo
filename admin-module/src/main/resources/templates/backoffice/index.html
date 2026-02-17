@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Backoffice</title>
-</head>
-<body>
-<main>
-    <h1>Admin Backoffice</h1>
-    <p>Base UI servida desde admin-module.</p>
-</main>
-</body>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout('Admin Backoffice', ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions"></th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8">
+            <article class="bg-white border border-[#e6dad1] rounded-xl p-6 max-w-2xl">
+                <h3 class="font-bold text-lg">Admin Backoffice</h3>
+                <p class="text-[#956d50] mt-2">Base UI servida desde admin-module.</p>
+            </article>
+        </section>
+    </th:block>
+</th:block>
 </html>

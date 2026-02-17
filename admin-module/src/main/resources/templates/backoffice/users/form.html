@@ -1,34 +1,9 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle}">Admin: User Form</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: "Plus Jakarta Sans", sans-serif; }
-    </style>
-</head>
-<body class="bg-[#f8f7f6] text-[#1b130e]">
-<div class="flex min-h-screen">
-    <aside class="hidden lg:flex w-72 flex-col border-r border-[#e6dad1] bg-white">
-        <div class="p-6 border-b border-[#e6dad1]">
-            <h1 class="font-extrabold text-lg text-[#8b4513]">CrumblyCookies</h1>
-            <p class="text-xs text-[#956d50] font-semibold uppercase">Admin Backoffice</p>
-        </div>
-        <nav class="p-4 space-y-1">
-            <a href="/admin/users" class="block px-3 py-2 rounded-lg bg-[#8b4513]/10 text-[#8b4513] font-bold text-sm">Users</a>
-        </nav>
-    </aside>
+<th:block th:replace="~{backoffice/layout :: layout(${pageTitle}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions"></th:block>
 
-    <main class="flex-1">
-        <header class="h-16 px-6 lg:px-8 border-b border-[#e6dad1] bg-white flex items-center">
-            <h2 class="font-extrabold text-xl" th:text="${pageTitle}">Admin: User Form</h2>
-        </header>
-
+    <th:block th:fragment="content">
         <section class="p-6 lg:p-8 max-w-5xl mx-auto">
             <nav class="text-sm text-[#956d50] mb-6">
                 <a href="/admin/users" class="hover:text-[#8b4513]">User Management</a>
@@ -36,63 +11,103 @@
                 <span th:text="${pageTitle}">Crear usuario admin</span>
             </nav>
 
-            <form class="bg-white border border-[#e6dad1] rounded-xl overflow-hidden">
+            <div th:if="${errorMessage}" class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+
+            <form th:action="${formAction}" method="post" class="bg-white border border-[#e6dad1] rounded-xl overflow-hidden">
                 <div class="p-6 border-b border-[#e6dad1]">
-                    <h3 class="text-lg font-bold">Personal Details</h3>
+                    <h3 class="text-lg font-bold">Admin User Details</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                         <label class="block">
-                            <span class="text-sm font-semibold">Full Name</span>
-                            <input type="text" class="mt-2 w-full rounded-lg border-[#e6dad1]" placeholder="e.g. Jane Doe">
+                            <span class="text-sm font-semibold">Email Address</span>
+                            <input name="email" type="email" class="mt-2 w-full rounded-lg border-[#e6dad1]" placeholder="jane.doe@crumblycookies.com" th:value="${email}" required>
+                            <span th:if="${emailError}" class="mt-2 block text-xs font-semibold text-red-700" th:text="${emailError}"></span>
                         </label>
                         <label class="block">
-                            <span class="text-sm font-semibold">Email Address</span>
-                            <input type="email" class="mt-2 w-full rounded-lg border-[#e6dad1]" placeholder="jane.doe@crumblycookies.com">
+                            <span class="text-sm font-semibold">Domain</span>
+                            <input type="text" class="mt-2 w-full rounded-lg border-[#e6dad1] bg-[#f8f7f6]" th:value="${domainCode}" readonly>
+                            <span class="mt-2 block text-xs text-[#956d50]">Domain is fixed after creation.</span>
                         </label>
+                    </div>
+                </div>
+
+                <div class="p-6 border-b border-[#e6dad1]">
+                    <h3 class="text-lg font-bold">Role & Permissions</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+                        <label class="block">
+                            <span class="text-sm font-semibold">Role</span>
+                            <select id="roleCode" name="roleCode" class="mt-2 w-full rounded-lg border-[#e6dad1]" required>
+                                <option value="">Select a role</option>
+                                <option
+                                    th:each="role : ${roles}"
+                                    th:value="${role.code()}"
+                                    th:text="|${role.name()} (${role.code()})|"
+                                    th:selected="${selectedRoleCode == role.code()}"
+                                    th:attr="data-permissions=${#strings.listJoin(role.permissions(), ';;')}"
+                                >manage-users</option>
+                            </select>
+                            <span th:if="${roleError}" class="mt-2 block text-xs font-semibold text-red-700" th:text="${roleError}"></span>
+                        </label>
+
+                        <div>
+                            <span class="text-sm font-semibold">Permission Preview</span>
+                            <ul id="rolePermissionPreview" class="mt-2 text-sm text-[#956d50] list-disc pl-5 space-y-1">
+                                <li>Select a role to preview permissions.</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
                 <div class="p-6 border-b border-[#e6dad1]">
                     <h3 class="text-lg font-bold">Security</h3>
                     <label class="block mt-4 max-w-md">
-                        <span class="text-sm font-semibold">Password</span>
-                        <input type="password" class="mt-2 w-full rounded-lg border-[#e6dad1]" placeholder="Min. 8 characters">
+                        <span class="text-sm font-semibold" th:text="${isEdit} ? \"Password (leave blank to keep current)\" : \"Password\"">Password</span>
+                        <input name="password" type="password" class="mt-2 w-full rounded-lg border-[#e6dad1]" placeholder="Min. 8 characters" th:required="${!isEdit}">
+                        <span th:if="${passwordError}" class="mt-2 block text-xs font-semibold text-red-700" th:text="${passwordError}"></span>
                     </label>
                 </div>
 
-                <div class="p-6 bg-[#fbfaf8] border-b border-[#e6dad1]">
-                    <h3 class="text-lg font-bold">Access Control</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                        <label class="block">
-                            <span class="text-sm font-semibold">Assigned Role</span>
-                            <select class="mt-2 w-full rounded-lg border-[#e6dad1]">
-                                <option>Super Admin</option>
-                                <option selected>Store Manager</option>
-                                <option>Editor</option>
-                                <option>Viewer</option>
-                            </select>
-                        </label>
-                        <div class="bg-white border border-[#e6dad1] rounded-lg p-4">
-                            <p class="text-xs uppercase font-bold text-[#8b4513] mb-2">Permissions Preview</p>
-                            <ul class="text-sm space-y-1 text-[#1b130e]">
-                                <li>Manage inventory and stock levels</li>
-                                <li>Process and refund orders</li>
-                                <li>View sales reports</li>
-                                <li class="text-[#956d50]">Create/Delete other admin users</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="p-6 flex items-center justify-between">
-                    <p class="text-sm text-[#956d50]" th:if="${isEdit}" th:text="'Editando usuario #' + ${userId}"></p>
+                    <p class="text-sm text-[#956d50]" th:if="${isEdit}" th:text="\"Editando usuario #\" + ${userId}"></p>
                     <div class="ml-auto space-x-3">
                         <a href="/admin/users" class="px-5 py-2.5 text-sm font-bold text-[#956d50]">Cancel</a>
-                        <button type="submit" class="px-6 py-2.5 text-sm font-bold text-white bg-[#8b4513] rounded-lg" th:text="${isEdit} ? 'Save Changes' : 'Save User'">Save User</button>
+                        <button type="submit" class="px-6 py-2.5 text-sm font-bold text-white bg-[#8b4513] rounded-lg" th:text="${submitLabel}">Save User</button>
                     </div>
                 </div>
             </form>
         </section>
-    </main>
-</div>
-</body>
+
+        <script>
+            (function () {
+                var roleSelect = document.getElementById("roleCode");
+                var previewList = document.getElementById("rolePermissionPreview");
+                if (!roleSelect || !previewList) {
+                    return;
+                }
+
+                function renderPermissions() {
+                    var selected = roleSelect.options[roleSelect.selectedIndex];
+                    var raw = selected ? selected.getAttribute("data-permissions") : "";
+                    var items = raw ? raw.split(";;").filter(Boolean) : [];
+
+                    previewList.innerHTML = "";
+                    if (!items.length) {
+                        var emptyItem = document.createElement("li");
+                        emptyItem.textContent = "Select a role to preview permissions.";
+                        previewList.appendChild(emptyItem);
+                        return;
+                    }
+
+                    items.forEach(function (permission) {
+                        var li = document.createElement("li");
+                        li.textContent = permission;
+                        previewList.appendChild(li);
+                    });
+                }
+
+                roleSelect.addEventListener("change", renderPermissions);
+                renderPermissions();
+            })();
+        </script>
+    </th:block>
+</th:block>
 </html>
