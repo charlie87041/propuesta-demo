@@ -73,7 +73,6 @@ public class AdminUserService {
         AdminUser created = createAdminUser(email, rawPassword);
         String actorDomainCode = resolvePrimaryDomainCode(actorUserId)
             .orElseThrow(() -> new IllegalArgumentException("Current user has no assigned domain"));
-        ensureActorCanAssignRole(actorUserId, actorDomainCode, roleCode);
         abilityAssignmentService.setSingleRole(actorUserId, created.getId(), actorDomainCode, roleCode);
         return created;
     }
@@ -110,7 +109,6 @@ public class AdminUserService {
         String targetDomainCode = resolvePrimaryDomainCode(userId)
             .or(() -> resolvePrimaryDomainCode(actorUserId))
             .orElseThrow(() -> new IllegalArgumentException("Cannot resolve domain for user role assignment"));
-        ensureActorCanAssignRole(actorUserId, targetDomainCode, roleCode);
         abilityAssignmentService.setSingleRole(actorUserId, userId, targetDomainCode, roleCode);
         return updated;
     }
@@ -220,16 +218,6 @@ public class AdminUserService {
     private AdminUser ensureAdminUserExists(Long userId) {
         return adminUserRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("Admin user not found: " + userId));
-    }
-
-    private void ensureActorCanAssignRole(Long actorUserId, String domainCode, String roleCode) {
-        if (abilityRepository.findByCode(roleCode).isEmpty()) {
-            throw new IllegalArgumentException("Ability not found: " + roleCode);
-        }
-
-        if (!domainAuthorizationService.hasAbility(actorUserId, domainCode, roleCode)) {
-            throw new AccessDeniedException("Cannot assign ability you do not possess");
-        }
     }
 
     private Optional<String> resolvePrimaryDomainCode(Long userId) {

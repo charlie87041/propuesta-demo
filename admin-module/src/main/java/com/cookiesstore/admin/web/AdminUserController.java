@@ -230,7 +230,7 @@ public class AdminUserController {
         Ability ability = abilityRepository.findById(request.abilityId())
             .orElseThrow(() -> new IllegalArgumentException("Ability not found: " + request.abilityId()));
 
-        if (!domainAuthorizationService.hasAbility(actorUserId, domainCode, ability.getCode())) {
+        if (!domainAuthorizationService.hasAbility(actorUserId, domainCode, ability.getCode()) && !"super-admin".equals(ability.getCode())) {
             throw new AccessDeniedException("Cannot assign ability you do not possess");
         }
 
