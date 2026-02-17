@@ -26,10 +26,10 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest
 @ActiveProfiles("external")
 @TestPropertySource(properties = {
-    "spring.datasource.url=jdbc:postgresql://172.18.0.1:5432/cookies_store",
+    "spring.datasource.url=jdbc:postgresql://pgsql/cookies_store",
     "spring.datasource.username=core",
     "spring.datasource.password=secret",
-    "spring.data.redis.host=172.18.0.1",
+    "spring.data.redis.host=redis",
     "spring.data.redis.port=6379"
 })
 public abstract class AbstractExternalContainerTest {
