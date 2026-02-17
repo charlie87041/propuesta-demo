@@ -1,89 +1,51 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - User Management</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: "Plus Jakarta Sans", sans-serif; }
-    </style>
-</head>
-<body class="bg-[#f8f7f6] text-[#1b130e]">
-<div class="flex min-h-screen">
-    <aside class="hidden lg:flex w-72 flex-col border-r border-[#e6dad1] bg-white">
-        <div class="p-6 border-b border-[#e6dad1]">
-            <h1 class="font-extrabold text-lg text-[#8b4513]">CrumblyCookies</h1>
-            <p class="text-xs text-[#956d50] font-semibold uppercase">Admin Backoffice</p>
-        </div>
-        <nav class="p-4 space-y-1">
-            <a href="/admin/users" class="block px-3 py-2 rounded-lg bg-[#8b4513]/10 text-[#8b4513] font-bold text-sm">Users</a>
-        </nav>
-    </aside>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(#{admin.users.title}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <a href="/admin/users/new" class="px-4 py-2 bg-[#8b4513] hover:bg-[#6f370f] text-white rounded-lg text-sm font-bold" th:text="#{admin.users.add}">
+            Add New User
+        </a>
+    </th:block>
 
-    <main class="flex-1">
-        <header class="h-16 px-6 lg:px-8 border-b border-[#e6dad1] bg-white flex items-center justify-between">
-            <h2 class="font-extrabold text-xl">Admin User Management</h2>
-            <a href="/admin/users/new" class="px-4 py-2 bg-[#8b4513] hover:bg-[#6f370f] text-white rounded-lg text-sm font-bold">
-                Add New User
-            </a>
-        </header>
-
+    <th:block th:fragment="content">
         <section class="p-6 lg:p-8 space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <article class="bg-white border border-[#e6dad1] rounded-xl p-5">
-                    <p class="text-sm text-[#956d50]">Total Admin Users</p>
-                    <p class="text-2xl font-extrabold">24</p>
-                </article>
-                <article class="bg-white border border-[#e6dad1] rounded-xl p-5">
-                    <p class="text-sm text-[#956d50]">Active Sessions</p>
-                    <p class="text-2xl font-extrabold">12</p>
-                </article>
-                <article class="bg-white border border-[#e6dad1] rounded-xl p-5">
-                    <p class="text-sm text-[#956d50]">Pending Invitations</p>
-                    <p class="text-2xl font-extrabold">5</p>
-                </article>
-            </div>
+            <div th:if="${successMessage}" class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
 
             <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
                 <header class="px-6 py-4 border-b border-[#e6dad1] flex items-center justify-between">
-                    <h3 class="font-bold">Internal Staff Directory</h3>
-                    <button class="text-sm text-[#8b4513] font-semibold">Export CSV</button>
+                    <h3 class="font-bold" th:text="#{admin.users.directory}">Internal Staff Directory</h3>
+                    <span class="text-sm text-[#956d50]" th:text="#{admin.users.activeCount(${#lists.size(users)}, ${domainCode})}">0 active users</span>
                 </header>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
                         <tr>
-                            <th class="px-6 py-3">User Name</th>
-                            <th class="px-6 py-3">Email</th>
-                            <th class="px-6 py-3">Role</th>
-                            <th class="px-6 py-3">Last Login</th>
-                            <th class="px-6 py-3">Status</th>
-                            <th class="px-6 py-3 text-right">Actions</th>
+                            <th class="px-6 py-3" th:text="#{admin.users.col.id}">User ID</th>
+                            <th class="px-6 py-3" th:text="#{admin.users.col.email}">Email</th>
+                            <th class="px-6 py-3" th:text="#{admin.users.col.role}">Role</th>
+                            <th class="px-6 py-3" th:text="#{admin.users.col.status}">Status</th>
+                            <th class="px-6 py-3" th:text="#{admin.users.col.createdAt}">Created At</th>
+                            <th class="px-6 py-3 text-right" th:text="#{admin.users.col.actions}">Actions</th>
                         </tr>
                         </thead>
                         <tbody class="divide-y divide-[#f3ece8] text-sm">
-                        <tr>
-                            <td class="px-6 py-4 font-semibold">Chef Cookie</td>
-                            <td class="px-6 py-4 text-[#956d50]">chef@crumbly.com</td>
-                            <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold bg-[#8b4513]/10 text-[#8b4513]">Super Admin</span></td>
-                            <td class="px-6 py-4 text-[#956d50]">2 hours ago</td>
-                            <td class="px-6 py-4 text-green-700 font-semibold">Active</td>
-                            <td class="px-6 py-4 text-right">
-                                <a href="/admin/users/1/edit" class="text-[#8b4513] font-semibold hover:underline">Edit</a>
-                            </td>
+                        <tr th:if="${#lists.isEmpty(users)}">
+                            <td colspan="6" class="px-6 py-8 text-center text-[#956d50]" th:text="#{admin.users.empty}">No admin users found.</td>
                         </tr>
-                        <tr>
-                            <td class="px-6 py-4 font-semibold">Baker Ben</td>
-                            <td class="px-6 py-4 text-[#956d50]">ben@crumbly.com</td>
-                            <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold bg-[#f3ece8]">Store Manager</span></td>
-                            <td class="px-6 py-4 text-[#956d50]">5 hours ago</td>
-                            <td class="px-6 py-4 text-green-700 font-semibold">Active</td>
+                        <tr th:each="user : ${users}">
+                            <td class="px-6 py-4 font-semibold" th:text="${user.id}">1</td>
+                            <td class="px-6 py-4 text-[#956d50]" th:text="${user.email}">admin@crumbly.com</td>
+                            <td class="px-6 py-4 text-[#956d50]" th:text="${userRoles[user.id]} ?: '-'">manage-users</td>
+                            <td class="px-6 py-4 text-green-700 font-semibold" th:text="${user.active} ? #{admin.users.status.active} : #{admin.users.status.inactive}">Active</td>
+                            <td class="px-6 py-4 text-[#956d50]" th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 10:00</td>
                             <td class="px-6 py-4 text-right">
-                                <a href="/admin/users/2/edit" class="text-[#8b4513] font-semibold hover:underline">Edit</a>
+                                <div class="inline-flex items-center gap-4">
+                                    <a th:href="@{'/admin/users/' + ${user.id} + '/edit'}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.users.action.edit}">Edit</a>
+                                    <form th:action="@{'/admin/users/' + ${user.id} + '/deactivate'}" method="post" class="inline">
+                                        <button type="submit" class="text-red-700 font-semibold hover:underline" th:text="#{admin.users.action.deactivate}">Deactivate</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         </tbody>
@@ -91,7 +53,6 @@
                 </div>
             </article>
         </section>
-    </main>
-</div>
-</body>
+    </th:block>
+</th:block>
 </html>
