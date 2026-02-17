@@ -6,6 +6,7 @@ dependencies {
     implementation(project(":order-module"))
     implementation(project(":payment-module"))
     implementation(project(":admin-module"))
-    
+
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.flywaydb:flyway-core")
 }

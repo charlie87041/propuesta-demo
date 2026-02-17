@@ -37,8 +37,13 @@ class AuthorizationDataSeederIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void exampleTestDomainExistsAfterSeed() {
+        assertTrue(domainRepository.findByCode("example.test").isPresent());
+    }
+
+    @Test
     void allDefinedAbilitiesExistAfterSeed() {
-        assertEquals(13L, abilityRepository.count());
+        assertEquals(14L, abilityRepository.count());
 
         Set<String> abilityCodes = abilityRepository.findAll().stream().map(Ability::getCode).collect(Collectors.toSet());
         assertTrue(abilityCodes.contains("browse-catalog"));
@@ -51,6 +56,7 @@ class AuthorizationDataSeederIntegrationTest extends AbstractIntegrationTest {
         assertTrue(abilityCodes.contains("process-orders"));
         assertTrue(abilityCodes.contains("manage-orders"));
         assertTrue(abilityCodes.contains("manage-customers"));
+        assertTrue(abilityCodes.contains("manage-users"));
         assertTrue(abilityCodes.contains("view-reports"));
         assertTrue(abilityCodes.contains("manage-settings"));
         assertTrue(abilityCodes.contains("super-admin"));
@@ -58,10 +64,12 @@ class AuthorizationDataSeederIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void allDefinedPermissionsExistAfterSeed() {
-        assertTrue(permissionRepository.count() >= 40L);
+        assertTrue(permissionRepository.count() >= 47L);
         assertTrue(permissionRepository.findByCode("products:list").isPresent());
         assertTrue(permissionRepository.findByCode("orders:update-status").isPresent());
         assertTrue(permissionRepository.findByCode("payments:refund").isPresent());
+        assertTrue(permissionRepository.findByCode("users:create").isPresent());
+        assertTrue(permissionRepository.findByCode("users:delete").isPresent());
         assertTrue(permissionRepository.findByCode("*").isPresent());
     }
 
@@ -76,6 +84,14 @@ class AuthorizationDataSeederIntegrationTest extends AbstractIntegrationTest {
         Set<String> inventoryPermissions = manageInventory.getPermissions().stream().map(p -> p.getCode()).collect(Collectors.toSet());
         assertTrue(inventoryPermissions.contains("products:create"));
         assertTrue(inventoryPermissions.contains("inventory:update-stock"));
+
+        Ability manageUsers = abilityRepository.findByCode("manage-users").orElseThrow();
+        Set<String> userPermissions = manageUsers.getPermissions().stream().map(p -> p.getCode()).collect(Collectors.toSet());
+        assertTrue(userPermissions.contains("users:list"));
+        assertTrue(userPermissions.contains("users:read"));
+        assertTrue(userPermissions.contains("users:create"));
+        assertTrue(userPermissions.contains("users:update"));
+        assertTrue(userPermissions.contains("users:delete"));
 
         Ability superAdmin = abilityRepository.findByCode("super-admin").orElseThrow();
         Set<String> superAdminPermissions = superAdmin.getPermissions().stream().map(p -> p.getCode()).collect(Collectors.toSet());
