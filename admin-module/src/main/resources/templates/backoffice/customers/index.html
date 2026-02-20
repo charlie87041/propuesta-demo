@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(#{admin.customers.title}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <div class="relative w-full md:w-80">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                <input class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#8b4513] focus:border-[#8b4513] transition-all text-sm outline-none" th:placeholder="#{admin.customers.search.placeholder}" placeholder="Search by name or email..." type="text"/>
+            </div>
+            <button class="flex items-center gap-2 px-4 py-2 bg-[#8b4513] text-white font-bold text-sm rounded-lg hover:bg-[#8b4513]/90 transition-all shadow-lg shadow-[#8b4513]/20 whitespace-nowrap">
+                <span class="material-symbols-outlined text-lg">download</span>
+                <span th:text="#{admin.customers.export}">Export List</span>
+            </button>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 space-y-6">
+            <div>
+                <h2 class="text-2xl font-extrabold text-slate-800" th:text="#{admin.customers.title}">Customer Management</h2>
+                <p class="text-slate-500 text-sm" th:text="#{admin.customers.subtitle}">View and manage your store customer database.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider" th:text="#{admin.customers.stats.total}">Total Customers</p>
+                        <div class="h-8 w-8 rounded-lg bg-[#8b4513]/10 text-[#8b4513] flex items-center justify-center">
+                            <span class="material-symbols-outlined">groups</span>
+                        </div>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <h3 class="text-3xl font-extrabold text-slate-800">1,240</h3>
+                        <span class="text-green-600 text-sm font-bold pb-1 flex items-center">
+                            <span class="material-symbols-outlined text-sm">trending_up</span> 12%
+                        </span>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider" th:text="#{admin.customers.stats.new}">New This Month</p>
+                        <div class="h-8 w-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined">person_add</span>
+                        </div>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <h3 class="text-3xl font-extrabold text-slate-800">85</h3>
+                        <span class="text-green-600 text-sm font-bold pb-1 flex items-center">
+                            <span class="material-symbols-outlined text-sm">trending_up</span> 5%
+                        </span>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider" th:text="#{admin.customers.stats.sessions}">Active Sessions</p>
+                        <div class="h-8 w-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined">online_prediction</span>
+                        </div>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <h3 class="text-3xl font-extrabold text-slate-800">12</h3>
+                        <span class="text-red-600 text-sm font-bold pb-1 flex items-center">
+                            <span class="material-symbols-outlined text-sm">trending_down</span> 2%
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                        <tr class="bg-slate-50 border-b border-slate-100">
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider" th:text="#{admin.customers.table.name}">Customer Name</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider" th:text="#{admin.customers.table.email}">Email</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider" th:text="#{admin.customers.table.joined}">Joined Date</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center" th:text="#{admin.customers.table.orders}">Orders</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider" th:text="#{admin.customers.table.status}">Status</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right" th:text="#{admin.customers.table.actions}">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                        <tr class="hover:bg-[#8b4513]/5 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <img class="h-10 w-10 rounded-full object-cover ring-2 ring-[#8b4513]/5" data-alt="Jane Cooper avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzVDp0NNdbDn6KbNyagZdUazsdUZHeSxYVzztAqWu-RHVYJKrbCT36JgxKvXTTb3xmxlv412hx1NU84HQz4YcJMnAvkhakzIGcKpkCx8CDX8IQbZg2KS95hu6wLonvji0LSbwYG9kNh-5rnL70pqgCIAPsCc-nU1i1qAxr4A9Sc-q0qz4F0ILITPj-amW3LvdHs7hMsUINdXBfPYY9AUJHojYrhlNegLD9aG474_SDB7y93X_-IqrCC4GjrCjLlTjP117fz_PJMDM"/>
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-800">Jane Cooper</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-slate-600">jane.c@example.com</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-slate-600">Oct 12, 2023</p>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <p class="text-sm font-bold text-slate-800">15</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700" th:text="#{admin.customers.status.active}">Active</span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex justify-end items-center gap-2">
+                                    <button class="p-1.5 hover:bg-white rounded-lg text-slate-400 hover:text-[#8b4513] transition-all" th:title="#{admin.customers.action.view}">
+                                        <span class="material-symbols-outlined text-xl">visibility</span>
+                                    </button>
+                                    <button class="p-1.5 hover:bg-white rounded-lg text-slate-400 hover:text-[#8b4513] transition-all" th:title="#{admin.customers.action.edit}">
+                                        <span class="material-symbols-outlined text-xl">edit</span>
+                                    </button>
+                                    <button class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg hover:bg-red-50 hover:text-red-600 transition-all" th:text="#{admin.customers.action.disable}">Disable</button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p class="text-sm text-slate-500" th:text="#{admin.customers.pagination.summary}">Showing 1 to 5 of 1,240 customers</p>
+                    <div class="flex items-center gap-2">
+                        <button class="p-2 border border-slate-200 rounded-lg hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-all" disabled>
+                            <span class="material-symbols-outlined text-xl">chevron_left</span>
+                        </button>
+                        <div class="flex items-center">
+                            <button class="h-10 w-10 bg-[#8b4513] text-white font-bold rounded-lg shadow-sm shadow-[#8b4513]/20">1</button>
+                            <button class="h-10 w-10 hover:bg-white rounded-lg text-slate-600 font-bold transition-all">2</button>
+                            <button class="h-10 w-10 hover:bg-white rounded-lg text-slate-600 font-bold transition-all">3</button>
+                            <span class="px-2 text-slate-400">...</span>
+                            <button class="h-10 w-10 hover:bg-white rounded-lg text-slate-600 font-bold transition-all">248</button>
+                        </div>
+                        <button class="p-2 border border-slate-200 rounded-lg hover:bg-white transition-all">
+                            <span class="material-symbols-outlined text-xl">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</th:block>
+</html>

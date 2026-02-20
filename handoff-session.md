@@ -104,3 +104,12 @@
 
 ## Notas operativas
 - Se presentó lock de Gradle por `bootRun` activo en otro contenedor (`cookies-store-dev`), se liberó deteniendo procesos Java/Gradle antes de correr tests.
+
+---
+
+## Update
+- Fecha: 2026-02-20
+
+## Acción actual
+- Se creó y se trabaja en la rama de la issue 8.7 (customer management):
+  - Rama: `feature/issue-8.7-admin-customer-management`

@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("org.springframework.boot") version "3.2.0" apply false
     id("io.spring.dependency-management") version "1.1.4" apply false
+  
 }
 
 allprojects {
@@ -15,8 +16,16 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
+    if (name != "application") {
+        apply(plugin = "java-library")
+    }
+
+    configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension> {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:3.2.0")
+        }
+    }
     
     java {
         toolchain {
@@ -32,24 +41,16 @@ subprojects {
     
     tasks.test {
         useJUnitPlatform()
+        jvmArgs("-Dspring.profiles.active=test")
     }
-    
-    // Disable bootJar for library modules, enable jar
-    tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-        enabled = false
-    }
-    
-    tasks.named<Jar>("jar") {
-        enabled = true
+
+    tasks.named<JavaCompile>("compileJava") {
+        options.release = 21
     }
 }
 
-// Enable bootJar only for the application module
+// Apply Spring Boot only to the application module
 project(":application") {
-    tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-        enabled = true
-    }
-    tasks.named<Jar>("jar") {
-        enabled = false
-    }
+    apply(plugin = "java")
+    apply(plugin = "org.springframework.boot")
 }

@@ -2,12 +2,11 @@ package com.cookiesstore.admin.web.controllers;
 
 import com.cookiesstore.admin.service.AdminAuthenticationService;
 import com.cookiesstore.common.auth.AuthCookieNames;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,13 +23,7 @@ public class AdminAuthController {
     }
 
     @GetMapping("/admin/login")
-    public String loginView() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()
-            && !(authentication instanceof AnonymousAuthenticationToken)) {
-            return "redirect:/admin";
-        }
-
+    public String loginView(HttpServletRequest request) {
         return "backoffice/login";
     }
 

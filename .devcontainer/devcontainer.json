@@ -20,18 +20,13 @@
     }
   },
   "runArgs": ["--security-opt", "label=disable", "--name", "cookie-store", "--network", "core-facturae_sail"],
-  "containerEnv": {
-    "SPRING_PROFILES_ACTIVE": "staging",
-    "SPRING_DATASOURCE_URL": "jdbc:postgresql://core-factu-api-pgsql:5432/cookies_store",
-    "SPRING_DATASOURCE_USERNAME": "core",
-    "SPRING_DATASOURCE_PASSWORD": "secret",
-    "SPRING_REDIS_HOST": "core-factu-api-redis",
-    "SPRING_REDIS_PORT": "6379",
-    "STAGING_SUPER_ADMIN_PASSWORD": "admin123"
-  },
   "remoteUser": "vscode",
   "updateRemoteUserUID": false,
   "mounts": [
     "source=gradle-cache-local,target=/home/vscode/.gradle,type=volume"
-  ]
+  ],
+  "containerEnv": {
+    "JAVA_HOME": "/usr/lib/jvm/msopenjdk-current"
+  }
+  
 }

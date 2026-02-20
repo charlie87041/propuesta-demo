@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(#{admin.customers.edit.title}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <div class="relative w-64">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#8b4513]/40 text-sm">search</span>
+            <input class="w-full bg-[#f3ece8] border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-[#8b4513]/20" th:placeholder="#{admin.customers.search.activity}" placeholder="Search activities..." type="text"/>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 max-w-5xl mx-auto w-full space-y-6">
+            <div class="bg-white rounded-xl border border-[#f3ece8] p-6 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-6">
+                    <img class="size-24 rounded-full border-4 border-[#f3ece8] object-cover" data-alt="Customer Jane Doe portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALbG7qDMWMQQ2n79AquBwdOLeJgDIrKnRk2A5XYlZTb9s3yb9sTx8Nu_doWnDCTOzYo71-I_P3V-4rLfw7i_6gX5eBbRF1UBEk3Du1eG5KERdsMoGplDEBlnwPzIYGVPMToz0ewX7ePCsBqAnRDjbf5MMTRiXCwVW35rj7y3g4V0L1CGXtiezMQj7xBATY12MLztVx9eaF-uPkhyZ1EQioAPERu_srFI_oCMCWTslwVH-7BG1h2Kwh2U16q7dXjIK7DDvdyFtJbxo"/>
+                    <div class="flex flex-col">
+                        <h3 class="text-2xl font-bold text-[#1b130e]">Jane Doe</h3>
+                        <p class="text-[#8b4513]/70 font-medium">jane.doe@example.com</p>
+                        <div class="flex items-center gap-2 mt-1 text-sm text-[#8b4513]/50">
+                            <span class="material-symbols-outlined text-sm">calendar_month</span>
+                            <span th:text="#{admin.customers.joined}">Joined October 12, 2023</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end gap-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#8b4513]/60" th:text="#{admin.customers.status.label}">Account Status</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input checked class="sr-only peer" type="checkbox"/>
+                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8b4513]"></div>
+                        <span class="ml-3 text-sm font-bold text-[#8b4513]" th:text="#{admin.customers.status.active}">Active</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <section class="lg:col-span-2 space-y-6">
+                    <div class="bg-white rounded-xl border border-[#f3ece8] shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-[#f3ece8] bg-[#f3ece8]/30 flex items-center justify-between">
+                            <h4 class="font-bold text-[#8b4513] flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">person</span>
+                                <span th:text="#{admin.customers.section.personal}">Personal Information</span>
+                            </h4>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.customers.firstName}">First Name</label>
+                                <input class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" type="text" value="Jane"/>
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.customers.lastName}">Last Name</label>
+                                <input class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" type="text" value="Doe"/>
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.customers.email}">Email Address</label>
+                                <input class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" type="email" value="jane.doe@example.com"/>
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.customers.phone}">Phone Number</label>
+                                <input class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" type="tel" value="+1 (555) 0123-4567"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-[#f3ece8] shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-[#f3ece8] bg-[#f3ece8]/30 flex items-center justify-between">
+                            <h4 class="font-bold text-[#8b4513] flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">location_on</span>
+                                <span th:text="#{admin.customers.section.addresses}">Shipping Addresses</span>
+                            </h4>
+                            <button class="text-xs font-bold text-[#8b4513] flex items-center gap-1 hover:underline">
+                                <span class="material-symbols-outlined text-sm">add</span>
+                                <span th:text="#{admin.customers.address.add}">Add New</span>
+                            </button>
+                        </div>
+                        <div class="divide-y divide-[#f3ece8]">
+                            <div class="p-6 flex justify-between items-start">
+                                <div class="flex gap-4">
+                                    <div class="bg-[#f3ece8] p-2 rounded-lg text-[#8b4513] self-start">
+                                        <span class="material-symbols-outlined text-base">home</span>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-sm font-bold text-[#1b130e]" th:text="#{admin.customers.address.home}">Home</span>
+                                            <span class="text-[10px] bg-[#8b4513]/10 text-[#8b4513] px-1.5 py-0.5 rounded font-bold uppercase tracking-tight" th:text="#{admin.customers.address.default}">Default</span>
+                                        </div>
+                                        <p class="text-sm text-[#8b4513]/70 leading-relaxed">
+                                            123 Baker Street, Apt 4B<br/>
+                                            San Francisco, CA 94103<br/>
+                                            United States
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="p-1.5 text-[#8b4513]/50 hover:text-[#8b4513] hover:bg-[#f3ece8] rounded transition-colors" th:title="#{admin.customers.action.edit}"><span class="material-symbols-outlined text-sm">edit</span></button>
+                                    <button class="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" th:title="#{admin.customers.action.delete}"><span class="material-symbols-outlined text-sm">delete</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="space-y-6">
+                    <div class="bg-white rounded-xl border border-[#f3ece8] shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-[#f3ece8] bg-[#f3ece8]/30 flex items-center justify-between">
+                            <h4 class="font-bold text-[#8b4513] text-sm flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">history</span>
+                                <span th:text="#{admin.customers.section.orders}">Order History</span>
+                            </h4>
+                        </div>
+                        <div class="p-0">
+                            <table class="w-full text-left">
+                                <thead>
+                                <tr class="text-[10px] uppercase font-bold text-[#8b4513]/50 tracking-wider">
+                                    <th class="px-6 py-3" th:text="#{admin.customers.orders.order}">Order</th>
+                                    <th class="px-6 py-3 text-right" th:text="#{admin.customers.orders.total}">Total</th>
+                                </tr>
+                                </thead>
+                                <tbody class="divide-y divide-[#f3ece8]">
+                                <tr>
+                                    <td class="px-6 py-4">
+                                        <p class="text-sm font-bold text-[#1b130e]">#CR-8821</p>
+                                        <p class="text-[11px] text-[#8b4513]/50">Oct 24, 2023</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <p class="text-sm font-bold text-[#8b4513]">$45.50</p>
+                                        <span class="text-[10px] text-green-600 font-bold bg-green-50 px-1.5 py-0.5 rounded" th:text="#{admin.customers.orders.status.shipped}">Shipped</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="p-4 bg-[#f8f7f6]">
+                                <button class="w-full py-2 text-xs font-bold text-[#8b4513] bg-white border border-[#f3ece8] rounded-lg hover:bg-[#f3ece8] transition-colors" th:text="#{admin.customers.orders.viewAll}">View Full History</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#8b4513] text-white rounded-xl p-6 shadow-md">
+                        <h4 class="text-sm font-bold opacity-80 mb-4" th:text="#{admin.customers.stats.ltv}">Life-time Value</h4>
+                        <div class="flex items-baseline gap-1 mb-6">
+                            <span class="text-3xl font-bold">$185.90</span>
+                            <span class="text-sm opacity-60">USD</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-xs">
+                                <span class="opacity-70" th:text="#{admin.customers.stats.avgOrder}">Average Order</span>
+                                <span class="font-bold">$61.96</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="opacity-70" th:text="#{admin.customers.stats.totalOrders}">Total Orders</span>
+                                <span class="font-bold">3</span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <footer class="mt-auto border-t border-[#f3ece8] bg-white p-6 sticky bottom-0 z-10">
+                <div class="max-w-5xl mx-auto flex justify-between items-center">
+                    <button class="text-[#8b4513]/60 hover:text-red-600 font-bold text-sm px-4 py-2 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base">delete</span>
+                        <span th:text="#{admin.customers.delete}">Delete Customer Profile</span>
+                    </button>
+                    <div class="flex gap-4">
+                        <button class="px-6 py-2.5 rounded-lg border border-[#8b4513] text-[#8b4513] text-sm font-bold hover:bg-[#f3ece8] transition-colors" th:text="#{admin.customers.cancel}">Cancel</button>
+                        <button class="px-8 py-2.5 rounded-lg bg-[#8b4513] text-white text-sm font-bold shadow-lg hover:bg-[#8b4513]/90 transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-base">save</span>
+                            <span th:text="#{admin.customers.save}">Save Changes</span>
+                        </button>
+                    </div>
+                </div>
+            </footer>
+        </section>
+    </th:block>
+</th:block>
+</html>
