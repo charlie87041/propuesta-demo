@@ -2,9 +2,12 @@ package com.cookiesstore.admin.web;
 
 import com.cookiesstore.admin.domain.AdminUser;
 import com.cookiesstore.admin.service.AdminUserService;
+import com.cookiesstore.admin.web.controllers.AdminUserViewController;
+import com.cookiesstore.admin.web.interceptos.AdminUserFormModelAdvice;
 import com.cookiesstore.common.authorization.domain.Ability;
-import com.cookiesstore.common.authorization.repository.AbilityRepository;
-import com.cookiesstore.common.authorization.service.DomainAuthorizationService;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.StaticMessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -25,13 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AdminUserControllerViewTest {
 
     private final AdminUserService adminUserService = Mockito.mock(AdminUserService.class);
+    private final MessageSource messageSource = messageSource();
 
     private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(
-        new AdminUserController(
-            adminUserService,
-            Mockito.mock(DomainAuthorizationService.class),
-            Mockito.mock(AbilityRepository.class)
-        )
+        new AdminUserViewController(adminUserService, messageSource)
+    ).setControllerAdvice(
+        new AdminUserFormModelAdvice(adminUserService, messageSource)
     ).build();
 
     @Test
@@ -152,5 +154,18 @@ class AdminUserControllerViewTest {
 
     private void mockAuthenticatedUser(Long userId) {
         SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken(String.valueOf(userId), null));
+        LocaleContextHolder.setLocale(java.util.Locale.ENGLISH);
+    }
+    private MessageSource messageSource() {
+        StaticMessageSource messageSource = new StaticMessageSource();
+        messageSource.addMessage("admin.users.title", java.util.Locale.ENGLISH, "Admin User Management");
+        messageSource.addMessage("admin.users.create.title", java.util.Locale.ENGLISH, "Crear usuario admin");
+        messageSource.addMessage("admin.users.edit.title", java.util.Locale.ENGLISH, "Editar usuario admin");
+        messageSource.addMessage("admin.users.submit.create", java.util.Locale.ENGLISH, "Save User");
+        messageSource.addMessage("admin.users.submit.edit", java.util.Locale.ENGLISH, "Save Changes");
+        messageSource.addMessage("admin.users.flash.created", java.util.Locale.ENGLISH, "Admin user created successfully.");
+        messageSource.addMessage("admin.users.flash.updated", java.util.Locale.ENGLISH, "Admin user updated successfully.");
+        messageSource.addMessage("admin.users.flash.deactivated", java.util.Locale.ENGLISH, "Admin user deactivated.");
+        return messageSource;
     }
 }

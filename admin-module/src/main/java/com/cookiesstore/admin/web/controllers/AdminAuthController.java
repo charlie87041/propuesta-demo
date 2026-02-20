@@ -1,4 +1,4 @@
-package com.cookiesstore.admin.web;
+package com.cookiesstore.admin.web.controllers;
 
 import com.cookiesstore.admin.service.AdminAuthenticationService;
 import com.cookiesstore.common.auth.AuthCookieNames;
@@ -36,8 +36,8 @@ public class AdminAuthController {
 
     @PostMapping("/admin/login")
     public String login(
-        @RequestParam String email,
-        @RequestParam String password,
+        @RequestParam("email") String email,
+        @RequestParam("password") String password,
         HttpServletResponse response
     ) {
         return adminAuthenticationService.authenticate(email, password)

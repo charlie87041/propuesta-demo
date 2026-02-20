@@ -85,6 +85,18 @@ rm -rf gradle-8.5 gradle-8.5-bin.zip
 ```
 
 ## Development
+## Admin User API
+
+- Domain is derived from the authenticated actor; `domainCode` in the path must match.
+- Create and update require `roleCode` to assign the user role.
+
+```json
+{
+  "email": "user@example.com",
+  "password": "Secret123!",
+  "roleCode": "manage-users"
+}
+```
 
 Each module follows standard Spring Boot structure:
 ```
