@@ -12,6 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.cookiesstore.admin.domain.AdminUser;
 import com.cookiesstore.admin.repository.AdminUserRepository;
 import com.cookiesstore.admin.service.AdminAuthenticationService;
+import com.cookiesstore.admin.web.controllers.AdminAuthController;
+import com.cookiesstore.admin.web.controllers.AdminBackofficeController;
 import com.cookiesstore.common.auth.AuthCookieNames;
 import com.cookiesstore.common.auth.JwtTokenProvider;
 import com.cookiesstore.common.config.CommonConfiguration;

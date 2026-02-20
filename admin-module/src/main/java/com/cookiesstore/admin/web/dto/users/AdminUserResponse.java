@@ -1,4 +1,4 @@
-package com.cookiesstore.admin.web.dto;
+package com.cookiesstore.admin.web.dto.users;
 
 import com.cookiesstore.admin.domain.AdminUser;
 

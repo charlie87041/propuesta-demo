@@ -12,6 +12,7 @@ import com.cookiesstore.admin.domain.AdminUser;
 import com.cookiesstore.admin.repository.AdminUserRepository;
 import com.cookiesstore.admin.service.AdminAbilityAssignmentService;
 import com.cookiesstore.admin.service.AdminUserService;
+import com.cookiesstore.admin.web.controllers.AdminUserApiController;
 import com.cookiesstore.common.auth.JwtTokenProvider;
 import com.cookiesstore.common.authorization.domain.Ability;
 import com.cookiesstore.common.authorization.domain.Domain;
@@ -90,7 +91,7 @@ class AdminUserControllerIntegrationTest {
         AuthorizationAspect.class,
         AdminAbilityAssignmentService.class,
         AdminUserService.class,
-        AdminUserController.class
+        AdminUserApiController.class
     })
     static class TestConfig {
     }
@@ -179,7 +180,7 @@ class AdminUserControllerIntegrationTest {
         Long actorId = 5004L;
         grantAbility(actorId, domain, manageCustomers);
 
-        String payload = objectMapper.writeValueAsString(new CreateUserRequest("create@cookies.dev", "Secret123!"));
+        String payload = objectMapper.writeValueAsString(new CreateUserRequest("create@cookies.dev", "Secret123!", "manage-users"));
 
         mockMvc.perform(post("/api/domains/example.test/admin/users")
                 .header(HttpHeaders.AUTHORIZATION, bearer(actorId))
@@ -206,7 +207,7 @@ class AdminUserControllerIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.email").value("target@cookies.dev"));
 
-        String updatePayload = objectMapper.writeValueAsString(new UpdateUserRequest("updated@cookies.dev", "NewSecret123!"));
+        String updatePayload = objectMapper.writeValueAsString(new UpdateUserRequest("updated@cookies.dev", "NewSecret123!", "manage-users"));
 
         mockMvc.perform(put("/api/domains/example.test/admin/users/{id}", target.getId())
                 .header(HttpHeaders.AUTHORIZATION, bearer(actorId))
@@ -348,9 +349,9 @@ class AdminUserControllerIntegrationTest {
         return adminUserRepository.saveAndFlush(adminUser);
     }
 
-    private record CreateUserRequest(String email, String password) {
+    private record CreateUserRequest(String email, String password, String roleCode) {
     }
 
-    private record UpdateUserRequest(String email, String password) {
+    private record UpdateUserRequest(String email, String password, String roleCode) {
     }
 }
