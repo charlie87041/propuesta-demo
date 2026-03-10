@@ -150,9 +150,37 @@ public class AdminUserService {
         overrideRepository.save(override);
     }
 
+    public void syncPermissionOverrides(
+        Long actorUserId,
+        Long targetUserId,
+        String domainCode,
+        Set<String> permissionCodes,
+        Set<String> deniedPermissionCodes
+    ) {
+        ensureAdminUserExists(targetUserId);
+
+        if (permissionCodes == null || permissionCodes.isEmpty()) {
+            return;
+        }
+
+        for (String permissionCode : permissionCodes) {
+            if (!StringUtils.hasText(permissionCode)) {
+                continue;
+            }
+
+            if (deniedPermissionCodes != null && deniedPermissionCodes.contains(permissionCode)) {
+                assignPermissionOverride(actorUserId, targetUserId, domainCode, permissionCode, false);
+                continue;
+            }
+
+            overrideRepository.findByUserIdAndDomainCodeAndPermissionCode(targetUserId, domainCode, permissionCode)
+                .ifPresent(overrideRepository::delete);
+        }
+    }
+
     @Transactional(readOnly = true)
     public List<AdminUser> listAdminUsersByDomain(String domainCode) {
-        Set<Long> userIds = userDomainAbilityRepository.findByDomainCodeAndGrantedTrue(domainCode)
+        Set<Long> userIds = userDomainAbilityRepository.findByDomainCode(domainCode)
             .stream()
             .map(UserDomainAbility::getUserId)
             .collect(LinkedHashSet::new, Set::add, Set::addAll);
@@ -161,9 +189,7 @@ public class AdminUserService {
             return List.of();
         }
 
-        List<AdminUser> users = new ArrayList<>(adminUserRepository.findAllById(userIds));
-        users.removeIf(user -> !user.isActive());
-        return users;
+        return new ArrayList<>(adminUserRepository.findAllById(userIds));
     }
 
     @Transactional(readOnly = true)
@@ -176,6 +202,12 @@ public class AdminUserService {
     public Set<String> listEffectivePermissions(Long userId, String domainCode) {
         ensureAdminUserExists(userId);
         return domainAuthorizationService.getPermissions(userId, domainCode);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDomainPermissionOverride> listPermissionOverrides(Long userId, String domainCode) {
+        ensureAdminUserExists(userId);
+        return overrideRepository.findByUserIdAndDomainCode(userId, domainCode);
     }
 
     @Transactional(readOnly = true)
@@ -213,6 +245,12 @@ public class AdminUserService {
         adminUser.setActive(false);
         adminUserRepository.save(adminUser);
         abilityAssignmentService.revokeAllAbilitiesForUser(userId);
+    }
+
+    public void enableAdminUser(Long userId) {
+        AdminUser adminUser = ensureAdminUserExists(userId);
+        adminUser.setActive(true);
+        adminUserRepository.save(adminUser);
     }
 
     private AdminUser ensureAdminUserExists(Long userId) {

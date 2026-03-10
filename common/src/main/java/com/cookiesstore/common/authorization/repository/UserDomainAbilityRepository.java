@@ -15,5 +15,7 @@ public interface UserDomainAbilityRepository extends JpaRepository<UserDomainAbi
 
     List<UserDomainAbility> findByDomainCodeAndGrantedTrue(String domainCode);
 
+    List<UserDomainAbility> findByDomainCode(String domainCode);
+
     long countByUserIdAndDomainCodeAndAbilityCodeAndGrantedTrue(Long userId, String domainCode, String abilityCode);
 }

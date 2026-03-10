@@ -41,12 +41,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.clearContext();
                 clearAuthCookie(response);
 
-                if (isAdminPath(path) && !"/admin/login".equals(path)) {
+                if (isAdminPath(path) && !isAdminLoginPath(path)) {
                     response.sendRedirect("/admin/login?error");
                     return;
                 }
 
-                if ("/admin/login".equals(path)) {
+                if (isAdminLoginPath(path)) {
                     filterChain.doFilter(request, response);
                     return;
                 }
@@ -91,6 +91,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean isAdminPath(String path) {
         return path != null && path.startsWith("/admin");
+    }
+
+    private boolean isAdminLoginPath(String path) {
+        return path != null && path.startsWith("/admin/login");
     }
 
     private void clearAuthCookie(HttpServletResponse response) {

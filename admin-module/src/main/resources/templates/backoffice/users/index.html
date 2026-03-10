@@ -40,10 +40,17 @@
                             <td class="px-6 py-4 text-green-700 font-semibold" th:text="${user.active} ? #{admin.users.status.active} : #{admin.users.status.inactive}">Active</td>
                             <td class="px-6 py-4 text-[#956d50]" th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 10:00</td>
                             <td class="px-6 py-4 text-right">
-                                <div class="inline-flex items-center gap-4">
+                                <div th:if="${user.active}" class="inline-flex items-center gap-4">
                                     <a th:href="@{'/admin/users/' + ${user.id} + '/edit'}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.users.action.edit}">Edit</a>
                                     <form th:action="@{'/admin/users/' + ${user.id} + '/deactivate'}" method="post" class="inline">
                                         <button type="submit" class="text-red-700 font-semibold hover:underline" th:text="#{admin.users.action.deactivate}">Deactivate</button>
+                                    </form>
+                                </div>
+
+                                <div th:if="${!user.active}" class="inline-flex items-center gap-4">
+                                    <a th:href="@{'/admin/users/' + ${user.id} + '/edit'}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.users.action.edit}">Edit</a>
+                                    <form th:action="@{'/admin/users/' + ${user.id} + '/enable'}" method="post" class="inline">
+                                        <button type="submit" class="text-red-700 font-semibold hover:underline" th:text="#{admin.users.action.enable}">Enable</button>
                                     </form>
                                 </div>
                             </td>

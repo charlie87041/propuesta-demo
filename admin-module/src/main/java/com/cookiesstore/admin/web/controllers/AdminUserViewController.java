@@ -6,10 +6,14 @@ import com.cookiesstore.admin.web.dto.users.CreateAdminUserForm;
 import com.cookiesstore.admin.web.dto.users.UpdateAdminUserForm;
 
 import jakarta.validation.Valid;
-import com.cookiesstore.admin.web.viewmodels.AdminUserViewModel;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -37,15 +41,14 @@ public class AdminUserViewController {
     ) {
         String domainCode = adminUserService.resolveActorDomainCode(actorUserId);
 
-        List<AdminUserViewModel> users = adminUserService.listAdminUsersByDomain(domainCode)
-            .stream()
-            .map(user -> AdminUserViewModel.from(
-                user,
-        adminUserService.findPrimaryRoleCode(user.getId(), domainCode)
-            ))
-            .toList();
+        List<AdminUser> users = adminUserService.listAdminUsersByDomain(domainCode);
+        Map<Long, String> userRoles = new LinkedHashMap<>();
+        for (AdminUser user : users) {
+            userRoles.put(user.getId(), adminUserService.findPrimaryRoleCode(user.getId(), domainCode));
+        }
 
         model.addAttribute("users", users);
+        model.addAttribute("userRoles", userRoles);
         model.addAttribute("domainCode", domainCode);
         return "backoffice/users/index";
     }
@@ -66,9 +69,16 @@ public class AdminUserViewController {
         model.addAttribute("email", form.email());
 
         if (bindingResult.hasErrors()) {
+            applyFieldErrors(model, bindingResult);
             return "backoffice/users/form";
         }
-        adminUserService.createAdminUserWithRole(actorUserId, form.email(), form.password(), form.roleCode());
+        AdminUser created = adminUserService.createAdminUserWithRole(
+            actorUserId,
+            form.email(),
+            form.password(),
+            form.roleCode()
+        );
+        applyPermissionOverrides(actorUserId, created.getId(), form, adminUserService.resolveUserDomainCode(created.getId()));
         redirectAttributes.addFlashAttribute("successMessage", message("admin.users.flash.created"));
         return "redirect:/admin/users";
     }
@@ -92,6 +102,7 @@ public class AdminUserViewController {
         model.addAttribute("email", form.email());
 
         if (bindingResult.hasErrors()) {
+            applyFieldErrors(model, bindingResult);
             return "backoffice/users/form";
         }
 
@@ -102,18 +113,108 @@ public class AdminUserViewController {
             form.password(),
             form.roleCode()
         );
+        applyPermissionOverrides(actorUserId, userId, form, adminUserService.resolveUserDomainCode(userId));
         redirectAttributes.addFlashAttribute("successMessage", message("admin.users.flash.updated"));
         return "redirect:/admin/users";
     }
 
     @PostMapping(value = "/admin/users/{userId}/deactivate", name = "admin.users.deactivate")
-    public String deactivateUserFromView(@PathVariable("userId") Long userId, RedirectAttributes redirectAttributes) {
+    public String deactivateUserFromView(
+        @PathVariable("userId") Long userId,
+         RedirectAttributes redirectAttributes,
+        @ModelAttribute("currentUserId") Long actorUserId
+        ) {
+        if (userId == actorUserId) {
+            redirectAttributes.addFlashAttribute("errorMessage", message("admin.users.error.deactivate.self"));
+            return "redirect:/admin/users";
+            
+        }
         adminUserService.deactivateAdminUser(userId);
         redirectAttributes.addFlashAttribute("successMessage", message("admin.users.flash.deactivated"));
         return "redirect:/admin/users";
     }
 
+
+
+    @PostMapping(value = "/admin/users/{userId}/enable", name = "admin.users.enable")
+    public String enableUserFromView(@PathVariable("userId") Long userId, RedirectAttributes redirectAttributes) {
+        adminUserService.enableAdminUser(userId);
+        redirectAttributes.addFlashAttribute("successMessage", message("admin.users.flash.enabled"));
+        return "redirect:/admin/users";
+    }
+
     private String message(String key, Object... args) {
         return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
+    }
+
+    private void applyFieldErrors(Model model, BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors("email")) {
+            model.addAttribute("emailError", bindingResult.getFieldError("email").getDefaultMessage());
+        }
+        if (bindingResult.hasFieldErrors("password")) {
+            model.addAttribute("passwordError", bindingResult.getFieldError("password").getDefaultMessage());
+        }
+        if (bindingResult.hasFieldErrors("roleCode")) {
+            model.addAttribute("roleError", bindingResult.getFieldError("roleCode").getDefaultMessage());
+        }
+    }
+
+    private void applyPermissionOverrides(
+        Long actorUserId,
+        Long targetUserId,
+        CreateAdminUserForm form,
+        String domainCode
+    ) {
+        Set<String> permissionCodes = toSet(form.permissionCodes());
+        if (permissionCodes.isEmpty()) {
+            return;
+        }
+        Set<String> grantedPermissions = toSet(form.grantedPermissions());
+        Set<String> deniedPermissions = new LinkedHashSet<>();
+        for (String permissionCode : permissionCodes) {
+            if (!grantedPermissions.contains(permissionCode)) {
+                deniedPermissions.add(permissionCode);
+            }
+        }
+        adminUserService.syncPermissionOverrides(
+            actorUserId,
+            targetUserId,
+            domainCode,
+            permissionCodes,
+            deniedPermissions
+        );
+    }
+
+    private void applyPermissionOverrides(
+        Long actorUserId,
+        Long targetUserId,
+        UpdateAdminUserForm form,
+        String domainCode
+    ) {
+        Set<String> permissionCodes = toSet(form.permissionCodes());
+        if (permissionCodes.isEmpty()) {
+            return;
+        }
+        Set<String> grantedPermissions = toSet(form.grantedPermissions());
+        Set<String> deniedPermissions = new LinkedHashSet<>();
+        for (String permissionCode : permissionCodes) {
+            if (!grantedPermissions.contains(permissionCode)) {
+                deniedPermissions.add(permissionCode);
+            }
+        }
+        adminUserService.syncPermissionOverrides(
+            actorUserId,
+            targetUserId,
+            domainCode,
+            permissionCodes,
+            deniedPermissions
+        );
+    }
+
+    private Set<String> toSet(List<String> values) {
+        if (values == null || values.isEmpty()) {
+            return Set.of();
+        }
+        return new LinkedHashSet<>(values);
     }
 }

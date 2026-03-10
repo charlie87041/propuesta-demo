@@ -15,17 +15,16 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.security.access.AccessDeniedException;
 
-@ControllerAdvice(annotations = Controller.class, assignableTypes = AdminUserViewController.class)
-public class AdminUserFormModelAdvice {
+@ControllerAdvice(assignableTypes = AdminUserViewController.class)
+public class AdminUserFormModelAdvice extends BaseInterceptor{
 
     private final AdminUserService adminUserService;
-    private final MessageSource messageSource;
 
     public AdminUserFormModelAdvice(AdminUserService adminUserService, MessageSource messageSource) {
+        super(messageSource);
         this.adminUserService = adminUserService;
-        this.messageSource = messageSource;
+      
     }
 
     @ModelAttribute
@@ -44,6 +43,7 @@ public class AdminUserFormModelAdvice {
         String routeName = resolveRouteName(webRequest);
         if ("admin.users.list".equals(routeName)) {
             model.addAttribute("pageTitle", message("admin.users.title"));
+            model.addAttribute("activeNav", "users");
             return;
         }
         String domainCode;
@@ -68,22 +68,7 @@ public class AdminUserFormModelAdvice {
             populateCreateFormModel(model, domainCode, selectedRoleCode);
         }
     }
-
-    private String resolveRouteName(NativeWebRequest webRequest) {
-        Object handler = webRequest.getAttribute(
-            HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE,
-            NativeWebRequest.SCOPE_REQUEST
-        );
-        if (handler instanceof HandlerMethod handlerMethod) {
-            org.springframework.web.bind.annotation.RequestMapping mapping =
-                org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation(handlerMethod.getMethod(), org.springframework.web.bind.annotation.RequestMapping.class);
-            if (mapping != null && StringUtils.hasText(mapping.name())) {
-                return mapping.name();
-            }
-        }
-        return null;
-    }
-
+    
     private void populateCreateFormModel(Model model, String domainCode, String selectedRoleCode) {
         model.addAttribute("pageTitle", message("admin.users.create.title"));
         model.addAttribute("isEdit", false);
@@ -120,28 +105,6 @@ public class AdminUserFormModelAdvice {
         model.addAttribute("selectedRoleCode", selectedRoleCode);
     }
 
-    private String message(String key, Object... args) {
-        return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
-    }
-
-    private Long currentUserId() {
-        var authentication = org.springframework.security.core.context.SecurityContextHolder
-            .getContext()
-            .getAuthentication();
-        if (authentication == null || authentication.getPrincipal() == null) {
-            throw new AccessDeniedException("Unauthenticated");
-        }
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof Long userId) {
-            return userId;
-        }
-        if (principal instanceof String textPrincipal) {
-            return Long.parseLong(textPrincipal);
-        }
-
-        throw new AccessDeniedException("Invalid authentication principal");
-    }
 
     public record RoleOption(String code, String name, java.util.List<String> permissions) {
     }

@@ -34,6 +34,7 @@ public class SecurityConfig {
                     "/api/auth/**",
                     "/actuator/health",
                     "/admin/login",
+                    "/admin/login/",
                     "/error",
                     "/error/**"
                 ).permitAll()
@@ -53,6 +54,12 @@ public class SecurityConfig {
     }
 
     private boolean isAdminPage(String path) {
-        return path != null && path.startsWith("/admin") && !path.equals("/admin/login");
+        if (path == null) {
+            return false;
+        }
+        if (path.startsWith("/admin/login")) {
+            return false;
+        }
+        return path.startsWith("/admin");
     }
 }

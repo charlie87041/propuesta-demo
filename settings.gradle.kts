@@ -4,7 +4,6 @@ rootProject.name = "cookies-store"
 include(":common")
 include(":catalog-module")
 include(":cart-module")
-include(":customer-module")
 include(":order-module")
 include(":payment-module")
 include(":admin-module")

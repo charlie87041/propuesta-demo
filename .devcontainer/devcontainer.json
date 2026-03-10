@@ -27,6 +27,12 @@
   ],
   "containerEnv": {
     "JAVA_HOME": "/usr/lib/jvm/msopenjdk-current"
-  }
+  },
+  "appPort": [8080],
+  "forwardPorts": [8080],
+  "portsAttributes": {
+  "8080": { "label": "Cookies Store", "onAutoForward": "openBrowser" }
+}
+
   
 }

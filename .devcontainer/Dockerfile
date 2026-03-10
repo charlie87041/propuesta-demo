@@ -25,4 +25,7 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 # Add to bashrc for persistence
 RUN echo "export JAVA_HOME=/usr/lib/jvm/msopenjdk-current" >> /etc/profile.d/java.sh \
     && echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile.d/java.sh \
+    && echo 'export JAVA_HOME=/usr/lib/jvm/msopenjdk-current' >> ~/.zshrc \
+    echo 'export PATH="$JAVA_HOME/bin:$PATH"' >> ~/.zshrc \
+    source ~/.zshrc \
     && chmod +x /etc/profile.d/java.sh  

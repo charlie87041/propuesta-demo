@@ -7,10 +7,10 @@
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
                 <input class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#8b4513] focus:border-[#8b4513] transition-all text-sm outline-none" th:placeholder="#{admin.customers.search.placeholder}" placeholder="Search by name or email..." type="text"/>
             </div>
-            <button class="flex items-center gap-2 px-4 py-2 bg-[#8b4513] text-white font-bold text-sm rounded-lg hover:bg-[#8b4513]/90 transition-all shadow-lg shadow-[#8b4513]/20 whitespace-nowrap">
-                <span class="material-symbols-outlined text-lg">download</span>
-                <span th:text="#{admin.customers.export}">Export List</span>
-            </button>
+            <a href="/admin/customers/new" class="flex items-center gap-2 px-4 py-2 bg-[#8b4513] text-white font-bold text-sm rounded-lg hover:bg-[#8b4513]/90 transition-all shadow-lg shadow-[#8b4513]/20 whitespace-nowrap">
+                <span class="material-symbols-outlined text-lg">add</span>
+                <span th:text="#{admin.customers.create}">Create Customer</span>
+            </a>
         </div>
     </th:block>
 
@@ -80,17 +80,17 @@
                         </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                        <tr class="hover:bg-[#8b4513]/5 transition-colors">
+                        <tr class="hover:bg-[#8b4513]/5 transition-colors" th:each="customer : ${customers}">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <img class="h-10 w-10 rounded-full object-cover ring-2 ring-[#8b4513]/5" data-alt="Jane Cooper avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzVDp0NNdbDn6KbNyagZdUazsdUZHeSxYVzztAqWu-RHVYJKrbCT36JgxKvXTTb3xmxlv412hx1NU84HQz4YcJMnAvkhakzIGcKpkCx8CDX8IQbZg2KS95hu6wLonvji0LSbwYG9kNh-5rnL70pqgCIAPsCc-nU1i1qAxr4A9Sc-q0qz4F0ILITPj-amW3LvdHs7hMsUINdXBfPYY9AUJHojYrhlNegLD9aG474_SDB7y93X_-IqrCC4GjrCjLlTjP117fz_PJMDM"/>
                                     <div>
-                                        <p class="text-sm font-bold text-slate-800">Jane Cooper</p>
+                                        <p class="text-sm font-bold text-slate-800" th:text="${customer.name}">Customer Name</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <p class="text-sm text-slate-600">jane.c@example.com</p>
+                                <p class="text-sm text-slate-600" th:text="${customer.email}">customer@example.com</p>
                             </td>
                             <td class="px-6 py-4">
                                 <p class="text-sm text-slate-600">Oct 12, 2023</p>
