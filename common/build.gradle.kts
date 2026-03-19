@@ -13,6 +13,7 @@ dependencies {
     
     // Spring Boot Redis support
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("io.minio:minio:8.5.12")
     
     // TestContainers for integration testing
     testImplementation("org.testcontainers:testcontainers:1.19.3")

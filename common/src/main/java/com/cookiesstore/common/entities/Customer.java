@@ -8,12 +8,14 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity(name = "customers")
 public class Customer {
@@ -21,9 +23,10 @@ public class Customer {
     private static final Pattern BCRYPT_PATTERN = Pattern.compile("^\\$2[aby]\\$\\d{2}\\$.+");
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Max(128)
+    @Size(max = 128)
     @NotBlank
     private String name;
 
@@ -36,11 +39,11 @@ public class Customer {
 
     @Email
     @NotBlank
-    @Max(128)
+    @Size(max = 128)
     private String email;
 
     @Nullable
-    @Max(32)
+    @Size(max = 32)
     private String phone;
 
     @Column(nullable = false)

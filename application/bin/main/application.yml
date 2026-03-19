@@ -3,4 +3,16 @@ spring:
     name: cookies-store
   
   profiles:
-    active: default
+    active: staging
+    default: staging
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+storage:
+  minio:
+    endpoint: ${MINIO_ENDPOINT:http://minio:9000}
+    access-key: ${MINIO_ROOT_USER:minioadmin}
+    secret-key: ${MINIO_ROOT_PASSWORD:minioadmin}
+    customer-avatars-bucket: ${MINIO_CUSTOMER_AVATARS_BUCKET:customer-avatars}

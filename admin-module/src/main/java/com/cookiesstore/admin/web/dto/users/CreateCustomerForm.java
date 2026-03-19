@@ -6,11 +6,10 @@ import jakarta.validation.constraints.Size;
 
 public record CreateCustomerForm (
 
-    @NotBlank @Size(min = 8) String name,
+    @NotBlank @Size(max = 128) String name,
     @NotBlank @Email String email,
     @NotBlank @Size(min = 8) String password,
-    @NotBlank @Size(max = 128) String phone,
-    @NotBlank @Size(max = 255) String logoUrl,
+    @NotBlank @Size(max = 32) String phone,
     boolean active
 ) {
 }

@@ -42,6 +42,11 @@ public class AdminCustomerFormModelAdvice extends BaseInterceptor{
         if ("admin.customers.create.view".equals(routeName) || "admin.customers.create".equals(routeName)) {
             model.addAttribute("pageTitle", message("admin.customers.create"));
             model.addAttribute("activeNav", "customers");
+            return;
+        }
+        if ("admin.customers.edit.view".equals(routeName) || "admin.customers.update".equals(routeName)) {
+            model.addAttribute("pageTitle", message("admin.customers.edit.title"));
+            model.addAttribute("activeNav", "customers");
         }
     }
 

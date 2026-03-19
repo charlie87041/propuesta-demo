@@ -1,0 +1,36 @@
+services:
+    minio:
+        image: minio/minio:latest
+        container_name: minio
+        command: server /data --console-address ":9010"
+        restart: unless-stopped
+        environment:
+            MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+            MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+        ports:
+            - "127.0.0.1:9000:9000"
+            - "127.0.0.1:9010:9010"
+        volumes:
+            - minio-data:/data
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+            interval: 30s
+            timeout: 20s
+            retries: 5
+        networks:
+            - core-facturae_sail
+
+    mailpit:
+        image: 'axllent/mailpit:latest'
+        container_name: mailpit
+        ports:
+            - '${FORWARD_MAILPIT_PORT:-1025}:1025'
+            - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
+        networks:
+            - core-facturae_sail
+networks:
+    core-facturae_sail:
+        external: true
+
+volumes:
+    minio-data:
