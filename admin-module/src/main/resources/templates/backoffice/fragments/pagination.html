@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="pager(page, baseUrl)">
+    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4"
+         th:with="pageNumber=${page.number},pageSize=${page.size},total=${page.totalElements},start=${total == 0 ? 0 : (pageNumber * pageSize + 1)},end=${total == 0 ? 0 : (pageNumber * pageSize + page.numberOfElements)}">
+        <p class="text-sm text-slate-500"
+           th:text="#{admin.pagination.summary(${start},${end},${total})}">Showing 1 to 5 of 1,240 items</p>
+        <div class="flex items-center gap-2">
+            <a class="p-2 border border-slate-200 rounded-lg hover:bg-white transition-all"
+               th:classappend="${page.hasPrevious()} ? '' : ' opacity-50 pointer-events-none'"
+               th:href="@{${baseUrl}(page=${page.number - 1},size=${page.size},sort=${sortParams},q=${searchQuery})}">
+                <span class="material-symbols-outlined text-xl">chevron_left</span>
+            </a>
+            <div class="flex items-center" th:with="totalPages=${page.totalPages},startPage=${pageNumber > 2 ? pageNumber - 2 : 0},endPage=${pageNumber + 2 < totalPages ? pageNumber + 2 : totalPages - 1}">
+                <a th:if="${startPage > 0}"
+                   th:href="@{${baseUrl}(page=0,size=${page.size},sort=${sortParams},q=${searchQuery})}"
+                   class="h-10 w-10 hover:bg-white rounded-lg text-slate-600 font-bold transition-all flex items-center justify-center">1</a>
+                <span th:if="${startPage > 1}" class="px-2 text-slate-400">...</span>
+                <a th:each="i : ${#numbers.sequence(startPage, endPage)}"
+                   th:href="@{${baseUrl}(page=${i},size=${page.size},sort=${sortParams},q=${searchQuery})}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == page.number} ? ' bg-[#8b4513] text-white shadow-sm shadow-[#8b4513]/20' : ' hover:bg-white text-slate-600'"
+                   class="h-10 w-10 rounded-lg font-bold transition-all flex items-center justify-center">1</a>
+                <span th:if="${endPage + 1 < totalPages - 1}" class="px-2 text-slate-400">...</span>
+                <a th:if="${totalPages > 1 && endPage < totalPages - 1}"
+                   th:href="@{${baseUrl}(page=${totalPages - 1},size=${page.size},sort=${sortParams},q=${searchQuery})}"
+                   class="h-10 w-10 hover:bg-white rounded-lg text-slate-600 font-bold transition-all flex items-center justify-center"
+                   th:text="${totalPages}">1</a>
+            </div>
+            <a class="p-2 border border-slate-200 rounded-lg hover:bg-white transition-all"
+               th:classappend="${page.hasNext()} ? '' : ' opacity-50 pointer-events-none'"
+               th:href="@{${baseUrl}(page=${page.number + 1},size=${page.size},sort=${sortParams},q=${searchQuery})}">
+                <span class="material-symbols-outlined text-xl">chevron_right</span>
+            </a>
+        </div>
+    </div>
+</th:block>
+</html>

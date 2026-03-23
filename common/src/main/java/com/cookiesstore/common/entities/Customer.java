@@ -129,6 +129,10 @@ public class Customer {
         this.active = active;
     }
 
+    public Instant getCreatedAt() {
+        return this.createdAt;
+    }
+
 
     
 }

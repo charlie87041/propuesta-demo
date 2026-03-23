@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="columnHeader(label, field, sortable, sortParams, formId)">
+    <div th:if="${sortable}" class="flex items-center justify-between gap-2"
+         th:with="isAsc=${sortParams != null && #lists.contains(sortParams, field + ',asc')},
+                  isDesc=${sortParams != null && #lists.contains(sortParams, field + ',desc')},
+                  currentSort=${isAsc} ? ${field + ',asc'} : (${isDesc} ? ${field + ',desc'} : '')">
+        <span th:text="${label}">Column</span>
+        <div class="relative">
+            <input type="hidden" name="sort"
+                   th:value="${currentSort}"
+                   th:attr="form=${formId},data-sort-form-id=${formId},data-sort-field=${field}"
+                   data-sort-input="true">
+            <button type="button"
+                    class="h-5 w-5 rounded text-slate-400 hover:text-[#8b4513] hover:bg-white leading-none"
+                    th:attr="aria-label=#{admin.sort.menu.label},data-sort-menu-trigger=${field}"
+                    data-sort-trigger="true">↓</button>
+            <div class="hidden absolute right-0 top-full mt-1 z-20 min-w-[96px] rounded-md border border-slate-200 bg-white shadow-md"
+                 th:attr="data-sort-menu=${field}">
+                <button type="button" class="block w-full px-3 py-1.5 text-left text-xs hover:bg-slate-50"
+                        th:attr="data-sort-option=${field},data-sort-value=''" th:text="#{admin.sort.none}">-</button>
+                <button type="button" class="block w-full px-3 py-1.5 text-left text-xs hover:bg-slate-50"
+                        th:attr="data-sort-option=${field},data-sort-value=${field + ',asc'}" th:text="#{admin.sort.asc}">Asc</button>
+                <button type="button" class="block w-full px-3 py-1.5 text-left text-xs hover:bg-slate-50"
+                        th:attr="data-sort-option=${field},data-sort-value=${field + ',desc'}" th:text="#{admin.sort.desc}">Desc</button>
+            </div>
+        </div>
+    </div>
+    <span th:if="${!sortable}" th:text="${label}">Column</span>
+</th:block>
+
+<th:block th:fragment="script">
+    <script>
+        (function () {
+            var triggers = document.querySelectorAll("button[data-sort-trigger='true']");
+            var closeAllMenus = function () {
+                var menus = document.querySelectorAll("[data-sort-menu]");
+                for (var i = 0; i < menus.length; i++) {
+                    menus[i].classList.add("hidden");
+                }
+            };
+
+            for (var t = 0; t < triggers.length; t++) {
+                triggers[t].addEventListener("click", function (event) {
+                    event.preventDefault();
+                    var field = this.getAttribute("data-sort-menu-trigger");
+                    var menu = document.querySelector("[data-sort-menu='" + field + "']");
+                    if (!menu) {
+                        return;
+                    }
+                    var wasHidden = menu.classList.contains("hidden");
+                    closeAllMenus();
+                    if (wasHidden) {
+                        menu.classList.remove("hidden");
+                    }
+                });
+            }
+
+            var options = document.querySelectorAll("button[data-sort-option]");
+            for (var o = 0; o < options.length; o++) {
+                options[o].addEventListener("click", function (event) {
+                    event.preventDefault();
+                    var field = this.getAttribute("data-sort-option");
+                    var value = this.getAttribute("data-sort-value");
+                    var input = document.querySelector("input[data-sort-input='true'][data-sort-field='" + field + "']");
+                    if (!input) {
+                        closeAllMenus();
+                        return;
+                    }
+                    input.value = value || "";
+
+                    var formId = input.getAttribute("data-sort-form-id");
+                    var form = formId ? document.getElementById(formId) : null;
+                    if (!form) {
+                        closeAllMenus();
+                        return;
+                    }
+
+                    var sameFormSorts = document.querySelectorAll("input[name='sort'][form='" + formId + "']");
+                    for (var j = 0; j < sameFormSorts.length; j++) {
+                        sameFormSorts[j].disabled = !sameFormSorts[j].value;
+                    }
+                    closeAllMenus();
+                    form.submit();
+                });
+            }
+
+            var sortInputs = document.querySelectorAll("input[data-sort-input='true']");
+            var initializedForms = {};
+            for (var s = 0; s < sortInputs.length; s++) {
+                var formId = sortInputs[s].getAttribute("data-sort-form-id");
+                if (!formId || initializedForms[formId]) {
+                    continue;
+                }
+                var form = document.getElementById(formId);
+                if (!form) {
+                    continue;
+                }
+                initializedForms[formId] = true;
+                form.addEventListener("submit", function () {
+                    var currentFormId = this.getAttribute("id");
+                    var formSorts = document.querySelectorAll("input[name='sort'][form='" + currentFormId + "']");
+                    for (var k = 0; k < formSorts.length; k++) {
+                        formSorts[k].disabled = !formSorts[k].value;
+                    }
+                });
+            }
+
+            document.addEventListener("click", function (event) {
+                var withinSorting = event.target.closest("[data-sort-menu]") || event.target.closest("button[data-sort-trigger='true']");
+                if (!withinSorting) {
+                    closeAllMenus();
+                }
+            });
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") {
+                    closeAllMenus();
+                }
+            });
+        })();
+    </script>
+</th:block>
+</html>

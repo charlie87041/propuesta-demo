@@ -6,11 +6,19 @@ import com.cookiesstore.admin.web.dto.users.UpdateCustomerForm;
 import com.cookiesstore.common.entities.Customer;
 import com.cookiesstore.common.services.CustomerService;
 import jakarta.validation.Valid;
+
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,16 +53,25 @@ public class AdminCustomerViewController {
     }
 
     @GetMapping(value = "/admin/customers", name = "admin.customers.list")
-    public String listCustomers(Model model) {
-        var customers = customerService.listCustomers();
-        model.addAttribute("customers", customers);
+    public String listCustomers(
+        @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+        @RequestParam(value = "sort", required = false) List<String> sortParams,
+        @RequestParam(value = "q", required = false) String searchQuery,
+        Model model
+    ) {
+        var customersPage = customerService.listCustomers(pageable, searchQuery);
+        var customersStatistics = customerService.getCustomerStatistics(java.sql.Date.valueOf(LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())), java.sql.Date.valueOf(LocalDate.now()));
+        model.addAttribute("customersPage", customersPage);
+        model.addAttribute("customersStatistics", customersStatistics);
+        model.addAttribute("sortParams", sortParams);
+        model.addAttribute("searchQuery", searchQuery);
         return "backoffice/customers/index";
     }
 
     @GetMapping(value = "/admin/customers/new", name = "admin.customers.create.view")
     public String newCustomer(Model model) {
         model.addAttribute("form", new CreateCustomerForm("", "", "", "", true));
-        model.addAttribute("isEdit", false);
+        
         return "backoffice/customers/form";
     }
 
@@ -67,7 +84,6 @@ public class AdminCustomerViewController {
         @RequestParam(value = "avatar", required = false) MultipartFile avatar,
         @ModelAttribute("currentUserId") Long actorUserId
     ) {
-        model.addAttribute("isEdit", false);
         if (bindingResult.hasErrors()) {
             return "backoffice/customers/form";
         }
@@ -110,8 +126,6 @@ public class AdminCustomerViewController {
             return "redirect:/admin/customers";
         }
         model.addAttribute("form", new UpdateCustomerForm(customer.getName(), customer.getEmail(), customer.getPhone(), customer.isActive()));
-        model.addAttribute("isEdit", true);
-        model.addAttribute("customerId", customerId);
         return "backoffice/customers/form";
     }
 
@@ -124,9 +138,6 @@ public class AdminCustomerViewController {
         RedirectAttributes redirectAttributes,
         @RequestParam(value = "avatar", required = false) MultipartFile avatar
     ) {
-        model.addAttribute("isEdit", true);
-        model.addAttribute("customerId", customerId);
-
         if (bindingResult.hasErrors()) {
             return "backoffice/customers/form";
         }

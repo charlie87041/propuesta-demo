@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -190,6 +192,38 @@ public class AdminUserService {
         }
 
         return new ArrayList<>(adminUserRepository.findAllById(userIds));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AdminUser> listAdminUsersByDomain(String domainCode, Pageable pageable) {
+        Set<Long> userIds = userDomainAbilityRepository.findByDomainCode(domainCode)
+            .stream()
+            .map(UserDomainAbility::getUserId)
+            .collect(LinkedHashSet::new, Set::add, Set::addAll);
+
+        if (userIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        return adminUserRepository.findByIdIn(userIds, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AdminUser> listAdminUsersByDomain(String domainCode, Pageable pageable, String searchQuery) {
+        Set<Long> userIds = userDomainAbilityRepository.findByDomainCode(domainCode)
+            .stream()
+            .map(UserDomainAbility::getUserId)
+            .collect(LinkedHashSet::new, Set::add, Set::addAll);
+
+        if (userIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        if (!StringUtils.hasText(searchQuery)) {
+            return adminUserRepository.findByIdIn(userIds, pageable);
+        }
+
+        return adminUserRepository.findByIdInAndEmailContainingIgnoreCase(userIds, searchQuery.trim(), pageable);
     }
 
     @Transactional(readOnly = true)

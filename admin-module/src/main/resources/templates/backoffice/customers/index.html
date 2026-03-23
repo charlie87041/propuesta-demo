@@ -3,10 +3,7 @@
 <th:block th:replace="~{backoffice/layout :: layout(#{admin.customers.title}, ~{::headerActions}, ~{::content})}">
     <th:block th:fragment="headerActions">
         <div class="flex items-center gap-3 w-full md:w-auto">
-            <div class="relative w-full md:w-80">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-                <input class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#8b4513] focus:border-[#8b4513] transition-all text-sm outline-none" th:placeholder="#{admin.customers.search.placeholder}" placeholder="Search by name or email..." type="text"/>
-            </div>
+            <th:block th:replace="~{backoffice/fragments/searching :: searchBox('q', #{admin.customers.search.placeholder}, ${searchQuery}, 'customersSortForm')}"></th:block>
             <a href="/admin/customers/new" class="flex items-center gap-2 px-4 py-2 bg-[#8b4513] text-white font-bold text-sm rounded-lg hover:bg-[#8b4513]/90 transition-all shadow-lg shadow-[#8b4513]/20 whitespace-nowrap">
                 <span class="material-symbols-outlined text-lg">add</span>
                 <span th:text="#{admin.customers.create}">Create Customer</span>
@@ -33,10 +30,8 @@
                         </div>
                     </div>
                     <div class="flex items-end gap-2">
-                        <h3 class="text-3xl font-extrabold text-slate-800">1,240</h3>
-                        <span class="text-green-600 text-sm font-bold pb-1 flex items-center">
-                            <span class="material-symbols-outlined text-sm">trending_up</span> 12%
-                        </span>
+                        <h3 class="text-3xl font-extrabold text-slate-800"
+                            th:text="${customersStatistics != null && customersStatistics.totalCustomers != null ? customersStatistics.totalCustomers : 0}">1,240</h3>
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
@@ -47,9 +42,13 @@
                         </div>
                     </div>
                     <div class="flex items-end gap-2">
-                        <h3 class="text-3xl font-extrabold text-slate-800">85</h3>
-                        <span class="text-green-600 text-sm font-bold pb-1 flex items-center">
-                            <span class="material-symbols-outlined text-sm">trending_up</span> 5%
+                        <h3 class="text-3xl font-extrabold text-slate-800"
+                            th:text="${customersStatistics != null && customersStatistics.newCustomersInMonth != null ? customersStatistics.newCustomersInMonth : 0}">85</h3>
+                        <span class="text-sm font-bold pb-1 flex items-center"
+                              th:classappend="${customersStatistics != null && customersStatistics.newCustomersInMonthPercent != null && customersStatistics.newCustomersInMonthPercent > 0} ? ' text-green-600' : ' text-red-600'">
+                            <span class="material-symbols-outlined text-sm"
+                                  th:text="${customersStatistics != null && customersStatistics.newCustomersInMonthPercent != null && customersStatistics.newCustomersInMonthPercent > 0} ? 'trending_up' : 'trending_down'">trending_up</span>
+                            <span th:text="${customersStatistics != null && customersStatistics.newCustomersInMonthPercent != null ? #numbers.formatDecimal(customersStatistics.newCustomersInMonthPercent, 1, 1) : 0} + '%'">5%</span>
                         </span>
                     </div>
                 </div>
@@ -61,29 +60,45 @@
                         </div>
                     </div>
                     <div class="flex items-end gap-2">
-                        <h3 class="text-3xl font-extrabold text-slate-800">12</h3>
-                        <span class="text-red-600 text-sm font-bold pb-1 flex items-center">
-                            <span class="material-symbols-outlined text-sm">trending_down</span> 2%
+                        <h3 class="text-3xl font-extrabold text-slate-800"
+                            th:text="${customersStatistics != null && customersStatistics.activeSessions != null ? customersStatistics.activeSessions : 0}">12</h3>
+                        <span class="text-sm font-bold pb-1 flex items-center"
+                              th:classappend="${customersStatistics != null && customersStatistics.activeSessionsPercent != null && customersStatistics.activeSessionsPercent > 0} ? ' text-green-600' : ' text-red-600'">
+                            <span class="material-symbols-outlined text-sm"
+                                  th:text="${customersStatistics != null && customersStatistics.activeSessionsPercent != null && customersStatistics.activeSessionsPercent > 0} ? 'trending_up' : 'trending_down'">trending_down</span>
+                            <span th:text="${customersStatistics != null && customersStatistics.activeSessionsPercent != null ? #numbers.formatDecimal(customersStatistics.activeSessionsPercent, 1, 1) : 0} + '%'">2%</span>
                         </span>
                     </div>
                 </div>
             </div>
 
             <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+                <form method="get" action="/admin/customers" id="customersSortForm">
+                    <input type="hidden" name="page" value="0">
+                    <input type="hidden" name="size" th:value="${customersPage.size}">
+                </form>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
                         <tr class="bg-slate-50 border-b border-slate-100">
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider" th:text="#{admin.customers.table.name}">Customer Name</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider" th:text="#{admin.customers.table.email}">Email</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider" th:text="#{admin.customers.table.joined}">Joined Date</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.customers.table.name}, 'name', true, ${sortParams}, 'customersSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.customers.table.email}, 'email', true, ${sortParams}, 'customersSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.customers.table.joined}, 'createdAt', true, ${sortParams}, 'customersSortForm')}"></th:block>
+                            </th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center" th:text="#{admin.customers.table.orders}">Orders</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider" th:text="#{admin.customers.table.status}">Status</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.customers.table.status}, 'active', true, ${sortParams}, 'customersSortForm')}"></th:block>
+                            </th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right" th:text="#{admin.customers.table.actions}">Actions</th>
                         </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                        <tr class="hover:bg-[#8b4513]/5 transition-colors" th:each="customer : ${customers}">
+                        <tr class="hover:bg-[#8b4513]/5 transition-colors" th:each="customer : ${customersPage.content}">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <img class="h-10 w-10 rounded-full object-cover ring-2 ring-[#8b4513]/5"
@@ -98,7 +113,7 @@
                                 <p class="text-sm text-slate-600" th:text="${customer.email}">customer@example.com</p>
                             </td>
                             <td class="px-6 py-4">
-                                <p class="text-sm text-slate-600">Oct 12, 2023</p>
+                                <p class="text-sm text-slate-600" th:text="${#dates.format(customer.createdAt, 'MMM dd, yyyy')}">Oct 12, 2023</p>
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <p class="text-sm font-bold text-slate-800">15</p>
@@ -110,12 +125,11 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end items-center gap-2">
-                                    <button class="p-1.5 hover:bg-white rounded-lg text-slate-400 hover:text-[#8b4513] transition-all" th:title="#{admin.customers.action.view}">
-                                        <span class="material-symbols-outlined text-xl">visibility</span>
-                                    </button>
-                                    <button class="p-1.5 hover:bg-white rounded-lg text-slate-400 hover:text-[#8b4513] transition-all" th:title="#{admin.customers.action.edit}">
+                                    <a th:href="@{/admin/customers/{customerId}/edit(customerId=${customer.id})}"
+                                       class="p-1.5 hover:bg-white rounded-lg text-slate-400 hover:text-[#8b4513] transition-all"
+                                       th:title="#{admin.customers.action.edit}">
                                         <span class="material-symbols-outlined text-xl">edit</span>
-                                    </button>
+                                    </a>
                                     <form th:if="${customer.active}" th:action="@{'/admin/customers/' + ${customer.id} + '/deactivate'}" method="post" class="inline">
                                         <button type="submit" class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg hover:bg-red-50 hover:text-red-600 transition-all" th:text="#{admin.customers.action.disable}">Disable</button>
                                     </form>
@@ -128,24 +142,9 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p class="text-sm text-slate-500" th:text="#{admin.customers.pagination.summary}">Showing 1 to 5 of 1,240 customers</p>
-                    <div class="flex items-center gap-2">
-                        <button class="p-2 border border-slate-200 rounded-lg hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-all" disabled>
-                            <span class="material-symbols-outlined text-xl">chevron_left</span>
-                        </button>
-                        <div class="flex items-center">
-                            <button class="h-10 w-10 bg-[#8b4513] text-white font-bold rounded-lg shadow-sm shadow-[#8b4513]/20">1</button>
-                            <button class="h-10 w-10 hover:bg-white rounded-lg text-slate-600 font-bold transition-all">2</button>
-                            <button class="h-10 w-10 hover:bg-white rounded-lg text-slate-600 font-bold transition-all">3</button>
-                            <span class="px-2 text-slate-400">...</span>
-                            <button class="h-10 w-10 hover:bg-white rounded-lg text-slate-600 font-bold transition-all">248</button>
-                        </div>
-                        <button class="p-2 border border-slate-200 rounded-lg hover:bg-white transition-all">
-                            <span class="material-symbols-outlined text-xl">chevron_right</span>
-                        </button>
-                    </div>
-                </div>
+                <th:block th:replace="~{backoffice/fragments/sorting :: script}"></th:block>
+                <th:block th:replace="~{backoffice/fragments/searching :: script}"></th:block>
+                <th:block th:replace="~{backoffice/fragments/pagination :: pager(${customersPage}, '/admin/customers')}"></th:block>
             </div>
         </section>
     </th:block>

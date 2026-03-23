@@ -1,10 +1,16 @@
 package com.cookiesstore.common.services;
 
+import java.sql.Date;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.cookiesstore.common.entities.Customer;
 import com.cookiesstore.common.repositories.CustomerRepository;
@@ -24,6 +30,24 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public List<Customer> listCustomers() {
         return customerRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Customer> listCustomers(Pageable pageable) {
+        return customerRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Customer> listCustomers(Pageable pageable, String searchQuery) {
+        if (!StringUtils.hasText(searchQuery)) {
+            return customerRepository.findAll(pageable);
+        }
+        String normalizedQuery = searchQuery.trim();
+        return customerRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+            normalizedQuery,
+            normalizedQuery,
+            pageable
+        );
     }
 
     public boolean disableCustomer(Long customerId) {
@@ -104,4 +128,18 @@ public class CustomerService {
     public Optional<Customer> findById(Long customerId) {
         return customerRepository.findById(customerId);
     }
+
+    @Transactional(readOnly = true)
+    public CustomerStatistics getCustomerStatistics(Date fromDate, Date toDate) {
+        Instant fromInstant = fromDate.toLocalDate().atStartOfDay().toInstant(ZoneOffset.UTC);
+        Instant toInstant = toDate.toLocalDate().plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC).minusNanos(1);
+
+        Integer totalCustomers = Math.toIntExact(customerRepository.count());
+        Integer newCustomersInMonth = Math.toIntExact(customerRepository.countByCreatedAtBetween(fromInstant, toInstant));
+        Integer activeSessions = Math.toIntExact(customerRepository.countByActiveTrueAndCreatedAtBetween(fromInstant, toInstant));
+        Float activeSessionsPercent = totalCustomers != 0 ? (activeSessions.floatValue() / totalCustomers.floatValue()) * 100 : 0;
+        Float newCustomersInMonthPercent = totalCustomers != 0 ? (newCustomersInMonth.floatValue() / totalCustomers.floatValue()) * 100 : 0;
+        return new CustomerStatistics(totalCustomers, newCustomersInMonth, newCustomersInMonthPercent, activeSessions, activeSessionsPercent, fromDate, toDate);
+    }
+
 }

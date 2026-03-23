@@ -1,8 +1,11 @@
 package com.cookiesstore.admin.repository;
 
 import com.cookiesstore.admin.domain.AdminUser;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AdminUserRepository extends JpaRepository<AdminUser, Long> {
@@ -12,4 +15,8 @@ public interface AdminUserRepository extends JpaRepository<AdminUser, Long> {
     boolean existsByEmail(String email);
 
     List<AdminUser> findByActiveTrueOrderByCreatedAtDesc();
+
+    Page<AdminUser> findByIdIn(Collection<Long> ids, Pageable pageable);
+
+    Page<AdminUser> findByIdInAndEmailContainingIgnoreCase(Collection<Long> ids, String email, Pageable pageable);
 }

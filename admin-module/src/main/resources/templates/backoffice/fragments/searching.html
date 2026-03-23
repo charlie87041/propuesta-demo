@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="searchBox(name, placeholder, value, formId)">
+    <div class="relative w-full md:w-80">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+        <input type="text"
+               class="w-full pl-10 pr-20 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#8b4513] focus:border-[#8b4513] transition-all text-sm outline-none"
+               th:attr="name=${name},placeholder=${placeholder},form=${formId},data-search-input='true',data-search-form-id=${formId}"
+               th:value="${value}">
+        <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            <button type="button"
+                    class="text-xs text-slate-500 hover:text-[#8b4513]"
+                    th:attr="data-search-clear=${formId}">x</button>
+            <button type="submit"
+                    class="text-xs font-semibold text-[#8b4513] hover:text-[#6f370f]"
+                    th:attr="form=${formId}"
+                    th:text="#{admin.search.go}">Go</button>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:fragment="script">
+    <script>
+        (function () {
+            var clearButtons = document.querySelectorAll("button[data-search-clear]");
+            for (var i = 0; i < clearButtons.length; i++) {
+                clearButtons[i].addEventListener("click", function (event) {
+                    event.preventDefault();
+                    var formId = this.getAttribute("data-search-clear");
+                    if (!formId) {
+                        return;
+                    }
+                    var form = document.getElementById(formId);
+                    if (!form) {
+                        return;
+                    }
+                    var input = document.querySelector("input[data-search-input='true'][data-search-form-id='" + formId + "']");
+                    if (input) {
+                        input.value = "";
+                    }
+                    form.submit();
+                });
+            }
+        })();
+    </script>
+</th:block>
+</html>
