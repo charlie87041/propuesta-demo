@@ -1,7 +1,7 @@
 package com.cookiesstore.admin.web.controllers;
 
 import com.cookiesstore.admin.domain.AdminUser;
-import com.cookiesstore.admin.service.AdminUserService;
+import com.cookiesstore.admin.service.users.AdminUserService;
 import com.cookiesstore.admin.web.dto.users.AdminUserResponse;
 import com.cookiesstore.admin.web.dto.users.AssignAbilityRequest;
 import com.cookiesstore.admin.web.dto.users.CreateAdminUserRequest;

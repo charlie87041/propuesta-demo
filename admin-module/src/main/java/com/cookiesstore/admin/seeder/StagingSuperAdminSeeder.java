@@ -13,11 +13,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Profile("staging")
+@Order(20)
 public class StagingSuperAdminSeeder implements CommandLineRunner {
 
     private final AdminUserRepository adminUserRepository;

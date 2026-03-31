@@ -10,10 +10,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import com.cookiesstore.admin.service.AdminUserService;
-import com.cookiesstore.admin.service.CustomerAvatarStorageService;
+import com.cookiesstore.admin.service.customers.CustomerAvatarStorageService;
+import com.cookiesstore.admin.service.users.AdminUserService;
 import com.cookiesstore.admin.web.controllers.AdminCustomerViewController;
-import com.cookiesstore.admin.web.interceptos.AdminCustomerFormModelAdvice;
+import com.cookiesstore.admin.web.advice.model.AdminCustomerFormModelAdvice;
 import com.cookiesstore.common.entities.Customer;
 import com.cookiesstore.common.services.CustomerService;
 import java.util.List;

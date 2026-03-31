@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(${pageTitle}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions"></th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 max-w-5xl mx-auto w-full space-y-6">
+            <nav class="text-sm text-[#956d50]">
+                <a th:href="@{/admin/products}" class="hover:text-[#8b4513]" th:text="#{admin.products.title}">Product Management</a>
+                <span class="mx-2">/</span>
+                <span th:text="${isEdit} ? #{admin.products.edit.title} : #{admin.products.create.title}">Create product</span>
+            </nav>
+
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+
+            <form th:action="${formAction}" th:object="${form}" method="post" class="space-y-6">
+                <div class="bg-white rounded-xl border border-[#f3ece8] shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-[#f3ece8] bg-[#f3ece8]/30">
+                        <h4 class="font-bold text-[#8b4513] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">bakery_dining</span>
+                            <span th:text="#{admin.products.form.section.details}">Product Details</span>
+                        </h4>
+                    </div>
+
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <label class="flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.sku}">SKU</span>
+                            <input name="sku" type="text" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{sku}" required>
+                            <span th:if="${#fields.hasErrors('sku')}" class="text-xs font-semibold text-red-700" th:errors="*{sku}"></span>
+                        </label>
+
+                        <label class="flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.name}">Name</span>
+                            <input name="name" type="text" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{name}" required>
+                            <span th:if="${#fields.hasErrors('name')}" class="text-xs font-semibold text-red-700" th:errors="*{name}"></span>
+                        </label>
+
+                        <label class="flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.slug}">Slug</span>
+                            <input name="slug" type="text" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{slug}" required>
+                            <span th:if="${#fields.hasErrors('slug')}" class="text-xs font-semibold text-red-700" th:errors="*{slug}"></span>
+                        </label>
+
+                        <label class="flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.category}">Category</span>
+                            <select name="categoryId" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{categoryId}" required>
+                                <option value="" th:text="#{admin.products.form.category.placeholder}">Select category</option>
+                                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">Category</option>
+                            </select>
+                            <span th:if="${#fields.hasErrors('categoryId')}" class="text-xs font-semibold text-red-700" th:errors="*{categoryId}"></span>
+                        </label>
+
+                        <label class="md:col-span-2 flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.description}">Description</span>
+                            <textarea name="description" rows="3" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{description}"></textarea>
+                            <span th:if="${#fields.hasErrors('description')}" class="text-xs font-semibold text-red-700" th:errors="*{description}"></span>
+                        </label>
+
+                        <label class="md:col-span-2 flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.mainImageUrl}">Main image URL</span>
+                            <input name="mainImageUrl" type="url" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{mainImageUrl}">
+                            <span th:if="${#fields.hasErrors('mainImageUrl')}" class="text-xs font-semibold text-red-700" th:errors="*{mainImageUrl}"></span>
+                        </label>
+
+                        <label class="md:col-span-2 flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.ingredients}">Ingredients</span>
+                            <textarea name="ingredients" rows="2" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{ingredients}"></textarea>
+                        </label>
+
+                        <label class="md:col-span-2 flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.allergenInfo}">Allergen info</span>
+                            <textarea name="allergenInfo" rows="2" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{allergenInfo}"></textarea>
+                        </label>
+
+                        <label class="md:col-span-2 flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.nutritionFacts}">Nutrition facts</span>
+                            <textarea name="nutritionFacts" rows="2" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{nutritionFacts}"></textarea>
+                        </label>
+
+                        <div th:if="${!isEdit}" class="md:col-span-2 space-y-3">
+                            <h5 class="text-sm font-bold text-[#8b4513]" th:text="#{admin.products.form.section.pricingInventory}">Pricing &amp; Inventory</h5>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <label class="flex flex-col gap-1.5">
+                                    <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.price}">Price</span>
+                                    <input name="price" type="number" min="0" step="0.01" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{price}" required>
+                                    <span th:if="${#fields.hasErrors('price')}" class="text-xs font-semibold text-red-700" th:errors="*{price}"></span>
+                                </label>
+                                <label class="flex flex-col gap-1.5">
+                                    <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.stockQuantity}">Stock quantity</span>
+                                    <input name="stockQuantity" type="number" min="0" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{stockQuantity}" required>
+                                    <span th:if="${#fields.hasErrors('stockQuantity')}" class="text-xs font-semibold text-red-700" th:errors="*{stockQuantity}"></span>
+                                </label>
+                                <label class="flex flex-col gap-1.5">
+                                    <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.lowStockThreshold}">Low stock threshold</span>
+                                    <input name="lowStockThreshold" type="number" min="0" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{lowStockThreshold}" required>
+                                    <span th:if="${#fields.hasErrors('lowStockThreshold')}" class="text-xs font-semibold text-red-700" th:errors="*{lowStockThreshold}"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div th:if="${!isEdit}" class="md:col-span-2 space-y-3">
+                            <h5 class="text-sm font-bold text-[#8b4513]" th:text="#{admin.products.form.section.sources}">Sources</h5>
+                            <div class="overflow-x-auto border border-[#f3ece8] rounded-lg">
+                                <table class="min-w-full text-sm">
+                                    <thead class="bg-[#fcfaf9] text-[#8b4513]">
+                                        <tr>
+                                            <th class="px-3 py-2 text-left font-bold" th:text="#{admin.products.form.sources.enabled}">Enabled</th>
+                                            <th class="px-3 py-2 text-left font-bold" th:text="#{admin.products.form.sources.source}">Source</th>
+                                            <th class="px-3 py-2 text-left font-bold" th:text="#{admin.products.form.sources.priceOverride}">Price override</th>
+                                            <th class="px-3 py-2 text-left font-bold" th:text="#{admin.products.form.sources.stockQuantity}">Stock quantity</th>
+                                            <th class="px-3 py-2 text-left font-bold" th:text="#{admin.products.form.sources.lowStockThreshold}">Low stock threshold</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="source : ${sources}" class="border-t border-[#f3ece8]">
+                                            <td class="px-3 py-2">
+                                                <input
+                                                    type="checkbox"
+                                                    th:name="sourceIds"
+                                                    th:value="${source.id}"
+                                                    th:checked="${form.sourceIds != null ? #lists.contains(form.sourceIds, source.id) : source.systemManaged}" />
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <p class="font-semibold text-[#1b130e]" th:text="${source.name}">Default source</p>
+                                                <p class="text-xs text-[#956d50]" th:text="${source.code}">DEFAULT</p>
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    step="0.01"
+                                                    class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-32"
+                                                    th:name="|sourcePrices[${source.id}]|"
+                                                    th:value="${form.sourcePrices != null ? form.sourcePrices.get(source.id) : ''}" />
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-28"
+                                                    th:name="|sourceStockQuantities[${source.id}]|"
+                                                    th:value="${form.sourceStockQuantities != null && form.sourceStockQuantities.get(source.id) != null ? form.sourceStockQuantities.get(source.id) : form.stockQuantity}" />
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-28"
+                                                    th:name="|sourceLowStockThresholds[${source.id}]|"
+                                                    th:value="${form.sourceLowStockThresholds != null && form.sourceLowStockThresholds.get(source.id) != null ? form.sourceLowStockThresholds.get(source.id) : form.lowStockThreshold}" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex items-center justify-between border border-[#f3ece8] rounded-lg px-4 py-3 bg-[#fcfaf9]">
+                                <div>
+                                    <p class="text-sm font-bold" th:text="#{admin.products.form.status}">Status</p>
+                                    <p id="productStatusText"
+                                       class="text-xs text-[#956d50]"
+                                       th:text="*{active} ? #{admin.products.status.active} : #{admin.products.status.inactive}"
+                                       th:attr="data-active-text=#{admin.products.status.active},data-inactive-text=#{admin.products.status.inactive}">Active</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input id="productActiveToggle" class="sr-only peer" type="checkbox" th:field="*{active}"/>
+                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8b4513]"></div>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between border border-[#f3ece8] rounded-lg px-4 py-3 bg-[#fcfaf9]">
+                                <div>
+                                    <p class="text-sm font-bold" th:text="#{admin.products.form.visible}">Visible</p>
+                                    <p id="productVisibleText"
+                                       class="text-xs text-[#956d50]"
+                                       th:text="*{visible} ? #{admin.products.visible.yes} : #{admin.products.visible.no}"
+                                       th:attr="data-yes-text=#{admin.products.visible.yes},data-no-text=#{admin.products.visible.no}">Yes</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input id="productVisibleToggle" class="sr-only peer" type="checkbox" th:field="*{visible}"/>
+                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8b4513]"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3">
+                    <a th:href="@{/admin/products}" class="px-5 py-2.5 text-sm font-bold text-[#956d50]" th:text="#{admin.products.form.cancel}">Cancel</a>
+                    <button type="submit" class="px-6 py-2.5 text-sm font-bold text-white bg-[#8b4513] rounded-lg" th:text="${submitLabel}">Save</button>
+                </div>
+            </form>
+        </section>
+
+        <script>
+            (function () {
+                var activeToggle = document.getElementById("productActiveToggle");
+                var activeTextNode = document.getElementById("productStatusText");
+                var visibleToggle = document.getElementById("productVisibleToggle");
+                var visibleTextNode = document.getElementById("productVisibleText");
+
+                function syncActive() {
+                    if (!activeToggle || !activeTextNode) {
+                        return;
+                    }
+                    var activeText = activeTextNode.getAttribute("data-active-text") || "Active";
+                    var inactiveText = activeTextNode.getAttribute("data-inactive-text") || "Inactive";
+                    activeTextNode.textContent = activeToggle.checked ? activeText : inactiveText;
+                }
+
+                function syncVisible() {
+                    if (!visibleToggle || !visibleTextNode) {
+                        return;
+                    }
+                    var yesText = visibleTextNode.getAttribute("data-yes-text") || "Yes";
+                    var noText = visibleTextNode.getAttribute("data-no-text") || "No";
+                    visibleTextNode.textContent = visibleToggle.checked ? yesText : noText;
+                }
+
+                if (activeToggle) {
+                    activeToggle.addEventListener("change", syncActive);
+                    syncActive();
+                }
+                if (visibleToggle) {
+                    visibleToggle.addEventListener("change", syncVisible);
+                    syncVisible();
+                }
+            })();
+        </script>
+    </th:block>
+</th:block>
+</html>

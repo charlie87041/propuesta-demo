@@ -1,6 +1,6 @@
 package com.cookiesstore.admin.web.controllers;
 
-import com.cookiesstore.admin.service.AdminAuthenticationService;
+import com.cookiesstore.admin.service.auth.AdminAuthenticationService;
 import com.cookiesstore.common.auth.AuthCookieNames;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

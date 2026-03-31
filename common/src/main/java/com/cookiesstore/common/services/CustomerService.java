@@ -8,12 +8,15 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.cookiesstore.common.entities.Customer;
 import com.cookiesstore.common.repositories.CustomerRepository;
+import com.cookiesstore.common.services.customers.CustomerEmailExistsException;
+import com.cookiesstore.common.services.customers.CustomerNotFoundException;
 
 
 
@@ -35,6 +38,11 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public Page<Customer> listCustomers(Pageable pageable) {
         return customerRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Customer> listCustomers(Specification<Customer> specification, Pageable pageable) {
+        return customerRepository.findAll(specification, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -80,7 +88,7 @@ public class CustomerService {
         boolean active
     ) {
         if (customerRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Customer email already exists");
+            throw new CustomerEmailExistsException(email);
         }
 
         Customer customer = new Customer();
@@ -106,7 +114,7 @@ public class CustomerService {
 
         Customer customer = optionalCustomer.get();
         if (!customer.getEmail().equalsIgnoreCase(email) && customerRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Customer email already exists");
+            throw new CustomerEmailExistsException(email);
         }
 
         customer.setName(name);
@@ -119,8 +127,48 @@ public class CustomerService {
 
     public void updateLogoUrl(Long customerId, String logoUrl) {
         Customer customer = customerRepository.findById(customerId)
-            .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+            .orElseThrow(() -> new CustomerNotFoundException(customerId));
         customer.setLogoUrl(logoUrl);
+        customerRepository.save(customer);
+    }
+
+    public Customer findByIdOrThrow(Long customerId) {
+        return customerRepository.findById(customerId)
+            .orElseThrow(() -> new CustomerNotFoundException(customerId));
+    }
+
+    public Customer updateCustomerOrThrow(
+        Long customerId,
+        String name,
+        String email,
+        String phone,
+        boolean active
+    ) {
+        Customer customer = customerRepository.findById(customerId)
+            .orElseThrow(() -> new CustomerNotFoundException(customerId));
+
+        if (!customer.getEmail().equalsIgnoreCase(email) && customerRepository.existsByEmail(email)) {
+            throw new CustomerEmailExistsException(email);
+        }
+
+        customer.setName(name);
+        customer.setEmail(email);
+        customer.setPhone(phone);
+        customer.setActive(active);
+        return customerRepository.save(customer);
+    }
+
+    public void disableCustomerOrThrow(Long customerId) {
+        Customer customer = customerRepository.findById(customerId)
+            .orElseThrow(() -> new CustomerNotFoundException(customerId));
+        customer.setActive(false);
+        customerRepository.save(customer);
+    }
+
+    public void enableCustomerOrThrow(Long customerId) {
+        Customer customer = customerRepository.findById(customerId)
+            .orElseThrow(() -> new CustomerNotFoundException(customerId));
+        customer.setActive(true);
         customerRepository.save(customer);
     }
 

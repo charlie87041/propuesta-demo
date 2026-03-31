@@ -1,0 +1,10 @@
+admin:
+  search:
+    categories:
+      fields: [name, code, slug, description]
+    customers:
+      fields: [name]
+    product-sources:
+      fields: [name, code, description]  
+    products:
+      fields: [name, sku, slug, description]

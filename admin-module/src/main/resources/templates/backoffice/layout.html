@@ -21,14 +21,26 @@
             <p class="text-xs text-[#956d50] font-semibold uppercase" th:text="#{admin.layout.subtitle}">Admin Backoffice</p>
         </div>
         <nav class="p-4 space-y-1">
-            <a href="/admin/users"
+            <a th:href="@{/admin/users}"
                class="block px-3 py-2 rounded-lg text-sm"
                th:classappend="${activeNav} == 'users' ? ' bg-[#8b4513]/10 text-[#8b4513] font-bold' : ' text-[#956d50] font-semibold hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
                th:text="#{admin.layout.nav.users}">Users</a>
-            <a href="/admin/customers"
+            <a th:href="@{/admin/customers}"
                class="block px-3 py-2 rounded-lg text-sm"
                th:classappend="${activeNav} == 'customers' ? ' bg-[#8b4513]/10 text-[#8b4513] font-bold' : ' text-[#956d50] font-semibold hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
                th:text="#{admin.layout.nav.customers}">Customers</a>
+            <a th:href="@{/admin/categories}"
+               class="block px-3 py-2 rounded-lg text-sm"
+               th:classappend="${activeNav} == 'categories' ? ' bg-[#8b4513]/10 text-[#8b4513] font-bold' : ' text-[#956d50] font-semibold hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+               th:text="#{admin.layout.nav.categories}">Categories</a>
+            <a th:href="@{/admin/product-sources}"
+               class="block px-3 py-2 rounded-lg text-sm"
+               th:classappend="${activeNav} == 'product-sources' ? ' bg-[#8b4513]/10 text-[#8b4513] font-bold' : ' text-[#956d50] font-semibold hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+               th:text="#{admin.layout.nav.product_sources}">Sources</a>
+            <a th:href="@{/admin/products}"
+               class="block px-3 py-2 rounded-lg text-sm"
+               th:classappend="${activeNav} == 'products' ? ' bg-[#8b4513]/10 text-[#8b4513] font-bold' : ' text-[#956d50] font-semibold hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+               th:text="#{admin.layout.nav.products}">Products</a>
         </nav>
     </aside>
 

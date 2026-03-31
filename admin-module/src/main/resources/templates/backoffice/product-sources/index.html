@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(#{admin.product_sources.title}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <th:block th:replace="~{backoffice/fragments/searching :: searchBox('q', #{admin.product_sources.search.placeholder}, ${searchQuery}, 'sourcesSortForm')}"></th:block>
+            <a th:href="@{/admin/product-sources/new}" class="px-4 py-2 bg-[#8b4513] hover:bg-[#6f370f] text-white rounded-lg text-sm font-bold whitespace-nowrap" th:text="#{admin.product_sources.add}">
+                Add Source
+            </a>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 space-y-6">
+            <div th:if="${successMessage}" class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+
+            <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
+                <header class="px-6 py-4 border-b border-[#e6dad1] flex items-center justify-between">
+                    <h3 class="font-bold" th:text="#{admin.product_sources.directory}">Sources Directory</h3>
+                    <span class="text-sm text-[#956d50]" th:text="#{admin.product_sources.totalCount(${page.totalElements})}">0 sources</span>
+                </header>
+
+                <form method="get" th:action="@{/admin/product-sources}" id="sourcesSortForm">
+                    <input type="hidden" name="page" value="0">
+                    <input type="hidden" name="size" th:value="${page.size}">
+                    <input type="hidden" name="q" th:value="${searchQuery}">
+                </form>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
+                        <tr>
+                            <th class="px-6 py-3">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_sources.col.id}, 'id', true, ${sortParams}, 'sourcesSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-3">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_sources.col.code}, 'code', true, ${sortParams}, 'sourcesSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-3">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_sources.col.name}, 'name', true, ${sortParams}, 'sourcesSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-3">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_sources.col.description}, 'description', false, ${sortParams}, 'sourcesSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-3">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_sources.col.status}, 'active', true, ${sortParams}, 'sourcesSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-3">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_sources.col.systemManaged}, 'systemManaged', true, ${sortParams}, 'sourcesSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-3 text-right" th:text="#{admin.product_sources.col.actions}">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#f3ece8] text-sm">
+                        <tr th:if="${page.totalElements == 0}">
+                            <td colspan="7" class="px-6 py-8 text-center text-[#956d50]" th:text="#{admin.product_sources.empty}">No sources found.</td>
+                        </tr>
+                        <tr th:each="source : ${page.content}">
+                            <td class="px-6 py-4 font-semibold" th:text="${source.id}">1</td>
+                            <td class="px-6 py-4 text-[#956d50]" th:text="${source.code}">default</td>
+                            <td class="px-6 py-4" th:text="${source.name}">Default</td>
+                            <td class="px-6 py-4 text-[#956d50]" th:text="${source.description} ?: '-'">Description</td>
+                            <td class="px-6 py-4" th:text="${source.active} ? #{admin.product_sources.status.active} : #{admin.product_sources.status.inactive}"
+                                th:classappend="${source.active} ? ' text-green-700 font-semibold' : ' text-slate-600 font-semibold'">Active</td>
+                            <td class="px-6 py-4" th:text="${source.systemManaged} ? #{admin.product_sources.systemManaged.yes} : #{admin.product_sources.systemManaged.no}"
+                                th:classappend="${source.systemManaged} ? ' text-amber-700 font-semibold' : ' text-slate-600'">No</td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="inline-flex items-center gap-4">
+                                    <a th:href="@{'/admin/product-sources/' + ${source.id} + '/edit'}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.product_sources.action.edit}">Edit</a>
+                                    <form th:if="${!source.systemManaged}" th:action="@{'/admin/product-sources/' + ${source.id} + '/delete'}" method="post" class="inline">
+                                        <button type="submit" class="text-red-700 font-semibold hover:underline" th:text="#{admin.product_sources.action.delete}">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <th:block th:replace="~{backoffice/fragments/sorting :: script}"></th:block>
+                <th:block th:replace="~{backoffice/fragments/searching :: script}"></th:block>
+                <th:block th:if="${page.totalElements > 0}"
+                          th:replace="~{backoffice/fragments/pagination :: pager(${page}, '/admin/product-sources')}"></th:block>
+            </article>
+        </section>
+    </th:block>
+</th:block>
+</html>

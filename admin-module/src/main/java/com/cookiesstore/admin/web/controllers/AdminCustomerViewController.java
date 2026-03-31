@@ -1,15 +1,16 @@
 package com.cookiesstore.admin.web.controllers;
 
-import com.cookiesstore.admin.service.CustomerAvatarStorageService;
-import com.cookiesstore.admin.web.dto.users.CreateCustomerForm;
-import com.cookiesstore.admin.web.dto.users.UpdateCustomerForm;
+import com.cookiesstore.admin.config.CustomerSearchProperties;
+import com.cookiesstore.admin.search.EntitySearchSpecifications;
+import com.cookiesstore.admin.service.customers.CustomerAvatarStorageService;
+import com.cookiesstore.admin.web.dto.customers.CreateCustomerForm;
+import com.cookiesstore.admin.web.dto.customers.UpdateCustomerForm;
 import com.cookiesstore.common.entities.Customer;
 import com.cookiesstore.common.services.CustomerService;
 import jakarta.validation.Valid;
 
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -41,30 +43,35 @@ public class AdminCustomerViewController {
     private final CustomerService customerService;
     private final CustomerAvatarStorageService customerAvatarStorageService;
     private final MessageSource messageSource;
+    private CustomerSearchProperties customerSearchProperties;
 
     public AdminCustomerViewController(
         CustomerService customerService,
         CustomerAvatarStorageService customerAvatarStorageService,
-        MessageSource messageSource
+        MessageSource messageSource,
+        CustomerSearchProperties customerSearchProperties
     ) {
         this.customerService = customerService;
         this.customerAvatarStorageService = customerAvatarStorageService;
         this.messageSource = messageSource;
+        this.customerSearchProperties = customerSearchProperties;
     }
 
     @GetMapping(value = "/admin/customers", name = "admin.customers.list")
     public String listCustomers(
         @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-        @RequestParam(value = "sort", required = false) List<String> sortParams,
-        @RequestParam(value = "q", required = false) String searchQuery,
+        @ModelAttribute("searchQuery") String searchQuery,
         Model model
     ) {
-        var customersPage = customerService.listCustomers(pageable, searchQuery);
+        var customersPage =  StringUtils.hasText(searchQuery)
+        ? customerService.listCustomers(
+            EntitySearchSpecifications.globalSearch(searchQuery, this.customerSearchProperties.getSearchableFields()), 
+            pageable
+        )
+        : customerService.listCustomers(pageable);
         var customersStatistics = customerService.getCustomerStatistics(java.sql.Date.valueOf(LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())), java.sql.Date.valueOf(LocalDate.now()));
         model.addAttribute("customersPage", customersPage);
         model.addAttribute("customersStatistics", customersStatistics);
-        model.addAttribute("sortParams", sortParams);
-        model.addAttribute("searchQuery", searchQuery);
         return "backoffice/customers/index";
     }
 
@@ -89,18 +96,13 @@ public class AdminCustomerViewController {
         }
 
         Customer created;
-        try {
-            created = customerService.createCustomer(
-                customerForm.name(),
-                customerForm.email(),
-                customerForm.password(),
-                customerForm.phone(),
-                customerForm.active()
-            );
-        } catch (IllegalArgumentException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "backoffice/customers/form";
-        }
+        created = customerService.createCustomer(
+            customerForm.name(),
+            customerForm.email(),
+            customerForm.password(),
+            customerForm.phone(),
+            customerForm.active()
+        );
 
         if (avatar != null && !avatar.isEmpty()) {
             try {
@@ -121,10 +123,7 @@ public class AdminCustomerViewController {
         @PathVariable("customerId") Long customerId,
         Model model
     ) {
-        Customer customer = customerService.findById(customerId).orElse(null);
-        if (customer == null) {
-            return "redirect:/admin/customers";
-        }
+        Customer customer = customerService.findByIdOrThrow(customerId);
         model.addAttribute("form", new UpdateCustomerForm(customer.getName(), customer.getEmail(), customer.getPhone(), customer.isActive()));
         return "backoffice/customers/form";
     }
@@ -142,22 +141,13 @@ public class AdminCustomerViewController {
             return "backoffice/customers/form";
         }
 
-        try {
-            boolean updated = customerService.updateCustomer(
-                customerId,
-                customerForm.name(),
-                customerForm.email(),
-                customerForm.phone(),
-                customerForm.active()
-            );
-            if (!updated) {
-                redirectAttributes.addFlashAttribute("errorMessage", message("admin.customers.flash.notFound"));
-                return "redirect:/admin/customers";
-            }
-        } catch (IllegalArgumentException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "backoffice/customers/form";
-        }
+        customerService.updateCustomerOrThrow(
+            customerId,
+            customerForm.name(),
+            customerForm.email(),
+            customerForm.phone(),
+            customerForm.active()
+        );
 
         if (avatar != null && !avatar.isEmpty()) {
             try {
@@ -178,12 +168,8 @@ public class AdminCustomerViewController {
         @PathVariable("customerId") Long customerId,
         RedirectAttributes redirectAttributes
     ) {
-        boolean deactivated = customerService.disableCustomer(customerId);
-        if (deactivated) {
-            redirectAttributes.addFlashAttribute("successMessage", message("admin.customers.flash.deactivated"));
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", message("admin.customers.flash.notFound"));
-        }
+        customerService.disableCustomerOrThrow(customerId);
+        redirectAttributes.addFlashAttribute("successMessage", message("admin.customers.flash.deactivated"));
         return "redirect:/admin/customers";
     }
 
@@ -192,12 +178,8 @@ public class AdminCustomerViewController {
         @PathVariable("customerId") Long customerId,
         RedirectAttributes redirectAttributes
     ) {
-        boolean enabled = customerService.enableCustomer(customerId);
-        if (enabled) {
-            redirectAttributes.addFlashAttribute("successMessage", message("admin.customers.flash.enabled"));
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", message("admin.customers.flash.notFound"));
-        }
+        customerService.enableCustomerOrThrow(customerId);
+        redirectAttributes.addFlashAttribute("successMessage", message("admin.customers.flash.enabled"));
         return "redirect:/admin/customers";
     }
 

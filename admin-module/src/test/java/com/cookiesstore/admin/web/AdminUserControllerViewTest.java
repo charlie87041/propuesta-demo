@@ -1,9 +1,9 @@
 package com.cookiesstore.admin.web;
 
 import com.cookiesstore.admin.domain.AdminUser;
-import com.cookiesstore.admin.service.AdminUserService;
+import com.cookiesstore.admin.service.users.AdminUserService;
 import com.cookiesstore.admin.web.controllers.AdminUserViewController;
-import com.cookiesstore.admin.web.interceptos.AdminUserFormModelAdvice;
+import com.cookiesstore.admin.web.advice.model.AdminUserFormModelAdvice;
 import com.cookiesstore.common.authorization.domain.Ability;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.StaticMessageSource;

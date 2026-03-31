@@ -10,8 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.cookiesstore.admin.domain.AdminUser;
 import com.cookiesstore.admin.repository.AdminUserRepository;
-import com.cookiesstore.admin.service.AdminAbilityAssignmentService;
-import com.cookiesstore.admin.service.AdminUserService;
+import com.cookiesstore.admin.service.users.AdminAbilityAssignmentService;
+import com.cookiesstore.admin.service.users.AdminUserService;
 import com.cookiesstore.admin.web.controllers.AdminUserApiController;
 import com.cookiesstore.common.auth.JwtTokenProvider;
 import com.cookiesstore.common.authorization.domain.Ability;

@@ -12,11 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@org.springframework.context.annotation.Profile("test")
+@Order(10)
 public class AuthorizationDataSeeder implements CommandLineRunner {
 
     private final DomainRepository domainRepository;

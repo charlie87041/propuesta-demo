@@ -1,7 +1,7 @@
 package com.cookiesstore.admin.web.controllers;
 
 import com.cookiesstore.admin.domain.AdminUser;
-import com.cookiesstore.admin.service.AdminUserService;
+import com.cookiesstore.admin.service.users.AdminUserService;
 import com.cookiesstore.admin.web.dto.users.CreateAdminUserForm;
 import com.cookiesstore.admin.web.dto.users.UpdateAdminUserForm;
 
@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -41,8 +39,7 @@ public class AdminUserViewController {
     @GetMapping(value = "/admin/users", name = "admin.users.list")
     public String usersList(
         @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-        @RequestParam(value = "sort", required = false) List<String> sortParams,
-        @RequestParam(value = "q", required = false) String searchQuery,
+        @ModelAttribute("searchQuery") String searchQuery,
         Model model,
         @ModelAttribute("currentUserId") Long actorUserId
     ) {
@@ -57,8 +54,6 @@ public class AdminUserViewController {
         model.addAttribute("usersPage", usersPage);
         model.addAttribute("userRoles", userRoles);
         model.addAttribute("domainCode", domainCode);
-        model.addAttribute("sortParams", sortParams);
-        model.addAttribute("searchQuery", searchQuery);
         return "backoffice/users/index";
     }
 
