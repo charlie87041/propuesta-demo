@@ -17,6 +17,8 @@ import com.cookiesstore.common.repositories.SourceRepository;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +78,7 @@ public class ProductService {
         List<Source> source = form.sourceIds() == null || form.sourceIds().isEmpty()
             ? sourceRepository.findAllBySystemManagedTrue()
             : sourceRepository.findAllById(form.sourceIds());
+        source = deduplicateSources(source);
 
 
         if (source.isEmpty()) {
@@ -100,8 +103,7 @@ public class ProductService {
 
         try {
             productRepository.save(product);
-            Price currentPrice = newProductPrice(product, form.price());
-            product.setCurrentPrice(currentPrice);
+            upsertProductCurrentPrice(product, form.price());
             addProductSource(
                 product,
                 source,
@@ -114,8 +116,64 @@ public class ProductService {
             );
             return productRepository.save(product);
         } catch (DataIntegrityViolationException ex) {
-            throw new ProductUniqueConstraintException();
+            throw mapDataIntegrityViolation(ex);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public UpdateProductForm buildUpdateProductForm(Long productId) {
+        Product product = getProduct(productId);
+        List<ProductSource> productSources = productSourceRepository.findByProductId(productId);
+
+        List<Long> sourceIds = productSources.stream()
+            .map(ps -> ps.getSource().getId())
+            .toList();
+
+        Map<Long, Double> sourcePrices = new HashMap<>();
+        Map<Long, Integer> sourceStockQuantities = new HashMap<>();
+        Map<Long, Integer> sourceLowStockThresholds = new HashMap<>();
+
+        Integer defaultStockQuantity = 0;
+        Integer defaultLowStockThreshold = PRODUCT_SOURCE_THRESHOLD;
+        if (!productSources.isEmpty()) {
+            defaultStockQuantity = productSources.get(0).getStockQuantity();
+            defaultLowStockThreshold = productSources.get(0).getLowStockThreshold();
+        }
+
+        for (ProductSource productSource : productSources) {
+            Long sourceId = productSource.getSource().getId();
+            sourceStockQuantities.put(sourceId, productSource.getStockQuantity());
+            sourceLowStockThresholds.put(sourceId, productSource.getLowStockThreshold());
+
+            if (productSource.getPrice() != null && productSource.getPrice().getAmount() != null) {
+                sourcePrices.put(sourceId, productSource.getPrice().getAmount().doubleValue());
+            }
+        }
+
+        Double currentPrice = product.getCurrentPrice() != null && product.getCurrentPrice().getAmount() != null
+            ? product.getCurrentPrice().getAmount().doubleValue()
+            : 0D;
+
+        return new UpdateProductForm(
+            product.getSku(),
+            product.getName(),
+            product.getSlug(),
+            product.getDescription(),
+            product.getCategory().getId(),
+            product.getMainImageUrl(),
+            product.getIngredients(),
+            product.getAllergenInfo(),
+            product.getNutritionFacts(),
+            sourceIds,
+            defaultStockQuantity,
+            defaultLowStockThreshold,
+            currentPrice,
+            sourcePrices,
+            sourceStockQuantities,
+            sourceLowStockThresholds,
+            product.isActive(),
+            product.isVisible()
+        );
     }
 
     protected Price newProductPrice(Product product, Double amount) {
@@ -147,6 +205,7 @@ public class ProductService {
 
         if (sync) {
             productSourceRepository.deleteByProductId(product.getId());
+            productSourceRepository.flush();
         }
         source.stream()
             .forEach((Source currentSource) -> {
@@ -164,16 +223,7 @@ public class ProductService {
                     sourceThreshold != null ? sourceThreshold : (lowStockThreshold != null ? lowStockThreshold : PRODUCT_SOURCE_THRESHOLD)
                 );
 
-                if (sourcePrice != null) {
-                    Price price = new Price();
-                    price.setSource(currentSource);
-                    price.setAmount(BigDecimal.valueOf(sourcePrice));
-                    price.setCurrency(defaultCurrency);
-                    price.setProduct(product);
-                    price.setValidFrom(Instant.now());
-                    price.setCreatedBy(actorUserId);
-                    productSource.setPrice(priceRepository.save(price));
-                }
+                productSource.setPrice(upsertSourcePrice(product, currentSource, sourcePrice, defaultCurrency, actorUserId));
                 productSourceRepository.save(productSource);
             });
     }
@@ -195,6 +245,15 @@ public class ProductService {
             throw new ProductSlugExistsException(slug);
         }
 
+        List<Source> source = form.sourceIds() == null || form.sourceIds().isEmpty()
+            ? sourceRepository.findAllBySystemManagedTrue()
+            : sourceRepository.findAllById(form.sourceIds());
+        source = deduplicateSources(source);
+
+        if (source.isEmpty()) {
+            throw new SourceNotFoundException(form.sourceIds());
+        }
+
         var category = categoryRepository.findById(form.categoryId())
             .orElseThrow(() -> new ProductCategoryNotFoundException(form.categoryId()));
 
@@ -211,9 +270,20 @@ public class ProductService {
         product.setVisible(form.visible());
 
         try {
+            upsertProductCurrentPrice(product, form.price());
+            addProductSource(
+                product,
+                source,
+                form.sourcePrices(),
+                form.sourceStockQuantities(),
+                form.sourceLowStockThresholds(),
+                form.stockQuantity(),
+                form.lowStockThreshold(),
+                true
+            );
             return productRepository.save(product);
         } catch (DataIntegrityViolationException ex) {
-            throw new ProductUniqueConstraintException();
+            throw mapDataIntegrityViolation(ex);
         }
     }
 
@@ -250,5 +320,107 @@ public class ProductService {
             throw new IllegalStateException("Invalid admin.pricing.default-currency configuration");
         }
         return configuredCurrency.toUpperCase();
+    }
+
+    private void upsertProductCurrentPrice(Product product, Double amount) {
+        if (amount == null) {
+            return;
+        }
+
+        String currency = resolveDefaultCurrency();
+        Price openBasePrice = priceRepository
+            .findFirstByProductIdAndSourceIdIsNullAndCurrencyAndValidToIsNull(product.getId(), currency)
+            .orElse(null);
+
+        BigDecimal requestedAmount = BigDecimal.valueOf(amount);
+        if (openBasePrice != null
+            && openBasePrice.getAmount() != null
+            && openBasePrice.getAmount().compareTo(requestedAmount) == 0) {
+            product.setCurrentPrice(openBasePrice);
+            return;
+        }
+
+        if (openBasePrice != null) {
+            openBasePrice.setValidTo(Instant.now());
+            priceRepository.save(openBasePrice);
+        }
+
+        Price currentPrice = newProductPrice(product, amount);
+        product.setCurrentPrice(currentPrice);
+    }
+
+    private Price upsertSourcePrice(
+        Product product,
+        Source source,
+        Double amount,
+        String currency,
+        Long actorUserId
+    ) {
+        Price openSourcePrice = priceRepository
+            .findFirstByProductIdAndSourceIdAndCurrencyAndValidToIsNull(product.getId(), source.getId(), currency)
+            .orElse(null);
+
+        if (amount == null) {
+            if (openSourcePrice != null) {
+                openSourcePrice.setValidTo(Instant.now());
+                priceRepository.save(openSourcePrice);
+            }
+            return null;
+        }
+
+        BigDecimal requestedAmount = BigDecimal.valueOf(amount);
+        if (openSourcePrice != null
+            && openSourcePrice.getAmount() != null
+            && openSourcePrice.getAmount().compareTo(requestedAmount) == 0) {
+            return openSourcePrice;
+        }
+
+        if (openSourcePrice != null) {
+            openSourcePrice.setValidTo(Instant.now());
+            priceRepository.save(openSourcePrice);
+        }
+
+        Price price = new Price();
+        price.setSource(source);
+        price.setAmount(requestedAmount);
+        price.setCurrency(currency);
+        price.setProduct(product);
+        price.setValidFrom(Instant.now());
+        price.setCreatedBy(actorUserId);
+        return priceRepository.save(price);
+    }
+
+    private RuntimeException mapDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String message = ex.getMostSpecificCause() != null
+            ? ex.getMostSpecificCause().getMessage()
+            : ex.getMessage();
+        if (message != null) {
+            String lower = message.toLowerCase();
+            if (lower.contains("idx_products_sku")
+                || lower.contains("idx_products_slug")
+                || lower.contains("products_sku_key")
+                || lower.contains("products_slug_key")) {
+                return new ProductUniqueConstraintException();
+            }
+        }
+        return ex;
+    }
+
+    private List<Source> deduplicateSources(List<Source> sources) {
+        if (sources == null || sources.isEmpty()) {
+            return List.of();
+        }
+        return new java.util.ArrayList<>(
+            sources.stream()
+                .collect(
+                    java.util.stream.Collectors.toMap(
+                        Source::getId,
+                        source -> source,
+                        (left, right) -> left,
+                        LinkedHashMap::new
+                    )
+                )
+                .values()
+        );
     }
 }

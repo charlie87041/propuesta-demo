@@ -77,7 +77,7 @@
                             <textarea name="nutritionFacts" rows="2" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{nutritionFacts}"></textarea>
                         </label>
 
-                        <div th:if="${!isEdit}" class="md:col-span-2 space-y-3">
+                        <div class="md:col-span-2 space-y-3">
                             <h5 class="text-sm font-bold text-[#8b4513]" th:text="#{admin.products.form.section.pricingInventory}">Pricing &amp; Inventory</h5>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <label class="flex flex-col gap-1.5">
@@ -98,7 +98,7 @@
                             </div>
                         </div>
 
-                        <div th:if="${!isEdit}" class="md:col-span-2 space-y-3">
+                        <div class="md:col-span-2 space-y-3">
                             <h5 class="text-sm font-bold text-[#8b4513]" th:text="#{admin.products.form.section.sources}">Sources</h5>
                             <div class="overflow-x-auto border border-[#f3ece8] rounded-lg">
                                 <table class="min-w-full text-sm">

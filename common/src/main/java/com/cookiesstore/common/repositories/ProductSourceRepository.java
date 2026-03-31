@@ -13,6 +13,8 @@ public interface ProductSourceRepository extends JpaRepository<ProductSource, Lo
 
     Optional<ProductSource> findByProductIdAndSourceId(Long productId, Long sourceId);
 
+    List<ProductSource> findByProductId(Long productId);
+
     List<ProductSource> findBySourceIdAndStatus(Long sourceId, ProductSourceStatus status);
 
     void deleteByProductId(Long productId);

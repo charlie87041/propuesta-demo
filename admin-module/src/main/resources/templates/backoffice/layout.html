@@ -29,18 +29,23 @@
                class="block px-3 py-2 rounded-lg text-sm"
                th:classappend="${activeNav} == 'customers' ? ' bg-[#8b4513]/10 text-[#8b4513] font-bold' : ' text-[#956d50] font-semibold hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
                th:text="#{admin.layout.nav.customers}">Customers</a>
-            <a th:href="@{/admin/categories}"
-               class="block px-3 py-2 rounded-lg text-sm"
-               th:classappend="${activeNav} == 'categories' ? ' bg-[#8b4513]/10 text-[#8b4513] font-bold' : ' text-[#956d50] font-semibold hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
-               th:text="#{admin.layout.nav.categories}">Categories</a>
-            <a th:href="@{/admin/product-sources}"
-               class="block px-3 py-2 rounded-lg text-sm"
-               th:classappend="${activeNav} == 'product-sources' ? ' bg-[#8b4513]/10 text-[#8b4513] font-bold' : ' text-[#956d50] font-semibold hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
-               th:text="#{admin.layout.nav.product_sources}">Sources</a>
-            <a th:href="@{/admin/products}"
-               class="block px-3 py-2 rounded-lg text-sm"
-               th:classappend="${activeNav} == 'products' ? ' bg-[#8b4513]/10 text-[#8b4513] font-bold' : ' text-[#956d50] font-semibold hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
-               th:text="#{admin.layout.nav.products}">Products</a>
+
+            <div class="mt-4 block px-3 py-2 rounded-lg text-sm text-[#956d50] font-semibold"
+                 th:text="#{admin.layout.nav.catalog}">Catalog</div>
+            <div class="space-y-1 pl-2">
+                <a th:href="@{/admin/categories}"
+                   class="block px-3 py-1.5 rounded-lg text-[11px] uppercase tracking-wide"
+                   th:classappend="${activeNav} == 'categories' ? ' text-[#8b4513] font-bold' : ' text-[#956d50]/80 font-bold hover:text-[#8b4513]'"
+                   th:text="#{admin.layout.nav.categories}">Categories</a>
+                <a th:href="@{/admin/product-sources}"
+                   class="block px-3 py-1.5 rounded-lg text-[11px] uppercase tracking-wide"
+                   th:classappend="${activeNav} == 'product-sources' ? ' text-[#8b4513] font-bold' : ' text-[#956d50]/80 font-bold hover:text-[#8b4513]'"
+                   th:text="#{admin.layout.nav.product_sources}">Sources</a>
+                <a th:href="@{/admin/products}"
+                   class="block px-3 py-1.5 rounded-lg text-[11px] uppercase tracking-wide"
+                   th:classappend="${activeNav} == 'products' ? ' text-[#8b4513] font-bold' : ' text-[#956d50]/80 font-bold hover:text-[#8b4513]'"
+                   th:text="#{admin.layout.nav.products}">Products</a>
+            </div>
         </nav>
     </aside>
 

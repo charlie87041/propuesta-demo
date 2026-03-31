@@ -69,6 +69,7 @@ public class ProductsModelAdvice extends BaseAdviceSupport {
             model.addAttribute("formAction", "/admin/products/" + productId);
             model.addAttribute("submitLabel", message("admin.products.submit.edit"));
             model.addAttribute("categories", categoryRepository.findAll(Sort.by(Sort.Order.asc("sortOrder"), Sort.Order.asc("name"))));
+            model.addAttribute("sources", sourceRepository.findAll(Sort.by(Sort.Order.asc("name"))));
         }
     }
 }

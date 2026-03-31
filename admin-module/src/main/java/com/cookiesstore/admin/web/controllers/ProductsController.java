@@ -61,7 +61,9 @@ public class ProductsController {
 
     @GetMapping(value = "/admin/products/new", produces = "text/html", name = "admin.products.create.view")
     public String newProduct(Model model) {
-        model.addAttribute("form", new CreateProductForm("", "", "", "", null, "", "", "", "", true, true, null, 0, 20, null, null, null, null));
+        if (!model.containsAttribute("form")) {
+            model.addAttribute("form", new CreateProductForm("", "", "", "", null, "", "", "", "", true, true, null, 0, 20, null, null, null, null));
+        }
         return "backoffice/products/form";
     }
 
@@ -85,23 +87,9 @@ public class ProductsController {
         @PathVariable("productId") Long productId,
         Model model
     ) {
-        var product = productService.getProduct(productId);
-        model.addAttribute(
-            "form",
-            new UpdateProductForm(
-                product.getSku(),
-                product.getName(),
-                product.getSlug(),
-                product.getDescription(),
-                product.getCategory().getId(),
-                product.getMainImageUrl(),
-                product.getIngredients(),
-                product.getAllergenInfo(),
-                product.getNutritionFacts(),
-                product.isActive(),
-                product.isVisible()
-            )
-        );
+        if (!model.containsAttribute("form")) {
+            model.addAttribute("form", productService.buildUpdateProductForm(productId));
+        }
         return "backoffice/products/form";
     }
 
