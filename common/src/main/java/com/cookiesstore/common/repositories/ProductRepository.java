@@ -4,8 +4,10 @@ import com.cookiesstore.common.entities.Product;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -20,4 +22,14 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     boolean existsByCategoryId(Long categoryId);
 
     Page<Product> findByNameContainingIgnoreCaseOrSkuContainingIgnoreCase(String name, String sku, Pageable pageable);
+
+    Optional<Product> findByIdAndProductTypeCode(Long id, String productTypeCode);
+
+    @EntityGraph(attributePaths = {"components", "components.childProduct", "components.source"})
+    @Query("select p from Product p where p.id = :id and p.productTypeCode = :productTypeCode")
+    Optional<Product> findBundleByIdAndProductTypeCode(Long id, String productTypeCode);
+
+    @Query("select p from Product p where p.id = :id and p.productTypeCode = :productTypeCode")
+    @EntityGraph(attributePaths = {"packageOptions", "packageOptions.optionType", "packageOptions.category"})
+    Optional<Product> findPackageByIdAndProductTypeCode(Long id, String productTypeCode);
 }

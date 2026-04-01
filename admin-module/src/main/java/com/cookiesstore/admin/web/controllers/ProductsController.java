@@ -2,10 +2,10 @@ package com.cookiesstore.admin.web.controllers;
 
 import com.cookiesstore.admin.config.ProductSearchProperties;
 import com.cookiesstore.admin.search.EntitySearchSpecifications;
-import com.cookiesstore.admin.service.products.ProductService;
 import com.cookiesstore.admin.web.dto.products.CreateProductForm;
 import com.cookiesstore.admin.web.dto.products.UpdateProductForm;
 import com.cookiesstore.common.repositories.ProductRepository;
+import com.cookiesstore.common.services.products.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -26,13 +26,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ProductsController {
 
     private final ProductRepository productRepository;
-    private final ProductService productService;
+    private final ProductService<CreateProductForm, UpdateProductForm> productService;
     private final ProductSearchProperties productSearchProperties;
     private final MessageSource messageSource;
 
     public ProductsController(
         ProductRepository productRepository,
-        ProductService productService,
+        ProductService<CreateProductForm, UpdateProductForm> productService,
         ProductSearchProperties productSearchProperties,
         MessageSource messageSource
     ) {
@@ -62,7 +62,37 @@ public class ProductsController {
     @GetMapping(value = "/admin/products/new", produces = "text/html", name = "admin.products.create.view")
     public String newProduct(Model model) {
         if (!model.containsAttribute("form")) {
-            model.addAttribute("form", new CreateProductForm("", "", "", "", null, "", "", "", "", true, true, null, 0, 20, null, null, null, null));
+            model.addAttribute(
+                "form",
+                new CreateProductForm(
+                    "",
+                    "",
+                    "",
+                    "",
+                    null,
+                    "",
+                    "",
+                    "",
+                    "",
+                    true,
+                    true,
+                    null,
+                    0,
+                    20,
+                    null,
+                    "SIMPLE",
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    true,
+                    true,
+                    true,
+                    null,
+                    null
+                )
+            );
         }
         return "backoffice/products/form";
     }

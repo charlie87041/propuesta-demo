@@ -1,6 +1,7 @@
 package com.cookiesstore.common.repositories;
 
 import com.cookiesstore.common.entities.Price;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,6 @@ public interface PriceRepository extends JpaRepository<Price, Long> {
         Long sourceId,
         String currency
     );
+
+    void deleteByProductIdAndSourceIdIn(Long productId, Collection<Long> sourceIds);
 }

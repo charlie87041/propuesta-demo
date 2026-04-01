@@ -14,13 +14,16 @@ import com.cookiesstore.common.repositories.PriceRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
 import com.cookiesstore.common.repositories.ProductSourceRepository;
 import com.cookiesstore.common.repositories.SourceRepository;
+import com.cookiesstore.common.services.products.ProductTypeService;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -29,19 +32,21 @@ import org.springframework.util.StringUtils;
 
 @Service
 @Transactional
-public class ProductService {
+public class SimpleProductService implements ProductTypeService<CreateProductForm, UpdateProductForm> {
 
-    private static final Integer PRODUCT_SOURCE_THRESHOLD = 20;
+    public static final String TYPE_CODE = "SIMPLE";
 
-    private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
-    private final SourceRepository sourceRepository;
-    private final PriceRepository priceRepository;
-    private final ProductSourceRepository productSourceRepository;
-    private final PricingProperties pricingProperties;
-    private final AuthenticatedUserProvider authenticatedUserProvider;
+    protected static final Integer PRODUCT_SOURCE_THRESHOLD = 20;
 
-    public ProductService(
+    protected final ProductRepository productRepository;
+    protected final CategoryRepository categoryRepository;
+    protected final SourceRepository sourceRepository;
+    protected final PriceRepository priceRepository;
+    protected final ProductSourceRepository productSourceRepository;
+    protected final PricingProperties pricingProperties;
+    protected final AuthenticatedUserProvider authenticatedUserProvider;
+
+    public SimpleProductService(
         ProductRepository productRepository,
         CategoryRepository categoryRepository,
         SourceRepository sourceRepository,
@@ -57,6 +62,11 @@ public class ProductService {
         this.productSourceRepository = productSourceRepository;
         this.pricingProperties = pricingProperties;
         this.authenticatedUserProvider = authenticatedUserProvider;
+    }
+
+    @Override
+    public String productTypeCode() {
+        return TYPE_CODE;
     }
 
     @Transactional(readOnly = true)
@@ -89,6 +99,7 @@ public class ProductService {
             .orElseThrow(() -> new ProductCategoryNotFoundException(form.categoryId()));
 
         Product product = new Product();
+        product.setProductTypeCode(form.productTypeCode());
         product.setSku(sku);
         product.setName(form.name().trim());
         product.setSlug(slug);
@@ -100,6 +111,9 @@ public class ProductService {
         product.setNutritionFacts(trimToNull(form.nutritionFacts()));
         product.setActive(form.active());
         product.setVisible(form.visible());
+        product.setListable(form.isListable());
+        product.setSearchable(form.isPurchasable());
+        product.setPurchasableAlone(form.isPurchasableAlone());
 
         try {
             productRepository.save(product);
@@ -168,11 +182,19 @@ public class ProductService {
             defaultStockQuantity,
             defaultLowStockThreshold,
             currentPrice,
+            product.getProductTypeCode(),
+            List.of(),
+            List.of(),
             sourcePrices,
             sourceStockQuantities,
             sourceLowStockThresholds,
             product.isActive(),
-            product.isVisible()
+            product.isVisible(),
+            product.getListable() == null || product.getListable(),
+            product.getSearchable() == null || product.getSearchable(),
+            product.getPurchasableAlone() == null || product.getPurchasableAlone(),
+            null,
+            List.of()
         );
     }
 
@@ -204,8 +226,21 @@ public class ProductService {
         Long actorUserId = authenticatedUserProvider.currentUserId();
 
         if (sync) {
+            List<ProductSource> existingProductSources = productSourceRepository.findByProductId(product.getId());
+            Set<Long> requestedSourceIds = new HashSet<>();
+            source.forEach(currentSource -> requestedSourceIds.add(currentSource.getId()));
+            List<Long> removedSourceIds = existingProductSources.stream()
+                .map(productSource -> productSource.getSource().getId())
+                .filter(existingSourceId -> !requestedSourceIds.contains(existingSourceId))
+                .distinct()
+                .toList();
+
             productSourceRepository.deleteByProductId(product.getId());
             productSourceRepository.flush();
+
+            if (!removedSourceIds.isEmpty()) {
+                priceRepository.deleteByProductIdAndSourceIdIn(product.getId(), removedSourceIds);
+            }
         }
         source.stream()
             .forEach((Source currentSource) -> {
@@ -268,6 +303,9 @@ public class ProductService {
         product.setNutritionFacts(trimToNull(form.nutritionFacts()));
         product.setActive(form.active());
         product.setVisible(form.visible());
+        product.setListable(form.isListable());
+        product.setSearchable(form.isPurchasable());
+        product.setPurchasableAlone(form.isPurchasableAlone());
 
         try {
             upsertProductCurrentPrice(product, form.price());

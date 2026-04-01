@@ -50,6 +50,16 @@
                             <span th:if="${#fields.hasErrors('categoryId')}" class="text-xs font-semibold text-red-700" th:errors="*{categoryId}"></span>
                         </label>
 
+                        <label class="flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70">Tipo de producto</span>
+                            <select id="productTypeCode" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{productTypeCode}">
+                                <option th:each="typeCode : ${supportedProductTypes}" th:value="${typeCode}" th:text="${typeCode}">SIMPLE</option>
+                            </select>
+                        </label>
+                        <input th:if="${!isEdit}" type="hidden" id="isListableInput" name="isListable" th:value="*{isListable}"/>
+                        <input th:if="${!isEdit}" type="hidden" id="isPurchasableInput" name="isPurchasable" th:value="*{isPurchasable}"/>
+                        <input th:if="${!isEdit}" type="hidden" id="isPurchasableAloneInput" name="isPurchasableAlone" th:value="*{isPurchasableAlone}"/>
+
                         <label class="md:col-span-2 flex flex-col gap-1.5">
                             <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.description}">Description</span>
                             <textarea name="description" rows="3" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{description}"></textarea>
@@ -77,12 +87,12 @@
                             <textarea name="nutritionFacts" rows="2" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{nutritionFacts}"></textarea>
                         </label>
 
-                        <div class="md:col-span-2 space-y-3">
+                        <div id="pricingInventorySection" class="md:col-span-2 space-y-3">
                             <h5 class="text-sm font-bold text-[#8b4513]" th:text="#{admin.products.form.section.pricingInventory}">Pricing &amp; Inventory</h5>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <label class="flex flex-col gap-1.5">
                                     <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.price}">Price</span>
-                                    <input name="price" type="number" min="0" step="0.01" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{price}" required>
+                                    <input id="productPriceInput" name="price" type="number" min="0" step="0.01" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{price}" required>
                                     <span th:if="${#fields.hasErrors('price')}" class="text-xs font-semibold text-red-700" th:errors="*{price}"></span>
                                 </label>
                                 <label class="flex flex-col gap-1.5">
@@ -96,6 +106,96 @@
                                     <span th:if="${#fields.hasErrors('lowStockThreshold')}" class="text-xs font-semibold text-red-700" th:errors="*{lowStockThreshold}"></span>
                                 </label>
                             </div>
+                        </div>
+
+                        <div id="bundleComponentsSection" class="md:col-span-2 space-y-3 hidden">
+                            <div class="flex items-center justify-between">
+                                <h5 class="text-sm font-bold text-[#8b4513]">Componentes del Bundle</h5>
+                                <button id="addBundleComponentBtn" type="button" class="px-3 py-1.5 text-xs font-bold text-white bg-[#8b4513] rounded-lg">
+                                    Agregar componente
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto border border-[#f3ece8] rounded-lg">
+                                <table class="min-w-full text-sm">
+                                    <thead class="bg-[#fcfaf9] text-[#8b4513]">
+                                        <tr>
+                                            <th class="px-3 py-2 text-left font-bold">Producto</th>
+                                            <th class="px-3 py-2 text-left font-bold">Source</th>
+                                            <th class="px-3 py-2 text-left font-bold">Cantidad</th>
+                                            <th class="px-3 py-2 text-left font-bold">Modo precio</th>
+                                            <th class="px-3 py-2 text-left font-bold">Precio override</th>
+                                            <th class="px-3 py-2 text-right font-bold">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bundleComponentsBody">
+                                        <tr th:if="${form.bundleComponents == null || form.bundleComponents.isEmpty()}" data-bundle-row>
+                                            <td class="px-3 py-2">
+                                                <select name="bundleComponents[0].childProductId" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                    <option value="">Seleccionar</option>
+                                                    <option th:each="p : ${bundleComponentProducts}" th:value="${p.id}" th:text="${p.name + ' (' + p.sku + ')'}">Product</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <select name="bundleComponents[0].sourceId" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                    <option value="">Global</option>
+                                                    <option th:each="source : ${sources}" th:value="${source.id}" th:text="${source.name}">Source</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <input name="bundleComponents[0].quantity" type="number" min="0.001" step="0.001" value="1.000" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-28" />
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <select name="bundleComponents[0].unitPriceMode" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                    <option value="INHERIT_PRODUCT_PRICE" selected>INHERIT_PRODUCT_PRICE</option>
+                                                    <option value="FIXED_OVERRIDE">FIXED_OVERRIDE</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <input name="bundleComponents[0].unitPriceOverride" type="number" min="0" step="0.01" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-32" />
+                                            </td>
+                                            <td class="px-3 py-2 text-right">
+                                                <button type="button" class="text-red-700 font-semibold remove-bundle-row">Quitar</button>
+                                            </td>
+                                        </tr>
+                                        <tr th:each="component,iter : ${form.bundleComponents}" data-bundle-row>
+                                            <td class="px-3 py-2">
+                                                <select th:name="|bundleComponents[${iter.index}].childProductId|" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                    <option value="">Seleccionar</option>
+                                                    <option th:each="p : ${bundleComponentProducts}" th:value="${p.id}" th:text="${p.name + ' (' + p.sku + ')'}" th:selected="${component.childProductId == p.id}">Product</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <select th:name="|bundleComponents[${iter.index}].sourceId|" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                    <option value="">Global</option>
+                                                    <option th:each="source : ${sources}" th:value="${source.id}" th:text="${source.name}" th:selected="${component.sourceId != null && component.sourceId == source.id}">Source</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <input th:name="|bundleComponents[${iter.index}].quantity|" type="number" min="0.001" step="0.001" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-28" th:value="${component.quantity}" />
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <select th:name="|bundleComponents[${iter.index}].unitPriceMode|" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                    <option value="INHERIT_PRODUCT_PRICE" th:selected="${component.unitPriceMode != null && component.unitPriceMode.name() == 'INHERIT_PRODUCT_PRICE'}">INHERIT_PRODUCT_PRICE</option>
+                                                    <option value="FIXED_OVERRIDE" th:selected="${component.unitPriceMode != null && component.unitPriceMode.name() == 'FIXED_OVERRIDE'}">FIXED_OVERRIDE</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <input th:name="|bundleComponents[${iter.index}].unitPriceOverride|" type="number" min="0" step="0.01" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-32" th:value="${component.unitPriceOverride}" />
+                                            </td>
+                                            <td class="px-3 py-2 text-right">
+                                                <button type="button" class="text-red-700 font-semibold remove-bundle-row">Quitar</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="addonInfoSection" class="md:col-span-2 hidden rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                            <p class="text-sm font-bold text-[#8b4513]">Producto Add-on</p>
+                            <p class="text-xs text-[#956d50]">
+                                Este tipo se ofrece como complemento: no se lista en catálogo ni se vende por sí solo.
+                            </p>
                         </div>
 
                         <div class="md:col-span-2 space-y-3">
@@ -199,6 +299,16 @@
                 var activeTextNode = document.getElementById("productStatusText");
                 var visibleToggle = document.getElementById("productVisibleToggle");
                 var visibleTextNode = document.getElementById("productVisibleText");
+                var productTypeSelect = document.getElementById("productTypeCode");
+                var bundleSection = document.getElementById("bundleComponentsSection");
+                var addonInfoSection = document.getElementById("addonInfoSection");
+                var pricingInventorySection = document.getElementById("pricingInventorySection");
+                var priceInput = document.getElementById("productPriceInput");
+                var bundleBody = document.getElementById("bundleComponentsBody");
+                var addBundleBtn = document.getElementById("addBundleComponentBtn");
+                var isListableInput = document.getElementById("isListableInput");
+                var isPurchasableInput = document.getElementById("isPurchasableInput");
+                var isPurchasableAloneInput = document.getElementById("isPurchasableAloneInput");
 
                 function syncActive() {
                     if (!activeToggle || !activeTextNode) {
@@ -218,6 +328,84 @@
                     visibleTextNode.textContent = visibleToggle.checked ? yesText : noText;
                 }
 
+                function reindexBundleRows() {
+                    if (!bundleBody) {
+                        return;
+                    }
+                    var rows = bundleBody.querySelectorAll("[data-bundle-row]");
+                    rows.forEach(function (row, index) {
+                        var fields = row.querySelectorAll("input[name], select[name]");
+                        fields.forEach(function (field) {
+                            if (!field.name) {
+                                return;
+                            }
+                            field.name = field.name.replace(/bundleComponents\[\d+\]/, "bundleComponents[" + index + "]");
+                        });
+                    });
+                }
+
+                function toggleTypeSections() {
+                    if (!productTypeSelect || !bundleSection) {
+                        return;
+                    }
+                    var isBundle = productTypeSelect.value === "BUNDLE";
+                    var isAddon = productTypeSelect.value === "ADD_ON";
+                    bundleSection.classList.toggle("hidden", !isBundle);
+                    if (addonInfoSection) {
+                        addonInfoSection.classList.toggle("hidden", !isAddon);
+                    }
+                    if (pricingInventorySection) {
+                        pricingInventorySection.classList.toggle("opacity-80", isBundle);
+                    }
+                    var bundleInputs = bundleSection.querySelectorAll("input,select,textarea,button.remove-bundle-row");
+                    bundleInputs.forEach(function (el) {
+                        if (el.type !== "button") {
+                            el.disabled = !isBundle;
+                        }
+                    });
+                    if (priceInput) {
+                        priceInput.readOnly = isBundle;
+                    }
+
+                    if (isListableInput && isPurchasableInput && isPurchasableAloneInput) {
+                        if (isAddon) {
+                            isListableInput.value = "false";
+                            isPurchasableInput.value = "false";
+                            isPurchasableAloneInput.value = "false";
+                        } else {
+                            isListableInput.value = "true";
+                            isPurchasableInput.value = "true";
+                            isPurchasableAloneInput.value = "true";
+                        }
+                    }
+                }
+
+                function addBundleRow() {
+                    if (!bundleBody) {
+                        return;
+                    }
+                    var index = bundleBody.querySelectorAll("[data-bundle-row]").length;
+                    var templateRow = bundleBody.querySelector("[data-bundle-row]");
+                    if (!templateRow) {
+                        return;
+                    }
+                    var row = templateRow.cloneNode(true);
+                    row.querySelectorAll("input,select").forEach(function (field) {
+                        if (field.tagName === "SELECT") {
+                            field.selectedIndex = 0;
+                        } else {
+                            if (field.name.indexOf(".quantity") !== -1) {
+                                field.value = "1.000";
+                            } else {
+                                field.value = "";
+                            }
+                        }
+                    });
+                    bundleBody.appendChild(row);
+                    reindexBundleRows();
+                    toggleTypeSections();
+                }
+
                 if (activeToggle) {
                     activeToggle.addEventListener("change", syncActive);
                     syncActive();
@@ -225,6 +413,29 @@
                 if (visibleToggle) {
                     visibleToggle.addEventListener("change", syncVisible);
                     syncVisible();
+                }
+                if (productTypeSelect) {
+                    productTypeSelect.addEventListener("change", toggleTypeSections);
+                    toggleTypeSections();
+                }
+                if (bundleBody) {
+                    bundleBody.addEventListener("click", function (event) {
+                        var trigger = event.target.closest(".remove-bundle-row");
+                        if (!trigger) {
+                            return;
+                        }
+                        var row = trigger.closest("[data-bundle-row]");
+                        if (row) {
+                            row.remove();
+                        }
+                        if (!bundleBody.querySelector("[data-bundle-row]")) {
+                            addBundleRow();
+                        }
+                        reindexBundleRows();
+                    });
+                }
+                if (addBundleBtn) {
+                    addBundleBtn.addEventListener("click", addBundleRow);
                 }
             })();
         </script>

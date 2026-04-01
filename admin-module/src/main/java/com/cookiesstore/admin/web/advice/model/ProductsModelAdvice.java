@@ -3,6 +3,7 @@ package com.cookiesstore.admin.web.advice.model;
 import com.cookiesstore.admin.web.advice.support.BaseAdviceSupport;
 import com.cookiesstore.admin.web.controllers.ProductsController;
 import com.cookiesstore.common.repositories.CategoryRepository;
+import com.cookiesstore.common.repositories.ProductRepository;
 import com.cookiesstore.common.repositories.SourceRepository;
 import java.util.List;
 import org.springframework.context.MessageSource;
@@ -19,15 +20,18 @@ public class ProductsModelAdvice extends BaseAdviceSupport {
 
     private final CategoryRepository categoryRepository;
     private final SourceRepository sourceRepository;
+    private final ProductRepository productRepository;
 
     public ProductsModelAdvice(
         CategoryRepository categoryRepository,
         SourceRepository sourceRepository,
+        ProductRepository productRepository,
         MessageSource messageSource
     ) {
         super(messageSource);
         this.categoryRepository = categoryRepository;
         this.sourceRepository = sourceRepository;
+        this.productRepository = productRepository;
     }
 
     @ModelAttribute
@@ -58,6 +62,8 @@ public class ProductsModelAdvice extends BaseAdviceSupport {
             model.addAttribute("submitLabel", message("admin.products.submit.create"));
             model.addAttribute("categories", categoryRepository.findAll(Sort.by(Sort.Order.asc("sortOrder"), Sort.Order.asc("name"))));
             model.addAttribute("sources", sourceRepository.findAll(Sort.by(Sort.Order.asc("name"))));
+            model.addAttribute("bundleComponentProducts", productRepository.findAll(Sort.by(Sort.Order.asc("name"))));
+            model.addAttribute("supportedProductTypes", List.of("SIMPLE", "BUNDLE", "PACKAGE", "ADD_ON"));
             return;
         }
 
@@ -70,6 +76,8 @@ public class ProductsModelAdvice extends BaseAdviceSupport {
             model.addAttribute("submitLabel", message("admin.products.submit.edit"));
             model.addAttribute("categories", categoryRepository.findAll(Sort.by(Sort.Order.asc("sortOrder"), Sort.Order.asc("name"))));
             model.addAttribute("sources", sourceRepository.findAll(Sort.by(Sort.Order.asc("name"))));
+            model.addAttribute("bundleComponentProducts", productRepository.findAll(Sort.by(Sort.Order.asc("name"))));
+            model.addAttribute("supportedProductTypes", List.of("SIMPLE", "BUNDLE", "PACKAGE", "ADD_ON"));
         }
     }
 }

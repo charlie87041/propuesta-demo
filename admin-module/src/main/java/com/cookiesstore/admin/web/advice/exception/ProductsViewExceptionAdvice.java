@@ -2,6 +2,7 @@ package com.cookiesstore.admin.web.advice.exception;
 
 import com.cookiesstore.admin.service.products.ProductDomainException;
 import com.cookiesstore.admin.service.products.ProductNotFoundException;
+import com.cookiesstore.admin.service.products.PackageOptionValidationException;
 import com.cookiesstore.admin.service.sources.SourceNotFoundException;
 import com.cookiesstore.admin.web.dto.products.CreateProductForm;
 import com.cookiesstore.admin.web.dto.products.UpdateProductForm;
@@ -67,6 +68,15 @@ public class ProductsViewExceptionAdvice {
         return new ModelAndView("redirect:/admin/products");
     }
 
+    @ExceptionHandler(PackageOptionValidationException.class)
+    public ModelAndView handlePackageOptionValidation(
+        PackageOptionValidationException ex,
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
+        return handleDomain(ex, request, response);
+    }
+
     @ExceptionHandler(SourceNotFoundException.class)
     public ModelAndView handleSource(
         SourceNotFoundException ex,
@@ -127,8 +137,12 @@ public class ProductsViewExceptionAdvice {
         Integer stockQuantity = parseInteger(value(request, "stockQuantity"));
         Integer lowStockThreshold = parseInteger(value(request, "lowStockThreshold"));
         Double price = parseDouble(value(request, "price"));
+        String productTypeCode = value(request, "productTypeCode");
         boolean active = parseBoolean(value(request, "active"));
         boolean visible = parseBoolean(value(request, "visible"));
+        boolean isListable = parseBooleanOrDefault(value(request, "isListable"), true);
+        boolean isPurchasable = parseBooleanOrDefault(value(request, "isPurchasable"), true);
+        boolean isPurchasableAlone = parseBooleanOrDefault(value(request, "isPurchasableAlone"), true);
 
         if ("/admin/products".equals(path)) {
             return new CreateProductForm(
@@ -147,9 +161,17 @@ public class ProductsViewExceptionAdvice {
                 stockQuantity,
                 lowStockThreshold,
                 price,
+                productTypeCode,
+                null,
+                null,
                 sourcePrices,
                 sourceStockQuantities,
-                sourceLowStockThresholds
+                sourceLowStockThresholds,
+                isListable,
+                isPurchasable,
+                isPurchasableAlone,
+                null,
+                null
             );
         }
 
@@ -167,11 +189,19 @@ public class ProductsViewExceptionAdvice {
             stockQuantity,
             lowStockThreshold,
             price,
+            productTypeCode,
+            null,
+            null,
             sourcePrices,
             sourceStockQuantities,
             sourceLowStockThresholds,
             active,
-            visible
+            visible,
+            isListable,
+            isPurchasable,
+            isPurchasableAlone,
+            null,
+            List.of()
         );
     }
 
@@ -264,5 +294,12 @@ public class ProductsViewExceptionAdvice {
 
     private boolean parseBoolean(String raw) {
         return "true".equalsIgnoreCase(raw) || "on".equalsIgnoreCase(raw) || "1".equals(raw);
+    }
+
+    private boolean parseBooleanOrDefault(String raw, boolean defaultValue) {
+        if (raw == null || raw.isBlank()) {
+            return defaultValue;
+        }
+        return parseBoolean(raw);
     }
 }

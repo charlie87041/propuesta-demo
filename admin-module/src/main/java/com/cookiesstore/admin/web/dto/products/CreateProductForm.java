@@ -25,14 +25,27 @@ public record CreateProductForm(
     @NotNull @Min(0) Integer stockQuantity,
     @NotNull @Min(0) Integer lowStockThreshold,
     @NotNull Double price,
+    String productTypeCode,
+    List<BundleComponentForm> bundleComponents,
+    List<PackageComponentForm> packageOptions,
     Map<Long, Double> sourcePrices,
     Map<Long, Integer> sourceStockQuantities,
-    Map<Long, Integer> sourceLowStockThresholds
+    Map<Long, Integer> sourceLowStockThresholds,
+    boolean isListable,
+    boolean isPurchasable,
+    boolean isPurchasableAlone,
+    //variant data
+    VariantProductForm variantData, //if this product itself is a variant, data ships here
+    List<CreateProductForm> variantForms //if variants are being created alongside product, data ships here
 ) {
     public CreateProductForm {
+        productTypeCode = (productTypeCode == null || productTypeCode.isBlank()) ? "SIMPLE" : productTypeCode.trim().toUpperCase();
         sourceIds = sourceIds == null ? List.of() : sourceIds;
+        bundleComponents = bundleComponents == null ? List.of() : bundleComponents;
+        packageOptions = packageOptions == null ? List.of() : packageOptions;
         sourcePrices = sourcePrices == null ? new HashMap<>() : sourcePrices;
         sourceStockQuantities = sourceStockQuantities == null ? new HashMap<>() : sourceStockQuantities;
         sourceLowStockThresholds = sourceLowStockThresholds == null ? new HashMap<>() : sourceLowStockThresholds;
+        variantForms = variantForms == null ? List.of() : variantForms;
     }
 }
