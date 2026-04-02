@@ -5,8 +5,13 @@ import com.cookiesstore.admin.search.EntitySearchSpecifications;
 import com.cookiesstore.admin.service.categories.CategoryService;
 import com.cookiesstore.admin.web.dto.categories.CreateCategoryForm;
 import com.cookiesstore.admin.web.dto.categories.UpdateCategoryForm;
+import com.cookiesstore.common.entities.Category;
 import com.cookiesstore.common.repositories.CategoryRepository;
+import com.cookiesstore.common.repositories.ProductRepository;
 import jakarta.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Pageable;
@@ -26,17 +31,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class CategoriesController {
 
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
     private final CategoryService categoryService;
     private final CategorySearchProperties categorySearchProperties;
     private final MessageSource messageSource;
 
     public CategoriesController(
         CategoryRepository categoryRepository,
+        ProductRepository productRepository,
         CategoryService categoryService,
         CategorySearchProperties categorySearchProperties,
         MessageSource messageSource
     ) {
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
         this.categoryService = categoryService;
         this.categorySearchProperties = categorySearchProperties;
         this.messageSource = messageSource;
@@ -55,7 +63,10 @@ public class CategoriesController {
             )
             : this.categoryRepository.findAll(pageable);
 
+        Map<Long, CategoryProductCounters> categoryProductCounts = buildCategoryProductCounters(categoriesPage.getContent());
+
         model.addAttribute("categoriesPage", categoriesPage);
+        model.addAttribute("categoryProductCounts", categoryProductCounts);
         return "backoffice/categories/index";
     }
 
@@ -148,5 +159,37 @@ public class CategoriesController {
 
     private String message(String key, Object... args) {
         return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
+    }
+
+    private Map<Long, CategoryProductCounters> buildCategoryProductCounters(List<Category> categories) {
+        if (categories == null || categories.isEmpty()) {
+            return Map.of();
+        }
+
+        List<Long> categoryIds = categories.stream()
+            .map(Category::getId)
+            .toList();
+
+        Map<Long, CategoryProductCounters> countsByCategory = new HashMap<>();
+        productRepository.countProductsByCategoryIds(categoryIds).forEach(row -> countsByCategory.put(
+            row.getCategoryId(),
+            new CategoryProductCounters(
+                row.getTotalProducts() == null ? 0L : row.getTotalProducts(),
+                row.getActiveProducts() == null ? 0L : row.getActiveProducts(),
+                row.getActiveListableProducts() == null ? 0L : row.getActiveListableProducts()
+            )
+        ));
+
+        // Ensure every category in the current page has a value (including zeros).
+        categories.forEach(category -> countsByCategory.putIfAbsent(category.getId(), CategoryProductCounters.ZERO));
+        return countsByCategory;
+    }
+
+    private record CategoryProductCounters(
+        long totalProducts,
+        long activeProducts,
+        long activeListableProducts
+    ) {
+        private static final CategoryProductCounters ZERO = new CategoryProductCounters(0L, 0L, 0L);
     }
 }

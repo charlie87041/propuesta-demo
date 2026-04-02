@@ -43,6 +43,9 @@
                             <th class="px-6 py-3">
                                 <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.products.col.category}, 'category.name', false, ${sortParams}, 'productsSortForm')}"></th:block>
                             </th>
+                            <th class="px-6 py-3">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.products.col.type}, 'productTypeCode', true, ${sortParams}, 'productsSortForm')}"></th:block>
+                            </th>
                             <th class="px-6 py-3" th:text="#{admin.products.col.sources}">Sources</th>
                             <th class="px-6 py-3">
                                 <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.products.col.status}, 'active', true, ${sortParams}, 'productsSortForm')}"></th:block>
@@ -55,7 +58,7 @@
                         </thead>
                         <tbody class="divide-y divide-[#f3ece8] text-sm">
                         <tr th:if="${productsPage.totalElements == 0}">
-                            <td colspan="8" class="px-6 py-8 text-center text-[#956d50]" th:text="#{admin.products.empty}">No products found.</td>
+                            <td colspan="9" class="px-6 py-8 text-center text-[#956d50]" th:text="#{admin.products.empty}">No products found.</td>
                         </tr>
                         <tr th:each="product : ${productsPage.content}">
                             <td class="px-6 py-4 font-semibold" th:text="${product.id}">1</td>
@@ -63,13 +66,30 @@
                             <td class="px-6 py-4" th:text="${product.name}">Chocolate Cookie</td>
                             <td class="px-6 py-4 text-[#956d50]" th:text="${product.category != null ? product.category.name : '-'}">Category</td>
                             <td class="px-6 py-4">
+                                <span class="inline-flex items-center rounded-full bg-[#efe3d7] px-2 py-0.5 text-xs font-semibold text-[#8b4513]"
+                                      th:switch="${product.productTypeCode}">
+                                    <span th:case="'SIMPLE'" th:text="#{admin.products.type.simple}">Simple</span>
+                                    <span th:case="'BUNDLE'" th:text="#{admin.products.type.bundle}">Bundle</span>
+                                    <span th:case="'PACKAGE'" th:text="#{admin.products.type.package}">Package</span>
+                                    <span th:case="'ADD_ON'" th:text="#{admin.products.type.addon}">Add-on</span>
+                                    <span th:case="'VARIANT'" th:text="#{admin.products.type.variant}">Variant</span>
+                                    <span th:case="'VARIANT_PARENT'" th:text="#{admin.products.type.variantParent}">Variant Parent</span>
+                                    <span th:case="*" th:text="${product.productTypeCode != null ? product.productTypeCode : '-'}">Unknown</span>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
                                 <div class="flex flex-wrap gap-1.5" th:if="${product.sources != null && !product.sources.isEmpty()}">
                                     <span
                                         th:each="source : ${product.sources}"
                                         class="inline-flex items-center rounded-full bg-[#f3ece8] px-2 py-0.5 text-xs font-semibold text-[#8b4513]"
                                         th:text="${source.name}">Default</span>
                                 </div>
-                                <span th:if="${product.sources == null || product.sources.isEmpty()}" class="text-[#956d50]">-</span>
+                                <div th:if="${product.sources == null || product.sources.isEmpty()}" class="space-y-1">
+                                    <span class="text-[#956d50]">-</span>
+                                    <p class="text-xs font-semibold text-amber-700" th:text="#{admin.products.sources.missing}">
+                                        No source assigned
+                                    </p>
+                                </div>
                             </td>
                             <td class="px-6 py-4" th:text="${product.active} ? #{admin.products.status.active} : #{admin.products.status.inactive}"
                                 th:classappend="${product.active} ? ' text-green-700 font-semibold' : ' text-slate-600 font-semibold'">Active</td>
@@ -77,13 +97,27 @@
                                 th:classappend="${product.visible} ? ' text-green-700 font-semibold' : ' text-slate-600 font-semibold'">Yes</td>
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-4" th:if="${product.active}">
+                                    <a th:href="@{'/admin/products/' + ${product.id}}" class="text-[#956d50] font-semibold hover:underline" th:text="#{admin.products.action.show}">Show</a>
                                     <a th:href="@{'/admin/products/' + ${product.id} + '/edit'}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.products.action.edit}">Edit</a>
+                                    <a th:if="${product.sources == null || product.sources.isEmpty()}"
+                                       th:href="@{'/admin/products/' + ${product.id} + '/edit#sourceAssignmentSection'}"
+                                       class="text-amber-700 font-semibold hover:underline"
+                                       th:text="#{admin.products.action.manageSources}">
+                                        Manage sources
+                                    </a>
                                     <form th:action="@{'/admin/products/' + ${product.id} + '/deactivate'}" method="post" class="inline">
                                         <button type="submit" class="text-red-700 font-semibold hover:underline" th:text="#{admin.products.action.deactivate}">Deactivate</button>
                                     </form>
                                 </div>
                                 <div class="inline-flex items-center gap-4" th:if="${!product.active}">
+                                    <a th:href="@{'/admin/products/' + ${product.id}}" class="text-[#956d50] font-semibold hover:underline" th:text="#{admin.products.action.show}">Show</a>
                                     <a th:href="@{'/admin/products/' + ${product.id} + '/edit'}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.products.action.edit}">Edit</a>
+                                    <a th:if="${product.sources == null || product.sources.isEmpty()}"
+                                       th:href="@{'/admin/products/' + ${product.id} + '/edit#sourceAssignmentSection'}"
+                                       class="text-amber-700 font-semibold hover:underline"
+                                       th:text="#{admin.products.action.manageSources}">
+                                        Manage sources
+                                    </a>
                                     <form th:action="@{'/admin/products/' + ${product.id} + '/enable'}" method="post" class="inline">
                                         <button type="submit" class="text-green-700 font-semibold hover:underline" th:text="#{admin.products.action.enable}">Enable</button>
                                     </form>

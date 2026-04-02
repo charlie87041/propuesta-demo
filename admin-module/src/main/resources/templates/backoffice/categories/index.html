@@ -49,12 +49,15 @@
                             <th class="px-6 py-3">
                                 <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.categories.col.status}, 'active', true, ${sortParams}, 'categoriesSortForm')}"></th:block>
                             </th>
+                            <th class="px-6 py-3 text-right" th:text="#{admin.categories.col.products.total}">Total products</th>
+                            <th class="px-6 py-3 text-right" th:text="#{admin.categories.col.products.active}">Active products</th>
+                            <th class="px-6 py-3 text-right" th:text="#{admin.categories.col.products.activeListable}">Active &amp; listable</th>
                             <th class="px-6 py-3 text-right" th:text="#{admin.categories.col.actions}">Actions</th>
                         </tr>
                         </thead>
                         <tbody class="divide-y divide-[#f3ece8] text-sm">
                         <tr th:if="${categoriesPage.totalElements == 0}">
-                            <td colspan="7" class="px-6 py-8 text-center text-[#956d50]" th:text="#{admin.categories.empty}">No categories found.</td>
+                            <td colspan="10" class="px-6 py-8 text-center text-[#956d50]" th:text="#{admin.categories.empty}">No categories found.</td>
                         </tr>
                         <tr th:each="category : ${categoriesPage.content}">
                             <td class="px-6 py-4 font-semibold" th:text="${category.id}">1</td>
@@ -64,6 +67,12 @@
                             <td class="px-6 py-4 text-[#956d50]" th:text="${category.sortOrder}">0</td>
                             <td class="px-6 py-4" th:text="${category.active} ? #{admin.categories.status.active} : #{admin.categories.status.inactive}"
                                 th:classappend="${category.active} ? ' text-green-700 font-semibold' : ' text-slate-600 font-semibold'">Active</td>
+                            <td class="px-6 py-4 text-right font-semibold text-[#1b130e]"
+                                th:text="${categoryProductCounts.get(category.id).totalProducts}">0</td>
+                            <td class="px-6 py-4 text-right text-[#956d50]"
+                                th:text="${categoryProductCounts.get(category.id).activeProducts}">0</td>
+                            <td class="px-6 py-4 text-right text-[#956d50]"
+                                th:text="${categoryProductCounts.get(category.id).activeListableProducts}">0</td>
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-4" th:if="${category.active}">
                                     <a th:href="@{'/admin/categories/' + ${category.id} + '/edit'}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.categories.action.edit}">Edit</a>

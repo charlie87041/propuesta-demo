@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(#{admin.catalog.stock.title}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <th:block th:replace="~{backoffice/fragments/searching :: searchBox('q', #{admin.catalog.stock.search.placeholder}, ${searchQuery}, 'stockSortForm')}"></th:block>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 space-y-6">
+            <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
+                <header class="px-6 py-4 border-b border-[#e6dad1] flex items-center justify-between">
+                    <h3 class="font-bold" th:text="#{admin.catalog.stock.directory}">Stock Directory</h3>
+                    <span class="text-sm text-[#956d50]" th:text="#{admin.catalog.stock.totalCount(${stockPage.totalElements})}">0 rows</span>
+                </header>
+
+                <form method="get" th:action="@{/admin/catalog/stock}" id="stockSortForm">
+                    <input type="hidden" name="page" value="0">
+                    <input type="hidden" name="size" th:value="${stockPage.size}">
+                    <input type="hidden" name="q" th:value="${searchQuery}">
+                </form>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
+                        <tr>
+                            <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.productId}">Product ID</th>
+                            <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.sku}">SKU</th>
+                            <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.name}">Name</th>
+                            <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.category}">Category</th>
+                            <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.type}">Type</th>
+                            <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.source}">Source</th>
+                            <th class="px-6 py-3 text-right" th:text="#{admin.catalog.stock.col.stock}">Stock</th>
+                            <th class="px-6 py-3 text-right" th:text="#{admin.catalog.stock.col.threshold}">Low stock threshold</th>
+                            <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.status}">Status</th>
+                            <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.visible}">Visible</th>
+                            <th class="px-6 py-3 text-right" th:text="#{admin.catalog.stock.col.actions}">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#f3ece8] text-sm">
+                        <tr th:if="${stockPage.totalElements == 0}">
+                            <td colspan="11" class="px-6 py-8 text-center text-[#956d50]" th:text="#{admin.catalog.stock.empty}">No rows found.</td>
+                        </tr>
+                        <tr th:each="row : ${stockPage.content}">
+                            <td class="px-6 py-4 font-semibold" th:text="${row.product.id}">1</td>
+                            <td class="px-6 py-4 text-[#956d50]" th:text="${row.product.sku}">SKU-001</td>
+                            <td class="px-6 py-4" th:text="${row.product.name}">Product</td>
+                            <td class="px-6 py-4 text-[#956d50]" th:text="${row.product.category != null ? row.product.category.name : '-'}">Category</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center rounded-full bg-[#efe3d7] px-2 py-0.5 text-xs font-semibold text-[#8b4513]"
+                                      th:switch="${row.product.productTypeCode}">
+                                    <span th:case="'SIMPLE'" th:text="#{admin.products.type.simple}">Simple</span>
+                                    <span th:case="'BUNDLE'" th:text="#{admin.products.type.bundle}">Bundle</span>
+                                    <span th:case="'PACKAGE'" th:text="#{admin.products.type.package}">Package</span>
+                                    <span th:case="'ADD_ON'" th:text="#{admin.products.type.addon}">Add-on</span>
+                                    <span th:case="'VARIANT'" th:text="#{admin.products.type.variant}">Variant</span>
+                                    <span th:case="'VARIANT_PARENT'" th:text="#{admin.products.type.variantParent}">Variant Parent</span>
+                                    <span th:case="*" th:text="${row.product.productTypeCode}">Type</span>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="font-semibold text-[#1b130e]" th:text="${row.source.name}">Source</p>
+                                <p class="text-xs text-[#956d50]" th:text="${row.source.code}">code</p>
+                            </td>
+                            <td class="px-6 py-4 text-right font-semibold text-[#1b130e]" th:text="${row.stockQuantity}">0</td>
+                            <td class="px-6 py-4 text-right text-[#956d50]" th:text="${row.lowStockThreshold}">0</td>
+                            <td class="px-6 py-4" th:text="${row.product.active} ? #{admin.products.status.active} : #{admin.products.status.inactive}"
+                                th:classappend="${row.product.active} ? ' text-green-700 font-semibold' : ' text-slate-600 font-semibold'">Active</td>
+                            <td class="px-6 py-4" th:text="${row.product.visible} ? #{admin.products.visible.yes} : #{admin.products.visible.no}"
+                                th:classappend="${row.product.visible} ? ' text-green-700 font-semibold' : ' text-slate-600 font-semibold'">Yes</td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="inline-flex items-center gap-4">
+                                    <a th:href="@{'/admin/products/' + ${row.product.id}}" class="text-[#956d50] font-semibold hover:underline" th:text="#{admin.products.action.show}">Show</a>
+                                    <a th:href="@{'/admin/products/' + ${row.product.id} + '/edit#sourceAssignmentSection'}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.catalog.stock.action.manageSource}">Manage source</a>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <th:block th:replace="~{backoffice/fragments/searching :: script}"></th:block>
+                <th:block th:if="${stockPage.totalElements > 0}"
+                          th:replace="~{backoffice/fragments/pagination :: pager(${stockPage}, '/admin/catalog/stock')}"></th:block>
+            </article>
+        </section>
+    </th:block>
+</th:block>
+</html>

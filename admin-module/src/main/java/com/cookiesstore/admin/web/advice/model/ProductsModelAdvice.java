@@ -3,6 +3,7 @@ package com.cookiesstore.admin.web.advice.model;
 import com.cookiesstore.admin.web.advice.support.BaseAdviceSupport;
 import com.cookiesstore.admin.web.controllers.ProductsController;
 import com.cookiesstore.common.repositories.CategoryRepository;
+import com.cookiesstore.common.repositories.PackageOptionTypeRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
 import com.cookiesstore.common.repositories.SourceRepository;
 import java.util.List;
@@ -21,17 +22,20 @@ public class ProductsModelAdvice extends BaseAdviceSupport {
     private final CategoryRepository categoryRepository;
     private final SourceRepository sourceRepository;
     private final ProductRepository productRepository;
+    private final PackageOptionTypeRepository packageOptionTypeRepository;
 
     public ProductsModelAdvice(
         CategoryRepository categoryRepository,
         SourceRepository sourceRepository,
         ProductRepository productRepository,
+        PackageOptionTypeRepository packageOptionTypeRepository,
         MessageSource messageSource
     ) {
         super(messageSource);
         this.categoryRepository = categoryRepository;
         this.sourceRepository = sourceRepository;
         this.productRepository = productRepository;
+        this.packageOptionTypeRepository = packageOptionTypeRepository;
     }
 
     @ModelAttribute
@@ -63,6 +67,7 @@ public class ProductsModelAdvice extends BaseAdviceSupport {
             model.addAttribute("categories", categoryRepository.findAll(Sort.by(Sort.Order.asc("sortOrder"), Sort.Order.asc("name"))));
             model.addAttribute("sources", sourceRepository.findAll(Sort.by(Sort.Order.asc("name"))));
             model.addAttribute("bundleComponentProducts", productRepository.findAll(Sort.by(Sort.Order.asc("name"))));
+            model.addAttribute("packageOptionTypes", packageOptionTypeRepository.findAll(Sort.by(Sort.Order.asc("name"))));
             model.addAttribute("supportedProductTypes", List.of("SIMPLE", "BUNDLE", "PACKAGE", "ADD_ON"));
             return;
         }
@@ -77,7 +82,15 @@ public class ProductsModelAdvice extends BaseAdviceSupport {
             model.addAttribute("categories", categoryRepository.findAll(Sort.by(Sort.Order.asc("sortOrder"), Sort.Order.asc("name"))));
             model.addAttribute("sources", sourceRepository.findAll(Sort.by(Sort.Order.asc("name"))));
             model.addAttribute("bundleComponentProducts", productRepository.findAll(Sort.by(Sort.Order.asc("name"))));
+            model.addAttribute("packageOptionTypes", packageOptionTypeRepository.findAll(Sort.by(Sort.Order.asc("name"))));
             model.addAttribute("supportedProductTypes", List.of("SIMPLE", "BUNDLE", "PACKAGE", "ADD_ON"));
+            return;
+        }
+
+        if ("admin.products.show".equals(routeName)) {
+            model.addAttribute("pageTitle", message("admin.products.show.title"));
+            model.addAttribute("activeNav", "products");
+            model.addAttribute("productId", productId);
         }
     }
 }

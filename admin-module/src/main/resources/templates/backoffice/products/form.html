@@ -52,13 +52,18 @@
 
                         <label class="flex flex-col gap-1.5">
                             <span class="text-sm font-bold text-[#8b4513]/70">Tipo de producto</span>
-                            <select id="productTypeCode" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{productTypeCode}">
+                            <select id="productTypeCode"
+                                    class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"
+                                    th:field="*{productTypeCode}"
+                                    th:disabled="${isEdit}">
                                 <option th:each="typeCode : ${supportedProductTypes}" th:value="${typeCode}" th:text="${typeCode}">SIMPLE</option>
                             </select>
+                            <input th:if="${isEdit}" type="hidden" name="productTypeCode" th:value="*{productTypeCode}"/>
+                            <span th:if="${isEdit}" class="text-xs text-[#956d50]">El tipo no se puede cambiar en edición.</span>
                         </label>
-                        <input th:if="${!isEdit}" type="hidden" id="isListableInput" name="isListable" th:value="*{isListable}"/>
-                        <input th:if="${!isEdit}" type="hidden" id="isPurchasableInput" name="isPurchasable" th:value="*{isPurchasable}"/>
-                        <input th:if="${!isEdit}" type="hidden" id="isPurchasableAloneInput" name="isPurchasableAlone" th:value="*{isPurchasableAlone}"/>
+                        <input type="hidden" id="isListableInput" name="isListable" th:value="*{isListable}"/>
+                        <input type="hidden" id="isPurchasableInput" name="isPurchasable" th:value="*{isPurchasable}"/>
+                        <input type="hidden" id="isPurchasableAloneInput" name="isPurchasableAlone" th:value="*{isPurchasableAlone}"/>
 
                         <label class="md:col-span-2 flex flex-col gap-1.5">
                             <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.description}">Description</span>
@@ -89,23 +94,18 @@
 
                         <div id="pricingInventorySection" class="md:col-span-2 space-y-3">
                             <h5 class="text-sm font-bold text-[#8b4513]" th:text="#{admin.products.form.section.pricingInventory}">Pricing &amp; Inventory</h5>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
                                 <label class="flex flex-col gap-1.5">
                                     <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.price}">Price</span>
                                     <input id="productPriceInput" name="price" type="number" min="0" step="0.01" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{price}" required>
                                     <span th:if="${#fields.hasErrors('price')}" class="text-xs font-semibold text-red-700" th:errors="*{price}"></span>
                                 </label>
-                                <label class="flex flex-col gap-1.5">
-                                    <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.stockQuantity}">Stock quantity</span>
-                                    <input name="stockQuantity" type="number" min="0" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{stockQuantity}" required>
-                                    <span th:if="${#fields.hasErrors('stockQuantity')}" class="text-xs font-semibold text-red-700" th:errors="*{stockQuantity}"></span>
-                                </label>
-                                <label class="flex flex-col gap-1.5">
-                                    <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.lowStockThreshold}">Low stock threshold</span>
-                                    <input name="lowStockThreshold" type="number" min="0" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{lowStockThreshold}" required>
-                                    <span th:if="${#fields.hasErrors('lowStockThreshold')}" class="text-xs font-semibold text-red-700" th:errors="*{lowStockThreshold}"></span>
-                                </label>
                             </div>
+                            <p class="text-xs text-[#956d50]">
+                                Precio e inventario se gestionan por source en la tabla inferior.
+                            </p>
+                            <input type="hidden" name="stockQuantity" th:value="*{stockQuantity}">
+                            <input type="hidden" name="lowStockThreshold" th:value="*{lowStockThreshold}">
                         </div>
 
                         <div id="bundleComponentsSection" class="md:col-span-2 space-y-3 hidden">
@@ -191,6 +191,230 @@
                             </div>
                         </div>
 
+                        <div id="packageOptionsSection" class="md:col-span-2 space-y-3 hidden">
+                            <div class="flex items-center justify-between">
+                                <h5 class="text-sm font-bold text-[#8b4513]">Opciones del Package</h5>
+                                <button id="addPackageOptionBtn" type="button" class="px-3 py-1.5 text-xs font-bold text-white bg-[#8b4513] rounded-lg">
+                                    Agregar opción
+                                </button>
+                            </div>
+
+                            <div id="packageOptionsContainer" class="space-y-4">
+                                <div th:if="${form.packageOptions == null || form.packageOptions.isEmpty()}" data-package-option-row class="rounded-lg border border-[#f3ece8] p-4 space-y-3 bg-[#fcfaf9]">
+                                    <input type="hidden" name="packageOptions[0].packageProductId" value="0"/>
+                                    <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+                                        <label class="md:col-span-2 flex flex-col gap-1">
+                                            <span class="text-xs font-bold text-[#8b4513]/70">Nombre de opción</span>
+                                            <input name="packageOptions[0].name" type="text" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"/>
+                                        </label>
+                                        <label class="flex flex-col gap-1">
+                                            <span class="text-xs font-bold text-[#8b4513]/70">Tipo</span>
+                                            <select name="packageOptions[0].optionTypeId" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm">
+                                                <option value="">Seleccionar</option>
+                                                <option th:each="type : ${packageOptionTypes}" th:value="${type.id}" th:text="${type.name}">ONE_OF</option>
+                                            </select>
+                                        </label>
+                                        <label class="flex flex-col gap-1">
+                                            <span class="text-xs font-bold text-[#8b4513]/70">Categoría</span>
+                                            <select name="packageOptions[0].categoryId" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm">
+                                                <option value="">Todas</option>
+                                                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">Categoría</option>
+                                            </select>
+                                        </label>
+                                        <label class="flex flex-col gap-1">
+                                            <span class="text-xs font-bold text-[#8b4513]/70">Min</span>
+                                            <input name="packageOptions[0].minSelect" type="number" min="0" value="0" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"/>
+                                        </label>
+                                        <label class="flex flex-col gap-1">
+                                            <span class="text-xs font-bold text-[#8b4513]/70">Max</span>
+                                            <input name="packageOptions[0].maxSelect" type="number" min="0" value="1" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"/>
+                                        </label>
+                                        <input type="hidden" name="packageOptions[0].sortOrder" value="0"/>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <p class="text-xs font-bold text-[#8b4513]/80">Items</p>
+                                            <button type="button" class="add-package-item-btn text-xs font-bold text-[#8b4513]">Agregar item</button>
+                                        </div>
+                                        <div class="overflow-x-auto border border-[#f3ece8] rounded-lg bg-white">
+                                            <table class="min-w-full text-sm">
+                                                <thead class="bg-[#fcfaf9] text-[#8b4513]">
+                                                    <tr>
+                                                        <th class="px-2 py-2 text-left text-xs font-bold">Producto</th>
+                                                        <th class="px-2 py-2 text-left text-xs font-bold">Source</th>
+                                                        <th class="px-2 py-2 text-left text-xs font-bold">Default</th>
+                                                        <th class="px-2 py-2 text-left text-xs font-bold">Extra mode</th>
+                                                        <th class="px-2 py-2 text-left text-xs font-bold">Extra</th>
+                                                        <th class="px-2 py-2 text-right text-xs font-bold">Acción</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody data-package-items-body>
+                                                    <tr data-package-item-row>
+                                                        <td class="px-2 py-2">
+                                                            <input type="hidden" name="packageOptions[0].items[0].itemId"/>
+                                                            <input type="hidden" name="packageOptions[0].items[0].sortOrder" value="0"/>
+                                                            <select name="packageOptions[0].items[0].productId" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                                <option value="">Seleccionar</option>
+                                                                <option th:each="p : ${bundleComponentProducts}" th:value="${p.id}" th:text="${p.name + ' (' + p.sku + ')'}">Product</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="px-2 py-2">
+                                                            <select name="packageOptions[0].items[0].sourceId" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                                <option value="">Global</option>
+                                                                <option th:each="source : ${sources}" th:value="${source.id}" th:text="${source.name}">Source</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="px-2 py-2 text-center">
+                                                            <input name="packageOptions[0].items[0].isDefault" type="checkbox"/>
+                                                        </td>
+                                                        <td class="px-2 py-2">
+                                                            <select name="packageOptions[0].items[0].extraPriceMode" class="package-item-extra-mode rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                                <option value="NO_EXTRA" selected>NO_EXTRA</option>
+                                                                <option value="FIXED_EXTRA">FIXED_EXTRA</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="px-2 py-2">
+                                                            <input name="packageOptions[0].items[0].extraPrice" type="number" min="0" step="0.01" class="package-item-extra-price rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-24" disabled/>
+                                                        </td>
+                                                        <td class="px-2 py-2 text-right">
+                                                            <button type="button" class="text-red-700 font-semibold remove-package-item-row">Quitar</button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-end">
+                                        <button type="button" class="text-red-700 text-xs font-semibold remove-package-option-row">Eliminar opción</button>
+                                    </div>
+                                </div>
+
+                                <div th:each="option,optionIter : ${form.packageOptions}" data-package-option-row class="rounded-lg border border-[#f3ece8] p-4 space-y-3 bg-[#fcfaf9]">
+                                    <input type="hidden" th:name="|packageOptions[${optionIter.index}].packageProductId|" th:value="${option.packageProductId == null ? 0 : option.packageProductId}"/>
+                                    <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+                                        <label class="md:col-span-2 flex flex-col gap-1">
+                                            <span class="text-xs font-bold text-[#8b4513]/70">Nombre de opción</span>
+                                            <input th:name="|packageOptions[${optionIter.index}].name|" type="text" th:value="${option.name}" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"/>
+                                        </label>
+                                        <label class="flex flex-col gap-1">
+                                            <span class="text-xs font-bold text-[#8b4513]/70">Tipo</span>
+                                            <select th:name="|packageOptions[${optionIter.index}].optionTypeId|" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm">
+                                                <option value="">Seleccionar</option>
+                                                <option th:each="type : ${packageOptionTypes}" th:value="${type.id}" th:text="${type.name}" th:selected="${option.optionTypeId == type.id}">ONE_OF</option>
+                                            </select>
+                                        </label>
+                                        <label class="flex flex-col gap-1">
+                                            <span class="text-xs font-bold text-[#8b4513]/70">Categoría</span>
+                                            <select th:name="|packageOptions[${optionIter.index}].categoryId|" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm">
+                                                <option value="">Todas</option>
+                                                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}" th:selected="${option.categoryId != null && option.categoryId == category.id}">Categoría</option>
+                                            </select>
+                                        </label>
+                                        <label class="flex flex-col gap-1">
+                                            <span class="text-xs font-bold text-[#8b4513]/70">Min</span>
+                                            <input th:name="|packageOptions[${optionIter.index}].minSelect|" type="number" min="0" th:value="${option.minSelect}" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"/>
+                                        </label>
+                                        <label class="flex flex-col gap-1">
+                                            <span class="text-xs font-bold text-[#8b4513]/70">Max</span>
+                                            <input th:name="|packageOptions[${optionIter.index}].maxSelect|" type="number" min="0" th:value="${option.maxSelect}" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"/>
+                                        </label>
+                                        <input type="hidden" th:name="|packageOptions[${optionIter.index}].sortOrder|" th:value="${option.sortOrder}"/>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <p class="text-xs font-bold text-[#8b4513]/80">Items</p>
+                                            <button type="button" class="add-package-item-btn text-xs font-bold text-[#8b4513]">Agregar item</button>
+                                        </div>
+                                        <div class="overflow-x-auto border border-[#f3ece8] rounded-lg bg-white">
+                                            <table class="min-w-full text-sm">
+                                                <thead class="bg-[#fcfaf9] text-[#8b4513]">
+                                                    <tr>
+                                                        <th class="px-2 py-2 text-left text-xs font-bold">Producto</th>
+                                                        <th class="px-2 py-2 text-left text-xs font-bold">Source</th>
+                                                        <th class="px-2 py-2 text-left text-xs font-bold">Default</th>
+                                                        <th class="px-2 py-2 text-left text-xs font-bold">Extra mode</th>
+                                                        <th class="px-2 py-2 text-left text-xs font-bold">Extra</th>
+                                                        <th class="px-2 py-2 text-right text-xs font-bold">Acción</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody data-package-items-body>
+                                                    <tr th:if="${option.items == null || option.items.isEmpty()}" data-package-item-row>
+                                                        <td class="px-2 py-2">
+                                                            <input type="hidden" th:name="|packageOptions[${optionIter.index}].items[0].itemId|"/>
+                                                            <input type="hidden" th:name="|packageOptions[${optionIter.index}].items[0].sortOrder|" value="0"/>
+                                                            <select th:name="|packageOptions[${optionIter.index}].items[0].productId|" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                                <option value="">Seleccionar</option>
+                                                                <option th:each="p : ${bundleComponentProducts}" th:value="${p.id}" th:text="${p.name + ' (' + p.sku + ')'}">Product</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="px-2 py-2">
+                                                            <select th:name="|packageOptions[${optionIter.index}].items[0].sourceId|" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                                <option value="">Global</option>
+                                                                <option th:each="source : ${sources}" th:value="${source.id}" th:text="${source.name}">Source</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="px-2 py-2 text-center">
+                                                            <input th:name="|packageOptions[${optionIter.index}].items[0].isDefault|" type="checkbox"/>
+                                                        </td>
+                                                        <td class="px-2 py-2">
+                                                            <select th:name="|packageOptions[${optionIter.index}].items[0].extraPriceMode|" class="package-item-extra-mode rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                                <option value="NO_EXTRA" selected>NO_EXTRA</option>
+                                                                <option value="FIXED_EXTRA">FIXED_EXTRA</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="px-2 py-2">
+                                                            <input th:name="|packageOptions[${optionIter.index}].items[0].extraPrice|" type="number" min="0" step="0.01" class="package-item-extra-price rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-24" disabled/>
+                                                        </td>
+                                                        <td class="px-2 py-2 text-right">
+                                                            <button type="button" class="text-red-700 font-semibold remove-package-item-row">Quitar</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr th:each="item,itemIter : ${option.items}" data-package-item-row>
+                                                        <td class="px-2 py-2">
+                                                            <input type="hidden" th:name="|packageOptions[${optionIter.index}].items[${itemIter.index}].itemId|" th:value="${item.itemId}"/>
+                                                            <input type="hidden" th:name="|packageOptions[${optionIter.index}].items[${itemIter.index}].sortOrder|" th:value="${item.sortOrder}"/>
+                                                            <select th:name="|packageOptions[${optionIter.index}].items[${itemIter.index}].productId|" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                                <option value="">Seleccionar</option>
+                                                                <option th:each="p : ${bundleComponentProducts}" th:value="${p.id}" th:text="${p.name + ' (' + p.sku + ')'}" th:selected="${item.productId == p.id}">Product</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="px-2 py-2">
+                                                            <select th:name="|packageOptions[${optionIter.index}].items[${itemIter.index}].sourceId|" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                                <option value="">Global</option>
+                                                                <option th:each="source : ${sources}" th:value="${source.id}" th:text="${source.name}" th:selected="${item.sourceId != null && item.sourceId == source.id}">Source</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="px-2 py-2 text-center">
+                                                            <input th:name="|packageOptions[${optionIter.index}].items[${itemIter.index}].isDefault|" type="checkbox" th:checked="${item.isDefault}"/>
+                                                        </td>
+                                                        <td class="px-2 py-2">
+                                                            <select th:name="|packageOptions[${optionIter.index}].items[${itemIter.index}].extraPriceMode|" class="package-item-extra-mode rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
+                                                                <option value="NO_EXTRA" th:selected="${item.extraPriceMode != null && item.extraPriceMode == 'NO_EXTRA'}">NO_EXTRA</option>
+                                                                <option value="FIXED_EXTRA" th:selected="${item.extraPriceMode != null && item.extraPriceMode == 'FIXED_EXTRA'}">FIXED_EXTRA</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="px-2 py-2">
+                                                            <input th:name="|packageOptions[${optionIter.index}].items[${itemIter.index}].extraPrice|" type="number" min="0" step="0.01" class="package-item-extra-price rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-24" th:value="${item.extraPrice}" th:disabled="${item.extraPriceMode == null || item.extraPriceMode != 'FIXED_EXTRA'}"/>
+                                                        </td>
+                                                        <td class="px-2 py-2 text-right">
+                                                            <button type="button" class="text-red-700 font-semibold remove-package-item-row">Quitar</button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-end">
+                                        <button type="button" class="text-red-700 text-xs font-semibold remove-package-option-row">Eliminar opción</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div id="addonInfoSection" class="md:col-span-2 hidden rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
                             <p class="text-sm font-bold text-[#8b4513]">Producto Add-on</p>
                             <p class="text-xs text-[#956d50]">
@@ -198,7 +422,7 @@
                             </p>
                         </div>
 
-                        <div class="md:col-span-2 space-y-3">
+                        <div id="sourceAssignmentSection" class="md:col-span-2 space-y-3">
                             <h5 class="text-sm font-bold text-[#8b4513]" th:text="#{admin.products.form.section.sources}">Sources</h5>
                             <div class="overflow-x-auto border border-[#f3ece8] rounded-lg">
                                 <table class="min-w-full text-sm">
@@ -301,11 +525,14 @@
                 var visibleTextNode = document.getElementById("productVisibleText");
                 var productTypeSelect = document.getElementById("productTypeCode");
                 var bundleSection = document.getElementById("bundleComponentsSection");
+                var packageSection = document.getElementById("packageOptionsSection");
                 var addonInfoSection = document.getElementById("addonInfoSection");
                 var pricingInventorySection = document.getElementById("pricingInventorySection");
                 var priceInput = document.getElementById("productPriceInput");
                 var bundleBody = document.getElementById("bundleComponentsBody");
                 var addBundleBtn = document.getElementById("addBundleComponentBtn");
+                var packageOptionsContainer = document.getElementById("packageOptionsContainer");
+                var addPackageOptionBtn = document.getElementById("addPackageOptionBtn");
                 var isListableInput = document.getElementById("isListableInput");
                 var isPurchasableInput = document.getElementById("isPurchasableInput");
                 var isPurchasableAloneInput = document.getElementById("isPurchasableAloneInput");
@@ -349,13 +576,17 @@
                         return;
                     }
                     var isBundle = productTypeSelect.value === "BUNDLE";
+                    var isPackage = productTypeSelect.value === "PACKAGE";
                     var isAddon = productTypeSelect.value === "ADD_ON";
                     bundleSection.classList.toggle("hidden", !isBundle);
+                    if (packageSection) {
+                        packageSection.classList.toggle("hidden", !isPackage);
+                    }
                     if (addonInfoSection) {
                         addonInfoSection.classList.toggle("hidden", !isAddon);
                     }
                     if (pricingInventorySection) {
-                        pricingInventorySection.classList.toggle("opacity-80", isBundle);
+                        pricingInventorySection.classList.toggle("opacity-80", isBundle || isPackage);
                     }
                     var bundleInputs = bundleSection.querySelectorAll("input,select,textarea,button.remove-bundle-row");
                     bundleInputs.forEach(function (el) {
@@ -363,6 +594,14 @@
                             el.disabled = !isBundle;
                         }
                     });
+                    if (packageSection) {
+                        var packageInputs = packageSection.querySelectorAll("input,select,textarea,button.remove-package-item-row,button.remove-package-option-row,button.add-package-item-btn");
+                        packageInputs.forEach(function (el) {
+                            if (el.type !== "button") {
+                                el.disabled = !isPackage;
+                            }
+                        });
+                    }
                     if (priceInput) {
                         priceInput.readOnly = isBundle;
                     }
@@ -372,6 +611,10 @@
                             isListableInput.value = "false";
                             isPurchasableInput.value = "false";
                             isPurchasableAloneInput.value = "false";
+                        } else if (isPackage) {
+                            isListableInput.value = "true";
+                            isPurchasableInput.value = "true";
+                            isPurchasableAloneInput.value = "true";
                         } else {
                             isListableInput.value = "true";
                             isPurchasableInput.value = "true";
@@ -406,6 +649,129 @@
                     toggleTypeSections();
                 }
 
+                function togglePackageItemExtraPrice(row) {
+                    if (!row) {
+                        return;
+                    }
+                    var mode = row.querySelector(".package-item-extra-mode");
+                    var extraPrice = row.querySelector(".package-item-extra-price");
+                    if (!mode || !extraPrice) {
+                        return;
+                    }
+                    var isFixed = mode.value === "FIXED_EXTRA";
+                    extraPrice.disabled = !isFixed;
+                    if (!isFixed) {
+                        extraPrice.value = "";
+                    }
+                }
+
+                function reindexPackageOptions() {
+                    if (!packageOptionsContainer) {
+                        return;
+                    }
+                    var optionRows = packageOptionsContainer.querySelectorAll("[data-package-option-row]");
+                    optionRows.forEach(function (optionRow, optionIndex) {
+                        var optionFields = optionRow.querySelectorAll("input[name], select[name], textarea[name]");
+                        optionFields.forEach(function (field) {
+                            field.name = field.name.replace(/packageOptions\[\d+\]/g, "packageOptions[" + optionIndex + "]");
+                        });
+
+                        var itemRows = optionRow.querySelectorAll("[data-package-item-row]");
+                        itemRows.forEach(function (itemRow, itemIndex) {
+                            var sortOrderInput = itemRow.querySelector("input[name$='.sortOrder']");
+                            if (sortOrderInput) {
+                                sortOrderInput.value = itemIndex;
+                            }
+                            itemRow.querySelectorAll("input[name], select[name], textarea[name]").forEach(function (field) {
+                                field.name = field.name.replace(/packageOptions\[\d+\]\.items\[\d+\]/g, "packageOptions[" + optionIndex + "].items[" + itemIndex + "]");
+                            });
+                            togglePackageItemExtraPrice(itemRow);
+                        });
+                    });
+                }
+
+                function addPackageOption() {
+                    if (!packageOptionsContainer) {
+                        return;
+                    }
+                    var template = packageOptionsContainer.querySelector("[data-package-option-row]");
+                    if (!template) {
+                        return;
+                    }
+                    var option = template.cloneNode(true);
+                    option.querySelectorAll("input, select, textarea").forEach(function (field) {
+                        if (field.type === "hidden") {
+                            if (field.name && field.name.endsWith(".packageProductId")) {
+                                field.value = "0";
+                            } else if (field.name && field.name.endsWith(".sortOrder")) {
+                                field.value = "0";
+                            } else {
+                                field.value = "";
+                            }
+                            return;
+                        }
+                        if (field.tagName === "SELECT") {
+                            field.selectedIndex = 0;
+                            return;
+                        }
+                        if (field.type === "checkbox") {
+                            field.checked = false;
+                            return;
+                        }
+                        field.value = "";
+                    });
+
+                    var itemRows = option.querySelectorAll("[data-package-item-row]");
+                    itemRows.forEach(function (row, index) {
+                        if (index > 0) {
+                            row.remove();
+                        }
+                    });
+                    togglePackageItemExtraPrice(option.querySelector("[data-package-item-row]"));
+
+                    packageOptionsContainer.appendChild(option);
+                    reindexPackageOptions();
+                    toggleTypeSections();
+                }
+
+                function addPackageItem(optionRow) {
+                    if (!optionRow) {
+                        return;
+                    }
+                    var itemsBody = optionRow.querySelector("[data-package-items-body]");
+                    if (!itemsBody) {
+                        return;
+                    }
+                    var templateRow = itemsBody.querySelector("[data-package-item-row]");
+                    if (!templateRow) {
+                        return;
+                    }
+                    var row = templateRow.cloneNode(true);
+                    row.querySelectorAll("input, select, textarea").forEach(function (field) {
+                        if (field.type === "hidden") {
+                            if (field.name && field.name.endsWith(".sortOrder")) {
+                                field.value = "0";
+                            } else {
+                                field.value = "";
+                            }
+                            return;
+                        }
+                        if (field.tagName === "SELECT") {
+                            field.selectedIndex = 0;
+                            return;
+                        }
+                        if (field.type === "checkbox") {
+                            field.checked = false;
+                            return;
+                        }
+                        field.value = "";
+                    });
+                    itemsBody.appendChild(row);
+                    togglePackageItemExtraPrice(row);
+                    reindexPackageOptions();
+                    toggleTypeSections();
+                }
+
                 if (activeToggle) {
                     activeToggle.addEventListener("change", syncActive);
                     syncActive();
@@ -436,6 +802,51 @@
                 }
                 if (addBundleBtn) {
                     addBundleBtn.addEventListener("click", addBundleRow);
+                }
+                if (addPackageOptionBtn) {
+                    addPackageOptionBtn.addEventListener("click", addPackageOption);
+                }
+                if (packageOptionsContainer) {
+                    packageOptionsContainer.addEventListener("click", function (event) {
+                        var addItemTrigger = event.target.closest(".add-package-item-btn");
+                        if (addItemTrigger) {
+                            addPackageItem(addItemTrigger.closest("[data-package-option-row]"));
+                            return;
+                        }
+
+                        var removeItemTrigger = event.target.closest(".remove-package-item-row");
+                        if (removeItemTrigger) {
+                            var itemRow = removeItemTrigger.closest("[data-package-item-row]");
+                            var itemsBody = removeItemTrigger.closest("[data-package-items-body]");
+                            if (itemRow && itemsBody) {
+                                itemRow.remove();
+                                if (!itemsBody.querySelector("[data-package-item-row]")) {
+                                    addPackageItem(removeItemTrigger.closest("[data-package-option-row]"));
+                                }
+                                reindexPackageOptions();
+                            }
+                            return;
+                        }
+
+                        var removeOptionTrigger = event.target.closest(".remove-package-option-row");
+                        if (removeOptionTrigger) {
+                            var optionRow = removeOptionTrigger.closest("[data-package-option-row]");
+                            if (optionRow) {
+                                optionRow.remove();
+                            }
+                            if (!packageOptionsContainer.querySelector("[data-package-option-row]")) {
+                                addPackageOption();
+                            }
+                            reindexPackageOptions();
+                        }
+                    });
+                    packageOptionsContainer.addEventListener("change", function (event) {
+                        var modeSelect = event.target.closest(".package-item-extra-mode");
+                        if (modeSelect) {
+                            togglePackageItemExtraPrice(modeSelect.closest("[data-package-item-row]"));
+                        }
+                    });
+                    reindexPackageOptions();
                 }
             })();
         </script>

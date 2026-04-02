@@ -115,7 +115,7 @@ public class PackageProductService extends AbstractCompositeProductService {
 
     }
 
-     @Override
+    @Override
     public Product createProduct(CreateProductForm form) {
         List<PackageComponentForm> packageOptions = form.packageOptions();
         BigDecimal resolvedPrice = calculateResolvedPackagePrice(BigDecimal.valueOf(form.price()), packageOptions);

@@ -4,9 +4,14 @@ import com.cookiesstore.admin.config.ProductSearchProperties;
 import com.cookiesstore.admin.search.EntitySearchSpecifications;
 import com.cookiesstore.admin.web.dto.products.CreateProductForm;
 import com.cookiesstore.admin.web.dto.products.UpdateProductForm;
+import com.cookiesstore.common.entities.Product;
+import com.cookiesstore.common.entities.ProductSource;
 import com.cookiesstore.common.repositories.ProductRepository;
+import com.cookiesstore.common.repositories.ProductSourceRepository;
 import com.cookiesstore.common.services.products.ProductService;
 import jakarta.validation.Valid;
+import java.util.Comparator;
+import java.util.List;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Pageable;
@@ -20,23 +25,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class ProductsController {
 
     private final ProductRepository productRepository;
+    private final ProductSourceRepository productSourceRepository;
     private final ProductService<CreateProductForm, UpdateProductForm> productService;
     private final ProductSearchProperties productSearchProperties;
     private final MessageSource messageSource;
 
     public ProductsController(
         ProductRepository productRepository,
+        ProductSourceRepository productSourceRepository,
         ProductService<CreateProductForm, UpdateProductForm> productService,
         ProductSearchProperties productSearchProperties,
         MessageSource messageSource
     ) {
         this.productRepository = productRepository;
+        this.productSourceRepository = productSourceRepository;
         this.productService = productService;
         this.productSearchProperties = productSearchProperties;
         this.messageSource = messageSource;
@@ -121,6 +130,39 @@ public class ProductsController {
             model.addAttribute("form", productService.buildUpdateProductForm(productId));
         }
         return "backoffice/products/form";
+    }
+
+    @GetMapping(value = "/admin/products/{productId}", produces = "text/html", name = "admin.products.show")
+    public String showProduct(
+        @PathVariable("productId") Long productId,
+        @RequestParam(value = "sourceId", required = false) Long sourceId,
+        Model model
+    ) {
+        Product product = productService.getProduct(productId);
+        List<ProductSource> productSources = productSourceRepository.findByProductId(productId).stream()
+            .sorted(Comparator.comparing(ps -> ps.getSource().getName(), String.CASE_INSENSITIVE_ORDER))
+            .toList();
+
+        ProductSource selectedSourceData = null;
+        if (!productSources.isEmpty()) {
+            Long resolvedSourceId = sourceId != null
+                ? sourceId
+                : productSources.get(0).getSource().getId();
+
+            selectedSourceData = productSources.stream()
+                .filter(ps -> ps.getSource().getId().equals(resolvedSourceId))
+                .findFirst()
+                .orElse(productSources.get(0));
+        }
+
+        model.addAttribute("product", product);
+        model.addAttribute("productSources", productSources);
+        model.addAttribute("selectedSourceData", selectedSourceData);
+        model.addAttribute(
+            "selectedSourceId",
+            selectedSourceData == null ? null : selectedSourceData.getSource().getId()
+        );
+        return "backoffice/products/show";
     }
 
     @PostMapping(value = "/admin/products/{productId}", name = "admin.products.update")

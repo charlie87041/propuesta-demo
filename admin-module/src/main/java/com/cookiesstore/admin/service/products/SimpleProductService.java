@@ -118,10 +118,15 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
         try {
             productRepository.save(product);
             upsertProductCurrentPrice(product, form.price());
+            Map<Long, Double> resolvedSourcePrices = resolveSourcePricesWithBaseFallback(
+                source,
+                form.sourcePrices(),
+                form.price()
+            );
             addProductSource(
                 product,
                 source,
-                form.sourcePrices(),
+                resolvedSourcePrices,
                 form.sourceStockQuantities(),
                 form.sourceLowStockThresholds(),
                 form.stockQuantity(),
@@ -309,10 +314,15 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
 
         try {
             upsertProductCurrentPrice(product, form.price());
+            Map<Long, Double> resolvedSourcePrices = resolveSourcePricesWithBaseFallback(
+                source,
+                form.sourcePrices(),
+                form.price()
+            );
             addProductSource(
                 product,
                 source,
-                form.sourcePrices(),
+                resolvedSourcePrices,
                 form.sourceStockQuantities(),
                 form.sourceLowStockThresholds(),
                 form.stockQuantity(),
@@ -461,4 +471,28 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
                 .values()
         );
     }
+
+    private Map<Long, Double> resolveSourcePricesWithBaseFallback(
+        List<Source> selectedSources,
+        Map<Long, Double> sourcePrices,
+        Double basePrice
+    ) {
+        Map<Long, Double> resolved = new HashMap<>();
+        if (sourcePrices != null && !sourcePrices.isEmpty()) {
+            resolved.putAll(sourcePrices);
+        }
+
+        if (basePrice == null || selectedSources == null || selectedSources.isEmpty()) {
+            return resolved;
+        }
+
+        for (Source source : selectedSources) {
+            Double value = resolved.get(source.getId());
+            if (value == null || value.doubleValue() == 0D) {
+                resolved.put(source.getId(), basePrice);
+            }
+        }
+        return resolved;
+    }
+
 }
