@@ -8,11 +8,16 @@ import com.cookiesstore.admin.web.dto.products.UpdateProductForm;
 import com.cookiesstore.common.entities.Price;
 import com.cookiesstore.common.entities.Product;
 import com.cookiesstore.common.entities.ProductSource;
+import com.cookiesstore.common.entities.ProductTemplate;
+import com.cookiesstore.common.entities.ProductTemplateField;
+import com.cookiesstore.common.entities.ProductTemplateFieldValue;
 import com.cookiesstore.common.entities.Source;
 import com.cookiesstore.common.repositories.CategoryRepository;
 import com.cookiesstore.common.repositories.PriceRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
 import com.cookiesstore.common.repositories.ProductSourceRepository;
+import com.cookiesstore.common.repositories.ProductTemplateFieldRepository;
+import com.cookiesstore.common.repositories.ProductTemplateFieldValueRepository;
 import com.cookiesstore.common.repositories.SourceRepository;
 import com.cookiesstore.common.services.products.ProductTypeService;
 
@@ -43,6 +48,8 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
     protected final SourceRepository sourceRepository;
     protected final PriceRepository priceRepository;
     protected final ProductSourceRepository productSourceRepository;
+    protected final ProductTemplateFieldRepository productTemplateFieldRepository;
+    protected final ProductTemplateFieldValueRepository productTemplateFieldValueRepository;
     protected final PricingProperties pricingProperties;
     protected final AuthenticatedUserProvider authenticatedUserProvider;
 
@@ -52,6 +59,8 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
         SourceRepository sourceRepository,
         PriceRepository priceRepository,
         ProductSourceRepository productSourceRepository,
+        ProductTemplateFieldRepository productTemplateFieldRepository,
+        ProductTemplateFieldValueRepository productTemplateFieldValueRepository,
         PricingProperties pricingProperties,
         AuthenticatedUserProvider authenticatedUserProvider
     ) {
@@ -60,6 +69,8 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
         this.sourceRepository = sourceRepository;
         this.priceRepository = priceRepository;
         this.productSourceRepository = productSourceRepository;
+        this.productTemplateFieldRepository = productTemplateFieldRepository;
+        this.productTemplateFieldValueRepository = productTemplateFieldValueRepository;
         this.pricingProperties = pricingProperties;
         this.authenticatedUserProvider = authenticatedUserProvider;
     }
@@ -97,6 +108,7 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
 
         var category = categoryRepository.findById(form.categoryId())
             .orElseThrow(() -> new ProductCategoryNotFoundException(form.categoryId()));
+        ProductTemplate categoryTemplate = category.getDefaultTemplate();
 
         Product product = new Product();
         product.setProductTypeCode(form.productTypeCode());
@@ -106,14 +118,12 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
         product.setDescription(trimToNull(form.description()));
         product.setCategory(category);
         product.setMainImageUrl(trimToNull(form.mainImageUrl()));
-        product.setIngredients(trimToNull(form.ingredients()));
-        product.setAllergenInfo(trimToNull(form.allergenInfo()));
-        product.setNutritionFacts(trimToNull(form.nutritionFacts()));
         product.setActive(form.active());
         product.setVisible(form.visible());
         product.setListable(form.isListable());
         product.setSearchable(form.isPurchasable());
         product.setPurchasableAlone(form.isPurchasableAlone());
+        product.setTemplate(categoryTemplate);
 
         try {
             productRepository.save(product);
@@ -133,7 +143,9 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
                 form.lowStockThreshold(),
                 false
             );
-            return productRepository.save(product);
+            Product persisted = productRepository.save(product);
+            syncTemplateFieldValues(persisted, form.templateValues());
+            return persisted;
         } catch (DataIntegrityViolationException ex) {
             throw mapDataIntegrityViolation(ex);
         }
@@ -172,6 +184,17 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
         Double currentPrice = product.getCurrentPrice() != null && product.getCurrentPrice().getAmount() != null
             ? product.getCurrentPrice().getAmount().doubleValue()
             : 0D;
+        Map<String, String> templateValues = productTemplateFieldValueRepository.findByProductId(productId)
+            .stream()
+            .filter(value -> value.getTemplateField() != null && value.getTemplateField().getFieldKey() != null)
+            .collect(
+                java.util.stream.Collectors.toMap(
+                    value -> value.getTemplateField().getFieldKey(),
+                    ProductTemplateFieldValue::getFieldValue,
+                    (left, right) -> right,
+                    LinkedHashMap::new
+                )
+            );
 
         return new UpdateProductForm(
             product.getSku(),
@@ -180,9 +203,6 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
             product.getDescription(),
             product.getCategory().getId(),
             product.getMainImageUrl(),
-            product.getIngredients(),
-            product.getAllergenInfo(),
-            product.getNutritionFacts(),
             sourceIds,
             defaultStockQuantity,
             defaultLowStockThreshold,
@@ -193,6 +213,7 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
             sourcePrices,
             sourceStockQuantities,
             sourceLowStockThresholds,
+            templateValues,
             product.isActive(),
             product.isVisible(),
             product.getListable() == null || product.getListable(),
@@ -296,6 +317,7 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
 
         var category = categoryRepository.findById(form.categoryId())
             .orElseThrow(() -> new ProductCategoryNotFoundException(form.categoryId()));
+        ProductTemplate categoryTemplate = category.getDefaultTemplate();
 
         product.setSku(sku);
         product.setName(form.name().trim());
@@ -303,14 +325,12 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
         product.setDescription(trimToNull(form.description()));
         product.setCategory(category);
         product.setMainImageUrl(trimToNull(form.mainImageUrl()));
-        product.setIngredients(trimToNull(form.ingredients()));
-        product.setAllergenInfo(trimToNull(form.allergenInfo()));
-        product.setNutritionFacts(trimToNull(form.nutritionFacts()));
         product.setActive(form.active());
         product.setVisible(form.visible());
         product.setListable(form.isListable());
         product.setSearchable(form.isPurchasable());
         product.setPurchasableAlone(form.isPurchasableAlone());
+        product.setTemplate(categoryTemplate);
 
         try {
             upsertProductCurrentPrice(product, form.price());
@@ -329,7 +349,9 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
                 form.lowStockThreshold(),
                 true
             );
-            return productRepository.save(product);
+            Product persisted = productRepository.save(product);
+            syncTemplateFieldValues(persisted, form.templateValues());
+            return persisted;
         } catch (DataIntegrityViolationException ex) {
             throw mapDataIntegrityViolation(ex);
         }
@@ -493,6 +515,75 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
             }
         }
         return resolved;
+    }
+
+    private void syncTemplateFieldValues(Product product, Map<String, String> requestedValues) {
+        ProductTemplate template = product.getTemplate();
+        if (template == null || template.getId() == null) {
+            productTemplateFieldValueRepository.deleteByProductId(product.getId());
+            return;
+        }
+
+        Map<String, String> values = requestedValues == null ? Map.of() : requestedValues;
+        List<ProductTemplateField> templateFields = productTemplateFieldRepository.findByTemplateIdOrderBySortOrderAsc(template.getId());
+        Map<Long, ProductTemplateFieldValue> existingByFieldId = productTemplateFieldValueRepository.findByProductId(product.getId())
+            .stream()
+            .filter(value -> value.getTemplateField() != null && value.getTemplateField().getId() != null)
+            .collect(
+                java.util.stream.Collectors.toMap(
+                    value -> value.getTemplateField().getId(),
+                    value -> value,
+                    (left, right) -> left
+                )
+            );
+
+        List<ProductTemplateFieldValue> toSave = new java.util.ArrayList<>();
+        List<ProductTemplateFieldValue> toDelete = new java.util.ArrayList<>();
+
+        for (ProductTemplateField field : templateFields) {
+            String normalizedValue = normalizeTemplateFieldValue(values.get(field.getFieldKey()));
+            if (field.isRequired() && !StringUtils.hasText(normalizedValue)) {
+                throw new ProductTemplateValidationException(field.getLabel());
+            }
+            ProductTemplateFieldValue existing = existingByFieldId.remove(field.getId());
+
+            if (!StringUtils.hasText(normalizedValue)) {
+                if (existing != null) {
+                    toDelete.add(existing);
+                }
+                continue;
+            }
+
+            if (existing != null) {
+                existing.setFieldValue(normalizedValue);
+                toSave.add(existing);
+                continue;
+            }
+
+            ProductTemplateFieldValue created = new ProductTemplateFieldValue();
+            created.setProduct(product);
+            created.setTemplateField(field);
+            created.setFieldValue(normalizedValue);
+            toSave.add(created);
+        }
+
+        if (!existingByFieldId.isEmpty()) {
+            toDelete.addAll(existingByFieldId.values());
+        }
+
+        if (!toDelete.isEmpty()) {
+            productTemplateFieldValueRepository.deleteAllInBatch(toDelete);
+        }
+        if (!toSave.isEmpty()) {
+            productTemplateFieldValueRepository.saveAll(toSave);
+        }
+    }
+
+    private String normalizeTemplateFieldValue(String raw) {
+        if (!StringUtils.hasText(raw)) {
+            return null;
+        }
+        return raw.trim();
     }
 
 }

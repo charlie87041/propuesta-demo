@@ -2,6 +2,8 @@ package com.cookiesstore.admin.web.advice.model;
 
 import com.cookiesstore.admin.web.advice.support.BaseAdviceSupport;
 import com.cookiesstore.admin.web.controllers.CategoriesController;
+import com.cookiesstore.common.repositories.ProductTemplateRepository;
+
 import java.util.List;
 import org.springframework.context.MessageSource;
 import org.springframework.ui.Model;
@@ -11,11 +13,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import org.springframework.data.domain.Sort;
+
 @ControllerAdvice(assignableTypes = CategoriesController.class)
 public class CategoriesModelAdvice extends BaseAdviceSupport {
 
-    public CategoriesModelAdvice(MessageSource messageSource) {
+    private final ProductTemplateRepository productTemplateRepository;
+
+    public CategoriesModelAdvice(MessageSource messageSource, ProductTemplateRepository productTemplateRepository) {
         super(messageSource);
+        this.productTemplateRepository = productTemplateRepository;
     }
 
     @ModelAttribute
@@ -44,6 +51,7 @@ public class CategoriesModelAdvice extends BaseAdviceSupport {
             model.addAttribute("isEdit", false);
             model.addAttribute("formAction", "/admin/categories");
             model.addAttribute("submitLabel", message("admin.categories.submit.create"));
+            populateCategoryFormModel(model, false, null);
             return;
         }
 
@@ -54,6 +62,15 @@ public class CategoriesModelAdvice extends BaseAdviceSupport {
             model.addAttribute("categoryId", categoryId);
             model.addAttribute("formAction", "/admin/categories/" + categoryId);
             model.addAttribute("submitLabel", message("admin.categories.submit.edit"));
+            populateCategoryFormModel(model, true, categoryId);
         }
+    }
+
+     private void populateCategoryFormModel(Model model, boolean isEdit, Long categoryId) {
+        model.addAttribute("isEdit", isEdit);
+        model.addAttribute("pageTitle", message(isEdit ? "admin.categories.edit.title" : "admin.categories.create.title"));
+        model.addAttribute("formAction", isEdit ? "/admin/categories/" + categoryId : "/admin/categories");
+        model.addAttribute("submitLabel", message(isEdit ? "admin.categories.submit.edit" : "admin.categories.submit.create"));
+        model.addAttribute("productTemplates", productTemplateRepository.findAll(Sort.by(Sort.Order.asc("name"))));
     }
 }

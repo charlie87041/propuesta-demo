@@ -1,15 +1,13 @@
 package com.cookiesstore.admin.service.categories;
 
-import com.cookiesstore.admin.service.categories.CategoryCodeExistsException;
-import com.cookiesstore.admin.service.categories.CategoryNotFoundException;
-import com.cookiesstore.admin.service.categories.CategorySlugExistsException;
-import com.cookiesstore.admin.service.categories.CategoryUniqueConstraintException;
-import com.cookiesstore.admin.service.categories.CategoryUpdateNotAllowedException;
 import com.cookiesstore.admin.web.dto.categories.CreateCategoryForm;
 import com.cookiesstore.admin.web.dto.categories.UpdateCategoryForm;
 import com.cookiesstore.common.entities.Category;
+import com.cookiesstore.common.entities.ProductTemplate;
 import com.cookiesstore.common.repositories.CategoryRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
+import com.cookiesstore.common.repositories.ProductTemplateRepository;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +18,12 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
+    private final ProductTemplateRepository productTemplateRepository;
 
-    public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository) {
+    public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository, ProductTemplateRepository productTemplateRepository) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
+        this.productTemplateRepository = productTemplateRepository;
     }
 
     public void deleteCategory(Long categoryId) {
@@ -45,6 +45,8 @@ public class CategoryService {
         if (categoryRepository.findBySlug(form.slug()).isPresent()) {
             throw new CategorySlugExistsException(form.slug());
         }
+        var productTemplate = productTemplateRepository.findById(form.productTemplateId())
+            .orElseThrow(() -> new ProductTemplateNotFoundException(form.productTemplateId()));
 
         Category category = new Category();
         category.setCode(form.code().trim());
@@ -53,6 +55,7 @@ public class CategoryService {
         category.setDescription(form.description());
         category.setSortOrder(form.sortOrder());
         category.setActive(form.active());
+        category.setDefaultTemplate(productTemplate);
 
         try {
             return categoryRepository.save(category);
@@ -79,12 +82,16 @@ public class CategoryService {
             throw new CategorySlugExistsException(form.slug());
         }
 
+        var productTemplate = productTemplateRepository.findById(form.productTemplateId())
+            .orElseThrow(() -> new ProductTemplateNotFoundException(form.productTemplateId()));
+
         category.setCode(form.code().trim());
         category.setName(form.name().trim());
         category.setSlug(form.slug().trim());
         category.setDescription(form.description());
         category.setSortOrder(form.sortOrder());
         category.setActive(form.active());
+        category.setDefaultTemplate(productTemplate);
 
         try {
             return categoryRepository.save(category);

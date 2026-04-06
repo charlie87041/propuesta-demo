@@ -1,6 +1,7 @@
 package com.cookiesstore.admin.web;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.cookiesstore.admin.service.customers.CustomerAvatarStorageService;
 import com.cookiesstore.admin.service.users.AdminUserService;
+import com.cookiesstore.admin.config.CustomerSearchProperties;
 import com.cookiesstore.admin.web.controllers.AdminCustomerViewController;
 import com.cookiesstore.admin.web.advice.model.AdminCustomerFormModelAdvice;
 import com.cookiesstore.common.entities.Customer;
@@ -33,9 +35,10 @@ class AdminCustomerControllerViewTest {
     private final CustomerAvatarStorageService customerAvatarStorageService = Mockito.mock(CustomerAvatarStorageService.class);
     private final AdminUserService adminUserService = Mockito.mock(AdminUserService.class);
     private final MessageSource messageSource = messageSource();
+    private final CustomerSearchProperties customerSearchProperties = new CustomerSearchProperties();
 
     private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(
-        new AdminCustomerViewController(customerService, customerAvatarStorageService, messageSource)
+        new AdminCustomerViewController(customerService, customerAvatarStorageService, messageSource, customerSearchProperties)
     ).setControllerAdvice(
         new AdminCustomerFormModelAdvice(adminUserService, messageSource)
     ).build();
@@ -49,52 +52,56 @@ class AdminCustomerControllerViewTest {
         customer.setActive(true);
 
         mockAuthenticatedUser(99L);
-        when(customerService.listCustomers()).thenReturn(List.of(customer));
+        when(customerService.listCustomers(org.mockito.ArgumentMatchers.any(org.springframework.data.domain.Pageable.class)))
+            .thenReturn(new org.springframework.data.domain.PageImpl<>(List.of(customer)));
+        when(customerService.getCustomerStatistics(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any()))
+            .thenReturn(new com.cookiesstore.common.services.CustomerStatistics(1, 1, 100f, 1, 100f, new java.sql.Date(System.currentTimeMillis()), new java.sql.Date(System.currentTimeMillis())));
 
         mockMvc.perform(get("/admin/customers"))
             .andExpect(status().isOk())
             .andExpect(view().name("backoffice/customers/index"))
-            .andExpect(model().attributeExists("customers"))
+            .andExpect(model().attributeExists("customersPage"))
             .andExpect(model().attribute("pageTitle", "Customer Management"));
     }
 
     @Test
     void shouldDeactivateCustomerAndRedirectToList() throws Exception {
         mockAuthenticatedUser(99L);
-        when(customerService.disableCustomer(42L)).thenReturn(true);
+        doNothing().when(customerService).disableCustomerOrThrow(42L);
 
         mockMvc.perform(post("/admin/customers/42/deactivate"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/admin/customers"))
             .andExpect(flash().attribute("successMessage", "Customer deactivated successfully."));
 
-        verify(customerService).disableCustomer(42L);
+        verify(customerService).disableCustomerOrThrow(42L);
     }
 
     @Test
     void shouldEnableCustomerAndRedirectToList() throws Exception {
         mockAuthenticatedUser(99L);
-        when(customerService.enableCustomer(42L)).thenReturn(true);
+        doNothing().when(customerService).enableCustomerOrThrow(42L);
 
         mockMvc.perform(post("/admin/customers/42/enable"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/admin/customers"))
             .andExpect(flash().attribute("successMessage", "Customer enabled successfully."));
 
-        verify(customerService).enableCustomer(42L);
+        verify(customerService).enableCustomerOrThrow(42L);
     }
 
     @Test
     void shouldShowErrorWhenCustomerDoesNotExistOnDeactivate() throws Exception {
         mockAuthenticatedUser(99L);
-        when(customerService.disableCustomer(999L)).thenReturn(false);
+        Mockito.doThrow(new com.cookiesstore.common.services.customers.CustomerNotFoundException(999L))
+            .when(customerService).disableCustomerOrThrow(999L);
 
         mockMvc.perform(post("/admin/customers/999/deactivate"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/admin/customers"))
             .andExpect(flash().attribute("errorMessage", "Customer not found."));
 
-        verify(customerService).disableCustomer(999L);
+        verify(customerService).disableCustomerOrThrow(999L);
     }
 
     private void mockAuthenticatedUser(Long userId) {

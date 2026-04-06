@@ -9,6 +9,8 @@ import com.cookiesstore.common.repositories.CategoryRepository;
 import com.cookiesstore.common.repositories.PriceRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
 import com.cookiesstore.common.repositories.ProductSourceRepository;
+import com.cookiesstore.common.repositories.ProductTemplateFieldRepository;
+import com.cookiesstore.common.repositories.ProductTemplateFieldValueRepository;
 import com.cookiesstore.common.repositories.SourceRepository;
 import java.util.List;
 
@@ -28,6 +30,8 @@ public class AddonProductService extends SimpleProductService {
         SourceRepository sourceRepository,
         PriceRepository priceRepository,
         ProductSourceRepository productSourceRepository,
+        ProductTemplateFieldRepository productTemplateFieldRepository,
+        ProductTemplateFieldValueRepository productTemplateFieldValueRepository,
         PricingProperties pricingProperties,
         AuthenticatedUserProvider authenticatedUserProvider
     ) {
@@ -37,6 +41,8 @@ public class AddonProductService extends SimpleProductService {
             sourceRepository,
             priceRepository,
             productSourceRepository,
+            productTemplateFieldRepository,
+            productTemplateFieldValueRepository,
             pricingProperties,
             authenticatedUserProvider
         );
@@ -67,9 +73,6 @@ public class AddonProductService extends SimpleProductService {
             baseForm.description(),
             baseForm.categoryId(),
             baseForm.mainImageUrl(),
-            baseForm.ingredients(),
-            baseForm.allergenInfo(),
-            baseForm.nutritionFacts(),
             baseForm.sourceIds(),
             baseForm.stockQuantity(),
             baseForm.lowStockThreshold(),
@@ -80,6 +83,7 @@ public class AddonProductService extends SimpleProductService {
             baseForm.sourcePrices(),
             baseForm.sourceStockQuantities(),
             baseForm.sourceLowStockThresholds(),
+            baseForm.templateValues(),
             baseForm.active(),
             baseForm.visible(),
             false,
@@ -99,9 +103,6 @@ public class AddonProductService extends SimpleProductService {
             form.description(),
             form.categoryId(),
             form.mainImageUrl(),
-            form.ingredients(),
-            form.allergenInfo(),
-            form.nutritionFacts(),
             form.active(),
             form.visible(),
             form.sourceIds(),
@@ -114,6 +115,7 @@ public class AddonProductService extends SimpleProductService {
             form.sourcePrices(),
             form.sourceStockQuantities(),
             form.sourceLowStockThresholds(),
+            form.templateValues(),
             false,
             false,
             false,
@@ -137,9 +139,6 @@ public class AddonProductService extends SimpleProductService {
             form.description(),
             form.categoryId(),
             form.mainImageUrl(),
-            form.ingredients(),
-            form.allergenInfo(),
-            form.nutritionFacts(),
             form.sourceIds(),
             form.stockQuantity(),
             form.lowStockThreshold(),
@@ -150,6 +149,7 @@ public class AddonProductService extends SimpleProductService {
             form.sourcePrices(),
             form.sourceStockQuantities(),
             form.sourceLowStockThresholds(),
+            form.templateValues(),
             form.active(),
             form.visible(),
             false,

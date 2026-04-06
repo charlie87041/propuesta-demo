@@ -7,25 +7,22 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(
-    name = "categories",
+    name = "product_templates",
     indexes = {
-        @Index(name = "idx_categories_active_sort", columnList = "active,sort_order"),
-        @Index(name = "idx_categories_slug", columnList = "slug", unique = true),
-        @Index(name = "idx_categories_code", columnList = "code", unique = true)
+        @Index(name = "idx_product_templates_code", columnList = "code", unique = true),
+        @Index(name = "idx_product_templates_active", columnList = "active")
     }
 )
-public class Category {
+public class ProductTemplate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,11 +31,8 @@ public class Category {
     @Column(nullable = false, unique = true, length = 80)
     private String code;
 
-    @Column(nullable = false, length = 120)
+    @Column(nullable = false, length = 180)
     private String name;
-
-    @Column(nullable = false, unique = true, length = 140)
-    private String slug;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -46,22 +40,14 @@ public class Category {
     @Column(nullable = false)
     private boolean active = true;
 
-    @Column(name = "sort_order", nullable = false)
-    private int sortOrder = 0;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "default_template_id")
-    private ProductTemplate defaultTemplate;
+    @OneToMany(mappedBy = "template", fetch = FetchType.LAZY)
+    private Set<ProductTemplateField> fields;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
-
-    @OneToMany(targetEntity = Product.class, fetch = FetchType.LAZY, mappedBy = "category")
-    public List<Product> products;
-
 
     @PrePersist
     void onCreate() {
@@ -95,14 +81,6 @@ public class Category {
         this.name = name;
     }
 
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -119,22 +97,9 @@ public class Category {
         this.active = active;
     }
 
-    public int getSortOrder() {
-        return sortOrder;
+    public Set<ProductTemplateField> getFields() {
+        return fields;
     }
-
-    public void setSortOrder(int sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public ProductTemplate getDefaultTemplate() {
-        return defaultTemplate;
-    }
-
-    public void setDefaultTemplate(ProductTemplate defaultTemplate) {
-        this.defaultTemplate = defaultTemplate;
-    }
-
 
     public Instant getCreatedAt() {
         return createdAt;

@@ -16,9 +16,6 @@ public record UpdateProductForm(
     @Size(max = 5000) String description,
     @NotNull Long categoryId,
     @Size(max = 255) String mainImageUrl,
-    @Size(max = 5000) String ingredients,
-    @Size(max = 5000) String allergenInfo,
-    @Size(max = 5000) String nutritionFacts,
     List<Long> sourceIds,
     @NotNull @Min(0) Integer stockQuantity,
     @NotNull @Min(0) Integer lowStockThreshold,
@@ -29,6 +26,7 @@ public record UpdateProductForm(
     Map<Long, Double> sourcePrices,
     Map<Long, Integer> sourceStockQuantities,
     Map<Long, Integer> sourceLowStockThresholds,
+    Map<String, String> templateValues,
     boolean active,
     boolean visible,
     boolean isListable,
@@ -45,6 +43,7 @@ public record UpdateProductForm(
         sourcePrices = sourcePrices == null ? new HashMap<>() : sourcePrices;
         sourceStockQuantities = sourceStockQuantities == null ? new HashMap<>() : sourceStockQuantities;
         sourceLowStockThresholds = sourceLowStockThresholds == null ? new HashMap<>() : sourceLowStockThresholds;
+        templateValues = templateValues == null ? new HashMap<>() : templateValues;
         variantForms = variantForms == null ? List.of() : variantForms;
     }
 }

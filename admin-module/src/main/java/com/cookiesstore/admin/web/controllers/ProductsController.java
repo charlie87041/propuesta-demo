@@ -2,6 +2,7 @@ package com.cookiesstore.admin.web.controllers;
 
 import com.cookiesstore.admin.config.ProductSearchProperties;
 import com.cookiesstore.admin.search.EntitySearchSpecifications;
+import com.cookiesstore.admin.web.advice.exception.AdminUserViewExceptionAdvice;
 import com.cookiesstore.admin.web.dto.products.CreateProductForm;
 import com.cookiesstore.admin.web.dto.products.UpdateProductForm;
 import com.cookiesstore.common.entities.Product;
@@ -70,38 +71,8 @@ public class ProductsController {
 
     @GetMapping(value = "/admin/products/new", produces = "text/html", name = "admin.products.create.view")
     public String newProduct(Model model) {
-        if (!model.containsAttribute("form")) {
-            model.addAttribute(
-                "form",
-                new CreateProductForm(
-                    "",
-                    "",
-                    "",
-                    "",
-                    null,
-                    "",
-                    "",
-                    "",
-                    "",
-                    true,
-                    true,
-                    null,
-                    0,
-                    20,
-                    null,
-                    "SIMPLE",
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    true,
-                    true,
-                    true,
-                    null,
-                    null
-                )
-            );
+        if (!(model.asMap().get("form") instanceof CreateProductForm)) {
+            model.addAttribute("form", buildDefaultCreateForm());
         }
         return "backoffice/products/form";
     }
@@ -113,6 +84,7 @@ public class ProductsController {
         RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
+            System.out.println(bindingResult.getAllErrors());
             return "backoffice/products/form";
         }
 
@@ -126,10 +98,39 @@ public class ProductsController {
         @PathVariable("productId") Long productId,
         Model model
     ) {
-        if (!model.containsAttribute("form")) {
+        if (!(model.asMap().get("form") instanceof UpdateProductForm)) {
             model.addAttribute("form", productService.buildUpdateProductForm(productId));
         }
         return "backoffice/products/form";
+    }
+
+    private CreateProductForm buildDefaultCreateForm() {
+        return new CreateProductForm(
+            "",
+            "",
+            "",
+            "",
+            null,
+            "",
+            true,
+            true,
+            null,
+            0,
+            20,
+            null,
+            "SIMPLE",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            true,
+            true,
+            true,
+            null,
+            null
+        );
     }
 
     @GetMapping(value = "/admin/products/{productId}", produces = "text/html", name = "admin.products.show")

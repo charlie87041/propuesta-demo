@@ -57,6 +57,10 @@ public class Product {
     @JoinColumn(name = "current_price_id")
     private Price currentPrice;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "template_id")
+    private ProductTemplate template;
+
     @Column(name = "product_type_code", nullable = false, length = 30)
     private String productTypeCode = "SIMPLE";
 
@@ -81,15 +85,6 @@ public class Product {
 
     @Column(name = "main_image_url", length = 255)
     private String mainImageUrl;
-
-    @Column(columnDefinition = "TEXT")
-    private String ingredients;
-
-    @Column(name = "allergen_info", columnDefinition = "TEXT")
-    private String allergenInfo;
-
-    @Column(name = "nutrition_facts", columnDefinition = "TEXT")
-    private String nutritionFacts;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -201,6 +196,14 @@ public class Product {
         this.currentPrice = currentPrice;
     }
 
+    public ProductTemplate getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(ProductTemplate template) {
+        this.template = template;
+    }
+
     public boolean isActive() {
         return active;
     }
@@ -247,30 +250,6 @@ public class Product {
 
     public void setMainImageUrl(String mainImageUrl) {
         this.mainImageUrl = mainImageUrl;
-    }
-
-    public String getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(String ingredients) {
-        this.ingredients = ingredients;
-    }
-
-    public String getAllergenInfo() {
-        return allergenInfo;
-    }
-
-    public void setAllergenInfo(String allergenInfo) {
-        this.allergenInfo = allergenInfo;
-    }
-
-    public String getNutritionFacts() {
-        return nutritionFacts;
-    }
-
-    public void setNutritionFacts(String nutritionFacts) {
-        this.nutritionFacts = nutritionFacts;
     }
 
     public Instant getCreatedAt() {

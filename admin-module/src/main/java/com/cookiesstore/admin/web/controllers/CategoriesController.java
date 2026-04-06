@@ -5,9 +5,11 @@ import com.cookiesstore.admin.search.EntitySearchSpecifications;
 import com.cookiesstore.admin.service.categories.CategoryService;
 import com.cookiesstore.admin.web.dto.categories.CreateCategoryForm;
 import com.cookiesstore.admin.web.dto.categories.UpdateCategoryForm;
+import com.cookiesstore.admin.web.dto.products.UpdateProductForm;
 import com.cookiesstore.common.entities.Category;
 import com.cookiesstore.common.repositories.CategoryRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
+
 import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +74,7 @@ public class CategoriesController {
 
     @GetMapping(value = "/admin/categories/new", produces = "text/html", name = "admin.categories.create.view")
     public String newCategory(Model model) {
-        model.addAttribute("form", new CreateCategoryForm("", "", "", "", 0, true));
+        model.addAttribute("form", new CreateCategoryForm("", "", "", "", 0, true, null));
         return "backoffice/categories/form";
     }
 
@@ -80,6 +82,7 @@ public class CategoriesController {
     public String createCategory(
         @Valid @ModelAttribute("form") CreateCategoryForm form,
         BindingResult bindingResult,
+        Model model,
         RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
@@ -105,9 +108,11 @@ public class CategoriesController {
                 category.getSlug(),
                 category.getDescription(),
                 category.getSortOrder(),
-                category.isActive()
+                category.isActive(),
+                category.getDefaultTemplate() != null ? category.getDefaultTemplate().getId() : null
             )
         );
+       
         return "backoffice/categories/form";
     }
 
@@ -116,6 +121,7 @@ public class CategoriesController {
         @PathVariable("categoryId") Long categoryId,
         @Valid @ModelAttribute("form") UpdateCategoryForm form,
         BindingResult bindingResult,
+        Model model,
         RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
@@ -184,6 +190,8 @@ public class CategoriesController {
         categories.forEach(category -> countsByCategory.putIfAbsent(category.getId(), CategoryProductCounters.ZERO));
         return countsByCategory;
     }
+
+   
 
     private record CategoryProductCounters(
         long totalProducts,

@@ -17,6 +17,8 @@ import com.cookiesstore.common.repositories.PackageOptionTypeRepository;
 import com.cookiesstore.common.repositories.PriceRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
 import com.cookiesstore.common.repositories.ProductSourceRepository;
+import com.cookiesstore.common.repositories.ProductTemplateFieldRepository;
+import com.cookiesstore.common.repositories.ProductTemplateFieldValueRepository;
 import com.cookiesstore.common.repositories.SourceRepository;
 import java.math.BigDecimal;
 import java.util.List;
@@ -46,6 +48,8 @@ public class PackageProductService extends AbstractCompositeProductService {
         PackageOptionItemRepository packageOptionItemRepository,
         PackageOptionTypeRepository packageOptionTypeRepository,
         ProductSourceRepository productSourceRepository,
+        ProductTemplateFieldRepository productTemplateFieldRepository,
+        ProductTemplateFieldValueRepository productTemplateFieldValueRepository,
         PricingProperties pricingProperties,
         AuthenticatedUserProvider authenticatedUserProvider
     ) {
@@ -55,6 +59,8 @@ public class PackageProductService extends AbstractCompositeProductService {
             sourceRepository,
             priceRepository,
             productSourceRepository,
+            productTemplateFieldRepository,
+            productTemplateFieldValueRepository,
             pricingProperties,
             authenticatedUserProvider
         );

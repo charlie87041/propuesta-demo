@@ -14,6 +14,13 @@
             <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
 
             <form th:action="${formAction}" th:object="${form}" method="post" class="space-y-6">
+                <div th:if="${#fields.hasErrors('*')}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <p class="font-semibold">Revisa los errores del formulario:</p>
+                    <ul class="list-disc ml-5 mt-1 space-y-1">
+                        <li th:each="error : ${#fields.errors('*')}" th:text="${error}">Error</li>
+                    </ul>
+                </div>
+
                 <div class="bg-white rounded-xl border border-[#f3ece8] shadow-sm overflow-hidden">
                     <div class="px-6 py-4 border-b border-[#f3ece8] bg-[#f3ece8]/30">
                         <h4 class="font-bold text-[#8b4513] flex items-center gap-2">
@@ -43,7 +50,7 @@
 
                         <label class="flex flex-col gap-1.5">
                             <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.category}">Category</span>
-                            <select name="categoryId" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{categoryId}" required>
+                            <select id="categoryId" name="categoryId" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{categoryId}" required>
                                 <option value="" th:text="#{admin.products.form.category.placeholder}">Select category</option>
                                 <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">Category</option>
                             </select>
@@ -61,9 +68,9 @@
                             <input th:if="${isEdit}" type="hidden" name="productTypeCode" th:value="*{productTypeCode}"/>
                             <span th:if="${isEdit}" class="text-xs text-[#956d50]">El tipo no se puede cambiar en edición.</span>
                         </label>
-                        <input type="hidden" id="isListableInput" name="isListable" th:value="*{isListable}"/>
-                        <input type="hidden" id="isPurchasableInput" name="isPurchasable" th:value="*{isPurchasable}"/>
-                        <input type="hidden" id="isPurchasableAloneInput" name="isPurchasableAlone" th:value="*{isPurchasableAlone}"/>
+                        <input type="hidden" id="isListableInput" name="isListable" th:value="${form != null ? form.isListable() : true}"/>
+                        <input type="hidden" id="isPurchasableInput" name="isPurchasable" th:value="${form != null ? form.isPurchasable() : true}"/>
+                        <input type="hidden" id="isPurchasableAloneInput" name="isPurchasableAlone" th:value="${form != null ? form.isPurchasableAlone() : true}"/>
 
                         <label class="md:col-span-2 flex flex-col gap-1.5">
                             <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.description}">Description</span>
@@ -71,25 +78,18 @@
                             <span th:if="${#fields.hasErrors('description')}" class="text-xs font-semibold text-red-700" th:errors="*{description}"></span>
                         </label>
 
+                        <div id="templateFieldsSection" class="md:col-span-2 space-y-3 hidden">
+                            <div class="rounded-lg border border-[#f3ece8] p-4 bg-[#fcfaf9]">
+                                <h5 class="text-sm font-bold text-[#8b4513]">Campos de template</h5>
+                                <p id="templateFieldsHint" class="text-xs text-[#956d50] mt-1"></p>
+                                <div id="templateFieldsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"></div>
+                            </div>
+                        </div>
+
                         <label class="md:col-span-2 flex flex-col gap-1.5">
                             <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.mainImageUrl}">Main image URL</span>
                             <input name="mainImageUrl" type="url" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{mainImageUrl}">
                             <span th:if="${#fields.hasErrors('mainImageUrl')}" class="text-xs font-semibold text-red-700" th:errors="*{mainImageUrl}"></span>
-                        </label>
-
-                        <label class="md:col-span-2 flex flex-col gap-1.5">
-                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.ingredients}">Ingredients</span>
-                            <textarea name="ingredients" rows="2" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{ingredients}"></textarea>
-                        </label>
-
-                        <label class="md:col-span-2 flex flex-col gap-1.5">
-                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.allergenInfo}">Allergen info</span>
-                            <textarea name="allergenInfo" rows="2" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{allergenInfo}"></textarea>
-                        </label>
-
-                        <label class="md:col-span-2 flex flex-col gap-1.5">
-                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.products.form.nutritionFacts}">Nutrition facts</span>
-                            <textarea name="nutritionFacts" rows="2" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{nutritionFacts}"></textarea>
                         </label>
 
                         <div id="pricingInventorySection" class="md:col-span-2 space-y-3">
@@ -104,8 +104,8 @@
                             <p class="text-xs text-[#956d50]">
                                 Precio e inventario se gestionan por source en la tabla inferior.
                             </p>
-                            <input type="hidden" name="stockQuantity" th:value="*{stockQuantity}">
-                            <input type="hidden" name="lowStockThreshold" th:value="*{lowStockThreshold}">
+                            <input type="hidden" name="stockQuantity" th:value="${form != null ? form.stockQuantity() : 0}">
+                            <input type="hidden" name="lowStockThreshold" th:value="${form != null ? form.lowStockThreshold() : 20}">
                         </div>
 
                         <div id="bundleComponentsSection" class="md:col-span-2 space-y-3 hidden">
@@ -128,7 +128,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="bundleComponentsBody">
-                                        <tr th:if="${form.bundleComponents == null || form.bundleComponents.isEmpty()}" data-bundle-row>
+                                        <tr th:if="${form == null || form.bundleComponents() == null || form.bundleComponents().isEmpty()}" data-bundle-row>
                                             <td class="px-3 py-2">
                                                 <select name="bundleComponents[0].childProductId" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
                                                     <option value="">Seleccionar</option>
@@ -157,7 +157,7 @@
                                                 <button type="button" class="text-red-700 font-semibold remove-bundle-row">Quitar</button>
                                             </td>
                                         </tr>
-                                        <tr th:each="component,iter : ${form.bundleComponents}" data-bundle-row>
+                                        <tr th:each="component,iter : ${form != null ? form.bundleComponents() : T(java.util.List).of()}" data-bundle-row>
                                             <td class="px-3 py-2">
                                                 <select th:name="|bundleComponents[${iter.index}].childProductId|" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
                                                     <option value="">Seleccionar</option>
@@ -200,7 +200,7 @@
                             </div>
 
                             <div id="packageOptionsContainer" class="space-y-4">
-                                <div th:if="${form.packageOptions == null || form.packageOptions.isEmpty()}" data-package-option-row class="rounded-lg border border-[#f3ece8] p-4 space-y-3 bg-[#fcfaf9]">
+                                <div th:if="${form == null || form.packageOptions() == null || form.packageOptions().isEmpty()}" data-package-option-row class="rounded-lg border border-[#f3ece8] p-4 space-y-3 bg-[#fcfaf9]">
                                     <input type="hidden" name="packageOptions[0].packageProductId" value="0"/>
                                     <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
                                         <label class="md:col-span-2 flex flex-col gap-1">
@@ -291,7 +291,7 @@
                                     </div>
                                 </div>
 
-                                <div th:each="option,optionIter : ${form.packageOptions}" data-package-option-row class="rounded-lg border border-[#f3ece8] p-4 space-y-3 bg-[#fcfaf9]">
+                                <div th:each="option,optionIter : ${form != null ? form.packageOptions() : T(java.util.List).of()}" data-package-option-row class="rounded-lg border border-[#f3ece8] p-4 space-y-3 bg-[#fcfaf9]">
                                     <input type="hidden" th:name="|packageOptions[${optionIter.index}].packageProductId|" th:value="${option.packageProductId == null ? 0 : option.packageProductId}"/>
                                     <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
                                         <label class="md:col-span-2 flex flex-col gap-1">
@@ -442,7 +442,7 @@
                                                     type="checkbox"
                                                     th:name="sourceIds"
                                                     th:value="${source.id}"
-                                                    th:checked="${form.sourceIds != null ? #lists.contains(form.sourceIds, source.id) : source.systemManaged}" />
+                                                    th:checked="${form != null && form.sourceIds() != null ? #lists.contains(form.sourceIds(), source.id) : source.systemManaged}" />
                                             </td>
                                             <td class="px-3 py-2">
                                                 <p class="font-semibold text-[#1b130e]" th:text="${source.name}">Default source</p>
@@ -455,7 +455,7 @@
                                                     step="0.01"
                                                     class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-32"
                                                     th:name="|sourcePrices[${source.id}]|"
-                                                    th:value="${form.sourcePrices != null ? form.sourcePrices.get(source.id) : ''}" />
+                                                    th:value="${form != null && form.sourcePrices() != null ? form.sourcePrices().get(source.id) : ''}" />
                                             </td>
                                             <td class="px-3 py-2">
                                                 <input
@@ -463,7 +463,7 @@
                                                     min="0"
                                                     class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-28"
                                                     th:name="|sourceStockQuantities[${source.id}]|"
-                                                    th:value="${form.sourceStockQuantities != null && form.sourceStockQuantities.get(source.id) != null ? form.sourceStockQuantities.get(source.id) : form.stockQuantity}" />
+                                                    th:value="${form != null && form.sourceStockQuantities() != null && form.sourceStockQuantities().get(source.id) != null ? form.sourceStockQuantities().get(source.id) : (form != null ? form.stockQuantity() : 0)}" />
                                             </td>
                                             <td class="px-3 py-2">
                                                 <input
@@ -471,7 +471,7 @@
                                                     min="0"
                                                     class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-28"
                                                     th:name="|sourceLowStockThresholds[${source.id}]|"
-                                                    th:value="${form.sourceLowStockThresholds != null && form.sourceLowStockThresholds.get(source.id) != null ? form.sourceLowStockThresholds.get(source.id) : form.lowStockThreshold}" />
+                                                    th:value="${form != null && form.sourceLowStockThresholds() != null && form.sourceLowStockThresholds().get(source.id) != null ? form.sourceLowStockThresholds().get(source.id) : (form != null ? form.lowStockThreshold() : 20)}" />
                                             </td>
                                         </tr>
                                     </tbody>
@@ -485,11 +485,11 @@
                                     <p class="text-sm font-bold" th:text="#{admin.products.form.status}">Status</p>
                                     <p id="productStatusText"
                                        class="text-xs text-[#956d50]"
-                                       th:text="*{active} ? #{admin.products.status.active} : #{admin.products.status.inactive}"
+                                       th:text="${form != null && form.active()} ? #{admin.products.status.active} : #{admin.products.status.inactive}"
                                        th:attr="data-active-text=#{admin.products.status.active},data-inactive-text=#{admin.products.status.inactive}">Active</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input id="productActiveToggle" class="sr-only peer" type="checkbox" th:field="*{active}"/>
+                                    <input id="productActiveToggle" class="sr-only peer" type="checkbox" name="active" th:checked="${form != null && form.active()}"/>
                                     <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8b4513]"></div>
                                 </label>
                             </div>
@@ -498,11 +498,11 @@
                                     <p class="text-sm font-bold" th:text="#{admin.products.form.visible}">Visible</p>
                                     <p id="productVisibleText"
                                        class="text-xs text-[#956d50]"
-                                       th:text="*{visible} ? #{admin.products.visible.yes} : #{admin.products.visible.no}"
+                                       th:text="${form != null && form.visible()} ? #{admin.products.visible.yes} : #{admin.products.visible.no}"
                                        th:attr="data-yes-text=#{admin.products.visible.yes},data-no-text=#{admin.products.visible.no}">Yes</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input id="productVisibleToggle" class="sr-only peer" type="checkbox" th:field="*{visible}"/>
+                                    <input id="productVisibleToggle" class="sr-only peer" type="checkbox" name="visible" th:checked="${form != null && form.visible()}"/>
                                     <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8b4513]"></div>
                                 </label>
                             </div>
@@ -517,17 +517,21 @@
             </form>
         </section>
 
-        <script>
+        <script th:inline="javascript">
             (function () {
                 var activeToggle = document.getElementById("productActiveToggle");
                 var activeTextNode = document.getElementById("productStatusText");
                 var visibleToggle = document.getElementById("productVisibleToggle");
                 var visibleTextNode = document.getElementById("productVisibleText");
+                var categorySelect = document.getElementById("categoryId");
                 var productTypeSelect = document.getElementById("productTypeCode");
                 var bundleSection = document.getElementById("bundleComponentsSection");
                 var packageSection = document.getElementById("packageOptionsSection");
                 var addonInfoSection = document.getElementById("addonInfoSection");
                 var pricingInventorySection = document.getElementById("pricingInventorySection");
+                var templateFieldsSection = document.getElementById("templateFieldsSection");
+                var templateFieldsContainer = document.getElementById("templateFieldsContainer");
+                var templateFieldsHint = document.getElementById("templateFieldsHint");
                 var priceInput = document.getElementById("productPriceInput");
                 var bundleBody = document.getElementById("bundleComponentsBody");
                 var addBundleBtn = document.getElementById("addBundleComponentBtn");
@@ -536,6 +540,176 @@
                 var isListableInput = document.getElementById("isListableInput");
                 var isPurchasableInput = document.getElementById("isPurchasableInput");
                 var isPurchasableAloneInput = document.getElementById("isPurchasableAloneInput");
+                var categoryTemplateMap = /*[[${categoryTemplateMap}]]*/ {};
+                var formTemplateValues = /*[[${form != null ? form.templateValues() : null}]]*/ {};
+                var requestTemplateValues = /*[[${templateValuesFromRequest}]]*/ {};
+                var existingTemplateValues = Object.assign({}, formTemplateValues || {}, requestTemplateValues || {});
+                var initialCategoryId = categorySelect ? String(categorySelect.value || "") : "";
+                var currentRenderedTemplateCategoryId = "";
+                var templateDrafts = {};
+
+                if (initialCategoryId) {
+                    templateDrafts[initialCategoryId] = Object.assign({}, existingTemplateValues || {});
+                }
+
+                function parseChoices(validationRules) {
+                    if (!validationRules || validationRules.indexOf("choices:") !== 0) {
+                        return [];
+                    }
+                    return validationRules
+                        .substring("choices:".length)
+                        .split(",")
+                        .map(function (item) { return item.trim(); })
+                        .filter(function (item) { return item.length > 0; });
+                }
+
+                function getCurrentTemplateInputValue(input) {
+                    if (!input) {
+                        return "";
+                    }
+                    if (input.tagName === "SELECT" && input.multiple) {
+                        var selected = Array.from(input.options).filter(function (opt) { return opt.selected; });
+                        return selected.map(function (opt) { return opt.value; }).join(",");
+                    }
+                    return input.value || "";
+                }
+
+                function persistCurrentTemplateDraft() {
+                    if (!templateFieldsContainer || !currentRenderedTemplateCategoryId) {
+                        return;
+                    }
+                    var draft = {};
+                    var inputs = templateFieldsContainer.querySelectorAll("[data-template-field-key]");
+                    inputs.forEach(function (input) {
+                        var key = input.getAttribute("data-template-field-key");
+                        if (!key) {
+                            return;
+                        }
+                        draft[key] = getCurrentTemplateInputValue(input);
+                    });
+                    templateDrafts[currentRenderedTemplateCategoryId] = draft;
+                }
+
+                function resolveInitialTemplateValue(categoryId, field) {
+                    if (!field || !field.fieldKey) {
+                        return "";
+                    }
+                    var categoryDraft = templateDrafts[categoryId];
+                    if (categoryDraft && categoryDraft[field.fieldKey] != null) {
+                        return String(categoryDraft[field.fieldKey]);
+                    }
+                    if (categoryId === initialCategoryId && existingTemplateValues && existingTemplateValues[field.fieldKey] != null) {
+                        return String(existingTemplateValues[field.fieldKey]);
+                    }
+                    if (field.defaultValue != null) {
+                        return String(field.defaultValue);
+                    }
+                    return "";
+                }
+
+                function buildTemplateInput(categoryId, field) {
+                    var key = field.fieldKey;
+                    var value = resolveInitialTemplateValue(categoryId, field);
+                    var type = (field.fieldType || "TEXT").toUpperCase();
+                    var input;
+                    var choices = parseChoices(field.validationRules);
+
+                    if (type === "LONG_TEXT") {
+                        input = document.createElement("textarea");
+                        input.rows = 3;
+                        input.value = value;
+                    } else if (type === "SELECT" && choices.length > 0) {
+                        input = document.createElement("select");
+                        var emptyOption = document.createElement("option");
+                        emptyOption.value = "";
+                        emptyOption.textContent = "Seleccionar";
+                        input.appendChild(emptyOption);
+                        choices.forEach(function (choice) {
+                            var option = document.createElement("option");
+                            option.value = choice;
+                            option.textContent = choice;
+                            option.selected = choice === value;
+                            input.appendChild(option);
+                        });
+                    } else if (type === "BOOLEAN") {
+                        input = document.createElement("select");
+                        [
+                            { value: "", label: "Seleccionar" },
+                            { value: "true", label: "Sí" },
+                            { value: "false", label: "No" }
+                        ].forEach(function (entry) {
+                            var option = document.createElement("option");
+                            option.value = entry.value;
+                            option.textContent = entry.label;
+                            option.selected = entry.value === value;
+                            input.appendChild(option);
+                        });
+                    } else {
+                        input = document.createElement("input");
+                        if (type === "DATE") {
+                            input.type = "date";
+                        } else if (type === "DATETIME") {
+                            input.type = "datetime-local";
+                        } else if (type === "NUMBER") {
+                            input.type = "number";
+                            input.step = "any";
+                        } else {
+                            input.type = "text";
+                        }
+                        input.value = value;
+                    }
+
+                    input.name = "templateValues[" + key + "]";
+                    input.setAttribute("data-template-field-key", key);
+                    input.className = "rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm";
+                    if (field.required) {
+                        input.required = true;
+                    }
+
+                    return input;
+                }
+
+                function renderTemplateFields() {
+                    if (!categorySelect || !templateFieldsSection || !templateFieldsContainer || !templateFieldsHint) {
+                        return;
+                    }
+                    persistCurrentTemplateDraft();
+                    var categoryId = String(categorySelect.value || "");
+                    var templateData = categoryTemplateMap ? categoryTemplateMap[categoryId] : null;
+                    currentRenderedTemplateCategoryId = categoryId;
+                    templateFieldsContainer.innerHTML = "";
+
+                    if (!templateData || !templateData.fields || templateData.fields.length === 0) {
+                        templateFieldsSection.classList.add("hidden");
+                        templateFieldsHint.textContent = "";
+                        return;
+                    }
+
+                    templateFieldsSection.classList.remove("hidden");
+                    templateFieldsHint.textContent = "Template: " + (templateData.templateName || templateData.templateCode || "");
+
+                    templateData.fields.forEach(function (field) {
+                        var wrapper = document.createElement("label");
+                        wrapper.className = "flex flex-col gap-1.5";
+
+                        var title = document.createElement("span");
+                        title.className = "text-sm font-bold text-[#8b4513]/70";
+                        title.textContent = field.label + (field.required ? " *" : "");
+                        wrapper.appendChild(title);
+
+                        var input = buildTemplateInput(categoryId, field);
+                        wrapper.appendChild(input);
+
+                        if (field.validationRules) {
+                            var helper = document.createElement("span");
+                            helper.className = "text-xs text-[#956d50]";
+                            helper.textContent = "Reglas: " + field.validationRules;
+                            wrapper.appendChild(helper);
+                        }
+
+                        templateFieldsContainer.appendChild(wrapper);
+                    });
+                }
 
                 function syncActive() {
                     if (!activeToggle || !activeTextNode) {
@@ -783,6 +957,10 @@
                 if (productTypeSelect) {
                     productTypeSelect.addEventListener("change", toggleTypeSections);
                     toggleTypeSections();
+                }
+                if (categorySelect) {
+                    categorySelect.addEventListener("change", renderTemplateFields);
+                    renderTemplateFields();
                 }
                 if (bundleBody) {
                     bundleBody.addEventListener("click", function (event) {

@@ -16,9 +16,6 @@ public record CreateProductForm(
     @Size(max = 5000) String description,
     @NotNull Long categoryId,
     @Size(max = 255) String mainImageUrl,
-    @Size(max = 5000) String ingredients,
-    @Size(max = 5000) String allergenInfo,
-    @Size(max = 5000) String nutritionFacts,
     boolean active,
     boolean visible,
     List<Long> sourceIds,
@@ -31,6 +28,7 @@ public record CreateProductForm(
     Map<Long, Double> sourcePrices,
     Map<Long, Integer> sourceStockQuantities,
     Map<Long, Integer> sourceLowStockThresholds,
+    Map<String, String> templateValues,
     boolean isListable,
     boolean isPurchasable,
     boolean isPurchasableAlone,
@@ -46,6 +44,7 @@ public record CreateProductForm(
         sourcePrices = sourcePrices == null ? new HashMap<>() : sourcePrices;
         sourceStockQuantities = sourceStockQuantities == null ? new HashMap<>() : sourceStockQuantities;
         sourceLowStockThresholds = sourceLowStockThresholds == null ? new HashMap<>() : sourceLowStockThresholds;
+        templateValues = templateValues == null ? new HashMap<>() : templateValues;
         variantForms = variantForms == null ? List.of() : variantForms;
     }
 }

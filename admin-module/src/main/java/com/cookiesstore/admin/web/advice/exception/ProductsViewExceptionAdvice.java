@@ -124,6 +124,7 @@ public class ProductsViewExceptionAdvice {
         Map<Long, Double> sourcePrices = parseDoubleMap(request.getParameterMap(), "sourcePrices");
         Map<Long, Integer> sourceStockQuantities = parseIntegerMap(request.getParameterMap(), "sourceStockQuantities");
         Map<Long, Integer> sourceLowStockThresholds = parseIntegerMap(request.getParameterMap(), "sourceLowStockThresholds");
+        Map<String, String> templateValues = parseStringMap(request.getParameterMap(), "templateValues");
 
         String sku = value(request, "sku");
         String name = value(request, "name");
@@ -131,9 +132,6 @@ public class ProductsViewExceptionAdvice {
         String description = value(request, "description");
         Long categoryId = parseLong(value(request, "categoryId"));
         String mainImageUrl = value(request, "mainImageUrl");
-        String ingredients = value(request, "ingredients");
-        String allergenInfo = value(request, "allergenInfo");
-        String nutritionFacts = value(request, "nutritionFacts");
         Integer stockQuantity = parseInteger(value(request, "stockQuantity"));
         Integer lowStockThreshold = parseInteger(value(request, "lowStockThreshold"));
         Double price = parseDouble(value(request, "price"));
@@ -152,9 +150,6 @@ public class ProductsViewExceptionAdvice {
                 description,
                 categoryId,
                 mainImageUrl,
-                ingredients,
-                allergenInfo,
-                nutritionFacts,
                 active,
                 visible,
                 sourceIds,
@@ -167,6 +162,7 @@ public class ProductsViewExceptionAdvice {
                 sourcePrices,
                 sourceStockQuantities,
                 sourceLowStockThresholds,
+                templateValues,
                 isListable,
                 isPurchasable,
                 isPurchasableAlone,
@@ -182,9 +178,6 @@ public class ProductsViewExceptionAdvice {
             description,
             categoryId,
             mainImageUrl,
-            ingredients,
-            allergenInfo,
-            nutritionFacts,
             sourceIds,
             stockQuantity,
             lowStockThreshold,
@@ -195,6 +188,7 @@ public class ProductsViewExceptionAdvice {
             sourcePrices,
             sourceStockQuantities,
             sourceLowStockThresholds,
+            templateValues,
             active,
             visible,
             isListable,
@@ -250,6 +244,18 @@ public class ProductsViewExceptionAdvice {
         return values;
     }
 
+    private Map<String, String> parseStringMap(Map<String, String[]> parameterMap, String prefix) {
+        Map<String, String> values = new HashMap<>();
+        parameterMap.forEach((key, rawValue) -> {
+            String mapKey = parseStringIndexedKey(key, prefix);
+            if (mapKey == null || rawValue == null || rawValue.length == 0) {
+                return;
+            }
+            values.put(mapKey, rawValue[0]);
+        });
+        return values;
+    }
+
     private Long parseIndexedKey(String key, String prefix) {
         String start = prefix + "[";
         if (!key.startsWith(start) || !key.endsWith("]")) {
@@ -257,6 +263,14 @@ public class ProductsViewExceptionAdvice {
         }
         String token = key.substring(start.length(), key.length() - 1);
         return parseLong(token);
+    }
+
+    private String parseStringIndexedKey(String key, String prefix) {
+        String start = prefix + "[";
+        if (!key.startsWith(start) || !key.endsWith("]")) {
+            return null;
+        }
+        return key.substring(start.length(), key.length() - 1);
     }
 
     private Long parseLong(String raw) {

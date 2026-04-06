@@ -10,6 +10,8 @@ import com.cookiesstore.common.repositories.CategoryRepository;
 import com.cookiesstore.common.repositories.PriceRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
 import com.cookiesstore.common.repositories.ProductSourceRepository;
+import com.cookiesstore.common.repositories.ProductTemplateFieldRepository;
+import com.cookiesstore.common.repositories.ProductTemplateFieldValueRepository;
 import com.cookiesstore.common.repositories.SourceRepository;
 import java.util.List;
 
@@ -21,6 +23,8 @@ public abstract class AbstractCompositeProductService extends SimpleProductServi
         SourceRepository sourceRepository,
         PriceRepository priceRepository,
         ProductSourceRepository productSourceRepository,
+        ProductTemplateFieldRepository productTemplateFieldRepository,
+        ProductTemplateFieldValueRepository productTemplateFieldValueRepository,
         PricingProperties pricingProperties,
         AuthenticatedUserProvider authenticatedUserProvider
     ) {
@@ -30,6 +34,8 @@ public abstract class AbstractCompositeProductService extends SimpleProductServi
             sourceRepository,
             priceRepository,
             productSourceRepository,
+            productTemplateFieldRepository,
+            productTemplateFieldValueRepository,
             pricingProperties,
             authenticatedUserProvider
         );
@@ -52,9 +58,6 @@ public abstract class AbstractCompositeProductService extends SimpleProductServi
             sourceForm.description(),
             sourceForm.categoryId(),
             sourceForm.mainImageUrl(),
-            sourceForm.ingredients(),
-            sourceForm.allergenInfo(),
-            sourceForm.nutritionFacts(),
             sourceForm.active(),
             sourceForm.visible(),
             sourceForm.sourceIds(),
@@ -67,6 +70,7 @@ public abstract class AbstractCompositeProductService extends SimpleProductServi
             sourceForm.sourcePrices(),
             sourceForm.sourceStockQuantities(),
             sourceForm.sourceLowStockThresholds(),
+            sourceForm.templateValues(),
             isListable,
             isSearchable,
             isPurchasableAlone,
@@ -89,9 +93,6 @@ public abstract class AbstractCompositeProductService extends SimpleProductServi
             sourceForm.description(),
             sourceForm.categoryId(),
             sourceForm.mainImageUrl(),
-            sourceForm.ingredients(),
-            sourceForm.allergenInfo(),
-            sourceForm.nutritionFacts(),
             sourceForm.sourceIds(),
             sourceForm.stockQuantity(),
             sourceForm.lowStockThreshold(),
@@ -102,6 +103,7 @@ public abstract class AbstractCompositeProductService extends SimpleProductServi
             sourceForm.sourcePrices(),
             sourceForm.sourceStockQuantities(),
             sourceForm.sourceLowStockThresholds(),
+            sourceForm.templateValues(),
             sourceForm.active(),
             sourceForm.visible(),
             sourceForm.isListable(),
@@ -125,9 +127,6 @@ public abstract class AbstractCompositeProductService extends SimpleProductServi
             baseForm.description(),
             baseForm.categoryId(),
             baseForm.mainImageUrl(),
-            baseForm.ingredients(),
-            baseForm.allergenInfo(),
-            baseForm.nutritionFacts(),
             baseForm.sourceIds(),
             baseForm.stockQuantity(),
             baseForm.lowStockThreshold(),
@@ -138,6 +137,7 @@ public abstract class AbstractCompositeProductService extends SimpleProductServi
             baseForm.sourcePrices(),
             baseForm.sourceStockQuantities(),
             baseForm.sourceLowStockThresholds(),
+            baseForm.templateValues(),
             baseForm.active(),
             baseForm.visible(),
             baseForm.isListable(),

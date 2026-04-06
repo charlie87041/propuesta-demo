@@ -47,6 +47,20 @@
                             <span th:if="${#fields.hasErrors('sortOrder')}" class="text-xs font-semibold text-red-700" th:errors="*{sortOrder}"></span>
                         </label>
 
+                        <label class="flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.categories.form.productTemplate}">Product template</span>
+                            <select name="productTemplateId"
+                                    class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"
+                                    th:field="*{productTemplateId}"
+                                    required>
+                                <option value="" th:text="#{admin.categories.form.productTemplate.placeholder}">Select template</option>
+                                <option th:each="template : ${productTemplates}"
+                                        th:value="${template.id}"
+                                        th:text="${template.name + ' (' + template.code + ')'}">Template</option>
+                            </select>
+                            <span th:if="${#fields.hasErrors('productTemplateId')}" class="text-xs font-semibold text-red-700" th:errors="*{productTemplateId}"></span>
+                        </label>
+
                         <label class="md:col-span-2 flex flex-col gap-1.5">
                             <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.categories.form.description}">Description</span>
                             <textarea name="description" rows="4" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" th:field="*{description}"></textarea>
