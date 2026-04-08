@@ -3,8 +3,10 @@ package com.cookiesstore.admin.web.dto.products;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.math.BigDecimal;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,11 +23,11 @@ public record CreateProductForm(
     List<Long> sourceIds,
     @NotNull @Min(0) Integer stockQuantity,
     @NotNull @Min(0) Integer lowStockThreshold,
-    @NotNull Double price,
+    @NotNull @DecimalMin(value = "0.00", inclusive = false) BigDecimal price,
     String productTypeCode,
     List<BundleComponentForm> bundleComponents,
     List<PackageComponentForm> packageOptions,
-    Map<Long, Double> sourcePrices,
+    Map<Long, BigDecimal> sourcePrices,
     Map<Long, Integer> sourceStockQuantities,
     Map<Long, Integer> sourceLowStockThresholds,
     Map<String, String> templateValues,

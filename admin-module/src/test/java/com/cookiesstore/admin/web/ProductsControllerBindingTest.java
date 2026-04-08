@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.cookiesstore.admin.config.ProductSearchProperties;
@@ -20,6 +19,7 @@ import com.cookiesstore.common.entities.Product;
 import com.cookiesstore.common.repositories.ProductRepository;
 import com.cookiesstore.common.repositories.ProductSourceRepository;
 import com.cookiesstore.common.services.products.ProductService;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -43,7 +43,6 @@ class ProductsControllerBindingTest {
     @Mock
     private ProductSourceRepository productSourceRepository;
 
-    @SuppressWarnings("unchecked")
     @Mock
     private ProductService<CreateProductForm, UpdateProductForm> productService;
 
@@ -133,7 +132,7 @@ class ProductsControllerBindingTest {
             List.of(),
             0,
             20,
-            12.0,
+            new BigDecimal("12"),
             "SIMPLE",
             List.of(),
             List.of(),

@@ -1,18 +1,13 @@
 package com.cookiesstore.admin.service.products;
 
-import com.cookiesstore.admin.config.PricingProperties;
 import com.cookiesstore.admin.service.support.AuthenticatedUserProvider;
 import com.cookiesstore.admin.web.dto.products.BundleComponentForm;
 import com.cookiesstore.admin.web.dto.products.CreateProductForm;
 import com.cookiesstore.admin.web.dto.products.PackageComponentForm;
 import com.cookiesstore.admin.web.dto.products.UpdateProductForm;
 import com.cookiesstore.common.repositories.CategoryRepository;
-import com.cookiesstore.common.repositories.PriceRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
-import com.cookiesstore.common.repositories.ProductSourceRepository;
-import com.cookiesstore.common.repositories.ProductTemplateFieldRepository;
-import com.cookiesstore.common.repositories.ProductTemplateFieldValueRepository;
-import com.cookiesstore.common.repositories.SourceRepository;
+import java.math.BigDecimal;
 import java.util.List;
 
 public abstract class AbstractCompositeProductService extends SimpleProductService {
@@ -20,30 +15,24 @@ public abstract class AbstractCompositeProductService extends SimpleProductServi
     protected AbstractCompositeProductService(
         ProductRepository productRepository,
         CategoryRepository categoryRepository,
-        SourceRepository sourceRepository,
-        PriceRepository priceRepository,
-        ProductSourceRepository productSourceRepository,
-        ProductTemplateFieldRepository productTemplateFieldRepository,
-        ProductTemplateFieldValueRepository productTemplateFieldValueRepository,
-        PricingProperties pricingProperties,
+        ProductPriceService productPriceService,
+        ProductSourceService productSourceService,
+        ProductTemplateService productTemplateService,
         AuthenticatedUserProvider authenticatedUserProvider
     ) {
         super(
             productRepository,
             categoryRepository,
-            sourceRepository,
-            priceRepository,
-            productSourceRepository,
-            productTemplateFieldRepository,
-            productTemplateFieldValueRepository,
-            pricingProperties,
+            productPriceService,
+            productSourceService,
+            productTemplateService,
             authenticatedUserProvider
         );
     }
 
     protected CreateProductForm buildCompositeCreateForm(
         CreateProductForm sourceForm,
-        double resolvedPrice,
+        BigDecimal resolvedPrice,
         String typeCode,
         List<BundleComponentForm> bundleComponents,
         List<PackageComponentForm> packageOptions,
@@ -81,7 +70,7 @@ public abstract class AbstractCompositeProductService extends SimpleProductServi
 
     protected UpdateProductForm buildCompositeUpdateForm(
         UpdateProductForm sourceForm,
-        double resolvedPrice,
+        BigDecimal resolvedPrice,
         String typeCode,
         List<BundleComponentForm> bundleComponents,
         List<PackageComponentForm> packageOptions

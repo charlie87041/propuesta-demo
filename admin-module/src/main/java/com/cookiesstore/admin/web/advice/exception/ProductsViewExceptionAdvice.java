@@ -9,6 +9,7 @@ import com.cookiesstore.admin.web.dto.products.UpdateProductForm;
 import com.cookiesstore.admin.web.controllers.ProductsController;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +122,7 @@ public class ProductsViewExceptionAdvice {
 
     private Object buildFormFromRequest(HttpServletRequest request, String path) {
         List<Long> sourceIds = parseLongList(request.getParameterValues("sourceIds"));
-        Map<Long, Double> sourcePrices = parseDoubleMap(request.getParameterMap(), "sourcePrices");
+        Map<Long, BigDecimal> sourcePrices = parseBigDecimalMap(request.getParameterMap(), "sourcePrices");
         Map<Long, Integer> sourceStockQuantities = parseIntegerMap(request.getParameterMap(), "sourceStockQuantities");
         Map<Long, Integer> sourceLowStockThresholds = parseIntegerMap(request.getParameterMap(), "sourceLowStockThresholds");
         Map<String, String> templateValues = parseStringMap(request.getParameterMap(), "templateValues");
@@ -134,7 +135,7 @@ public class ProductsViewExceptionAdvice {
         String mainImageUrl = value(request, "mainImageUrl");
         Integer stockQuantity = parseInteger(value(request, "stockQuantity"));
         Integer lowStockThreshold = parseInteger(value(request, "lowStockThreshold"));
-        Double price = parseDouble(value(request, "price"));
+        BigDecimal price = parseBigDecimal(value(request, "price"));
         String productTypeCode = value(request, "productTypeCode");
         boolean active = parseBoolean(value(request, "active"));
         boolean visible = parseBoolean(value(request, "visible"));
@@ -214,14 +215,14 @@ public class ProductsViewExceptionAdvice {
             .toList();
     }
 
-    private Map<Long, Double> parseDoubleMap(Map<String, String[]> parameterMap, String prefix) {
-        Map<Long, Double> values = new HashMap<>();
+    private Map<Long, BigDecimal> parseBigDecimalMap(Map<String, String[]> parameterMap, String prefix) {
+        Map<Long, BigDecimal> values = new HashMap<>();
         parameterMap.forEach((key, rawValue) -> {
             Long sourceId = parseIndexedKey(key, prefix);
             if (sourceId == null || rawValue == null || rawValue.length == 0) {
                 return;
             }
-            Double value = parseDouble(rawValue[0]);
+            BigDecimal value = parseBigDecimal(rawValue[0]);
             if (value != null) {
                 values.put(sourceId, value);
             }
@@ -295,12 +296,12 @@ public class ProductsViewExceptionAdvice {
         }
     }
 
-    private Double parseDouble(String raw) {
+    private BigDecimal parseBigDecimal(String raw) {
         if (raw == null || raw.isBlank()) {
             return null;
         }
         try {
-            return Double.parseDouble(raw.trim());
+            return new BigDecimal(raw.trim());
         } catch (NumberFormatException ex) {
             return null;
         }

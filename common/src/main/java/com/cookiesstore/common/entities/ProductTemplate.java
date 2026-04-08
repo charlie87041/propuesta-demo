@@ -7,12 +7,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.Set;
+
+import org.hibernate.annotations.ManyToAny;
 
 @Entity
 @Table(
@@ -48,6 +51,9 @@ public class ProductTemplate {
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @OneToMany(mappedBy = "template", fetch = FetchType.LAZY)
+    private Set<Product> products;
 
     @PrePersist
     void onCreate() {
@@ -107,5 +113,13 @@ public class ProductTemplate {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public void setFields(Set<ProductTemplateField> fields) {
+        this.fields = fields;
+    }
+
+    public Set<Product> getProducts() {
+        return products;    
     }
 }

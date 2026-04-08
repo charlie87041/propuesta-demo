@@ -167,7 +167,7 @@ public class PackageProductValidationStrategy implements ProductTypeValidationSt
                 }
             }
             case "FIXED_EXTRA" -> {
-                if (item.extraPrice() == null || item.extraPrice() < 0D) {
+                if (item.extraPrice() == null || item.extraPrice().compareTo(java.math.BigDecimal.ZERO) < 0) {
                     throw new PackageOptionValidationException("admin.products.package.items.extra-price-invalid");
                 }
             }

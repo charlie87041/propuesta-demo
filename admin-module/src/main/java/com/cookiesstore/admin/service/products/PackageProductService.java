@@ -1,6 +1,5 @@
 package com.cookiesstore.admin.service.products;
 
-import com.cookiesstore.admin.config.PricingProperties;
 import com.cookiesstore.admin.service.support.AuthenticatedUserProvider;
 import com.cookiesstore.admin.web.dto.products.CreateProductForm;
 import com.cookiesstore.admin.web.dto.products.PackageComponentForm;
@@ -14,11 +13,7 @@ import com.cookiesstore.common.repositories.CategoryRepository;
 import com.cookiesstore.common.repositories.PackageOptionItemRepository;
 import com.cookiesstore.common.repositories.PackageOptionRepository;
 import com.cookiesstore.common.repositories.PackageOptionTypeRepository;
-import com.cookiesstore.common.repositories.PriceRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
-import com.cookiesstore.common.repositories.ProductSourceRepository;
-import com.cookiesstore.common.repositories.ProductTemplateFieldRepository;
-import com.cookiesstore.common.repositories.ProductTemplateFieldValueRepository;
 import com.cookiesstore.common.repositories.SourceRepository;
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,37 +29,32 @@ public class PackageProductService extends AbstractCompositeProductService {
 
     public static final String TYPE_CODE = "PACKAGE";
 
-    private final ProductRepository productRepository;
     private final PackageOptionRepository packageOptionRepository;
     private final PackageOptionItemRepository packageOptionItemRepository;
     private final PackageOptionTypeRepository packageOptionTypeRepository;
+    private final SourceRepository sourceRepository;
 
     public PackageProductService(
         ProductRepository productRepository,
         CategoryRepository categoryRepository,
         SourceRepository sourceRepository,
-        PriceRepository priceRepository,
         PackageOptionRepository packageOptionRepository,
         PackageOptionItemRepository packageOptionItemRepository,
         PackageOptionTypeRepository packageOptionTypeRepository,
-        ProductSourceRepository productSourceRepository,
-        ProductTemplateFieldRepository productTemplateFieldRepository,
-        ProductTemplateFieldValueRepository productTemplateFieldValueRepository,
-        PricingProperties pricingProperties,
+        ProductPriceService productPriceService,
+        ProductSourceService productSourceService,
+        ProductTemplateService productTemplateService,
         AuthenticatedUserProvider authenticatedUserProvider
     ) {
         super(
             productRepository,
             categoryRepository,
-            sourceRepository,
-            priceRepository,
-            productSourceRepository,
-            productTemplateFieldRepository,
-            productTemplateFieldValueRepository,
-            pricingProperties,
+            productPriceService,
+            productSourceService,
+            productTemplateService,
             authenticatedUserProvider
         );
-        this.productRepository = productRepository;
+        this.sourceRepository = sourceRepository;
         this.packageOptionRepository = packageOptionRepository;
         this.packageOptionItemRepository = packageOptionItemRepository;
         this.packageOptionTypeRepository = packageOptionTypeRepository;
@@ -106,7 +96,7 @@ public class PackageProductService extends AbstractCompositeProductService {
                         item.getSortOrder(),
                         item.isDefault(),
                         item.getExtraPriceMode().name(),
-                        item.getExtraPrice() != null ? item.getExtraPrice().doubleValue() : null
+                        item.getExtraPrice()
                     ))
                     .toList(),
                 packageOption.getSortOrder()    
@@ -124,10 +114,10 @@ public class PackageProductService extends AbstractCompositeProductService {
     @Override
     public Product createProduct(CreateProductForm form) {
         List<PackageComponentForm> packageOptions = form.packageOptions();
-        BigDecimal resolvedPrice = calculateResolvedPackagePrice(BigDecimal.valueOf(form.price()), packageOptions);
+        BigDecimal resolvedPrice = calculateResolvedPackagePrice(form.price(), packageOptions);
         CreateProductForm packageForm = buildCompositeCreateForm(
             form,
-            resolvedPrice.doubleValue(),
+            resolvedPrice,
             TYPE_CODE,
             List.of(),
             packageOptions,
@@ -143,10 +133,10 @@ public class PackageProductService extends AbstractCompositeProductService {
     @Override
     public Product updateProduct(Long productId, UpdateProductForm form) {
         List<PackageComponentForm> packageOptions = form.packageOptions();
-        BigDecimal resolvedPrice = calculateResolvedPackagePrice(BigDecimal.valueOf(form.price()), packageOptions);
+        BigDecimal resolvedPrice = calculateResolvedPackagePrice(form.price(), packageOptions);
         UpdateProductForm packageForm = buildCompositeUpdateForm(
             form,
-            resolvedPrice.doubleValue(),
+            resolvedPrice,
             TYPE_CODE,
             List.of(),
             packageOptions
@@ -193,7 +183,7 @@ public class PackageProductService extends AbstractCompositeProductService {
                 PackageOptionItemExtraPriceMode mode = PackageOptionItemExtraPriceMode.valueOf(itemForm.extraPriceMode().trim().toUpperCase());
                 item.setExtraPriceMode(mode);
                 item.setExtraPrice(mode == PackageOptionItemExtraPriceMode.FIXED_EXTRA && itemForm.extraPrice() != null
-                    ? BigDecimal.valueOf(itemForm.extraPrice())
+                    ? itemForm.extraPrice()
                     : null
                 );
                 packageOptionItemRepository.save(item);
@@ -263,7 +253,7 @@ public class PackageProductService extends AbstractCompositeProductService {
     private BigDecimal resolveItemExtra(PackageComponentItemForm item) {
         String mode = item.extraPriceMode() == null ? "" : item.extraPriceMode().trim().toUpperCase();
         if ("FIXED_EXTRA".equals(mode) && item.extraPrice() != null) {
-            return BigDecimal.valueOf(item.extraPrice());
+            return item.extraPrice();
         }
         return BigDecimal.ZERO;
     }

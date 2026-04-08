@@ -36,8 +36,11 @@ public class Price {
     @JoinColumn(name = "source_id")
     private Source source;
 
-    @Column(nullable = false, precision = 12, scale = 2)
+    @Column(nullable = false, precision = 19, scale = 6)
     private BigDecimal amount;
+
+    @Column(name = "amount_minor", nullable = false)
+    private long amountMinor;
 
     @Column(nullable = false, length = 3)
     private String currency;
@@ -85,6 +88,14 @@ public class Price {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public long getAmountMinor() {
+        return amountMinor;
+    }
+
+    public void setAmountMinor(long amountMinor) {
+        this.amountMinor = amountMinor;
     }
 
     public String getCurrency() {

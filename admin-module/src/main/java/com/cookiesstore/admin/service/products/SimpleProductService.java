@@ -1,35 +1,17 @@
 package com.cookiesstore.admin.service.products;
 
-import com.cookiesstore.admin.config.PricingProperties;
-import com.cookiesstore.admin.service.sources.SourceNotFoundException;
 import com.cookiesstore.admin.service.support.AuthenticatedUserProvider;
 import com.cookiesstore.admin.web.dto.products.CreateProductForm;
 import com.cookiesstore.admin.web.dto.products.UpdateProductForm;
-import com.cookiesstore.common.entities.Price;
+import com.cookiesstore.common.entities.Currency;
 import com.cookiesstore.common.entities.Product;
-import com.cookiesstore.common.entities.ProductSource;
 import com.cookiesstore.common.entities.ProductTemplate;
-import com.cookiesstore.common.entities.ProductTemplateField;
-import com.cookiesstore.common.entities.ProductTemplateFieldValue;
-import com.cookiesstore.common.entities.Source;
 import com.cookiesstore.common.repositories.CategoryRepository;
-import com.cookiesstore.common.repositories.PriceRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
-import com.cookiesstore.common.repositories.ProductSourceRepository;
-import com.cookiesstore.common.repositories.ProductTemplateFieldRepository;
-import com.cookiesstore.common.repositories.ProductTemplateFieldValueRepository;
-import com.cookiesstore.common.repositories.SourceRepository;
 import com.cookiesstore.common.services.products.ProductTypeService;
-
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,37 +23,26 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
 
     public static final String TYPE_CODE = "SIMPLE";
 
-    protected static final Integer PRODUCT_SOURCE_THRESHOLD = 20;
-
     protected final ProductRepository productRepository;
     protected final CategoryRepository categoryRepository;
-    protected final SourceRepository sourceRepository;
-    protected final PriceRepository priceRepository;
-    protected final ProductSourceRepository productSourceRepository;
-    protected final ProductTemplateFieldRepository productTemplateFieldRepository;
-    protected final ProductTemplateFieldValueRepository productTemplateFieldValueRepository;
-    protected final PricingProperties pricingProperties;
+    protected final ProductPriceService productPriceService;
+    protected final ProductSourceService productSourceService;
+    protected final ProductTemplateService productTemplateService;
     protected final AuthenticatedUserProvider authenticatedUserProvider;
 
     public SimpleProductService(
         ProductRepository productRepository,
         CategoryRepository categoryRepository,
-        SourceRepository sourceRepository,
-        PriceRepository priceRepository,
-        ProductSourceRepository productSourceRepository,
-        ProductTemplateFieldRepository productTemplateFieldRepository,
-        ProductTemplateFieldValueRepository productTemplateFieldValueRepository,
-        PricingProperties pricingProperties,
+        ProductPriceService productPriceService,
+        ProductSourceService productSourceService,
+        ProductTemplateService productTemplateService,
         AuthenticatedUserProvider authenticatedUserProvider
     ) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
-        this.sourceRepository = sourceRepository;
-        this.priceRepository = priceRepository;
-        this.productSourceRepository = productSourceRepository;
-        this.productTemplateFieldRepository = productTemplateFieldRepository;
-        this.productTemplateFieldValueRepository = productTemplateFieldValueRepository;
-        this.pricingProperties = pricingProperties;
+        this.productPriceService = productPriceService;
+        this.productSourceService = productSourceService;
+        this.productTemplateService = productTemplateService;
         this.authenticatedUserProvider = authenticatedUserProvider;
     }
 
@@ -87,64 +58,37 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
     }
 
     public Product createProduct(CreateProductForm form) {
-        String sku = form.sku().trim();
-        String slug = form.slug().trim();
-
-        if (productRepository.findBySku(sku).isPresent()) {
-            throw new ProductSkuExistsException(sku);
-        }
-        if (productRepository.findBySlug(slug).isPresent()) {
-            throw new ProductSlugExistsException(slug);
-        }
-        List<Source> source = form.sourceIds() == null || form.sourceIds().isEmpty()
-            ? sourceRepository.findAllBySystemManagedTrue()
-            : sourceRepository.findAllById(form.sourceIds());
-        source = deduplicateSources(source);
-
-
-        if (source.isEmpty()) {
-            throw  new SourceNotFoundException(form.sourceIds());
-        }
-
-        var category = categoryRepository.findById(form.categoryId())
-            .orElseThrow(() -> new ProductCategoryNotFoundException(form.categoryId()));
-        ProductTemplate categoryTemplate = category.getDefaultTemplate();
-
-        Product product = new Product();
-        product.setProductTypeCode(form.productTypeCode());
-        product.setSku(sku);
-        product.setName(form.name().trim());
-        product.setSlug(slug);
-        product.setDescription(trimToNull(form.description()));
-        product.setCategory(category);
-        product.setMainImageUrl(trimToNull(form.mainImageUrl()));
-        product.setActive(form.active());
-        product.setVisible(form.visible());
-        product.setListable(form.isListable());
-        product.setSearchable(form.isPurchasable());
-        product.setPurchasableAlone(form.isPurchasableAlone());
-        product.setTemplate(categoryTemplate);
+        ProductCreateContext createContext = buildCreateContext(form);
+        Product product = createContext.product();
+        List<com.cookiesstore.common.entities.Source> sources = createContext.sources();
 
         try {
             productRepository.save(product);
-            upsertProductCurrentPrice(product, form.price());
-            Map<Long, Double> resolvedSourcePrices = resolveSourcePricesWithBaseFallback(
-                source,
-                form.sourcePrices(),
-                form.price()
-            );
-            addProductSource(
+            Currency defaultCurrency = productPriceService.resolveDefaultCurrency();
+            productPriceService.upsertProductCurrentPrice(
                 product,
-                source,
+                form.price(),
+                defaultCurrency,
+                authenticatedUserProvider.currentUserId()
+            );
+            Map<Long, BigDecimal> resolvedSourcePrices = productSourceService.resolveSourcePricesForSelectedSources(
+                sources,
+                form.sourcePrices()
+            );
+            productSourceService.upsertProductSources(
+                product,
+                sources,
                 resolvedSourcePrices,
                 form.sourceStockQuantities(),
                 form.sourceLowStockThresholds(),
                 form.stockQuantity(),
                 form.lowStockThreshold(),
+                defaultCurrency,
+                authenticatedUserProvider.currentUserId(),
                 false
             );
             Product persisted = productRepository.save(product);
-            syncTemplateFieldValues(persisted, form.templateValues());
+            productTemplateService.syncTemplateFieldValues(persisted, form.templateValues());
             return persisted;
         } catch (DataIntegrityViolationException ex) {
             throw mapDataIntegrityViolation(ex);
@@ -154,47 +98,12 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
     @Transactional(readOnly = true)
     public UpdateProductForm buildUpdateProductForm(Long productId) {
         Product product = getProduct(productId);
-        List<ProductSource> productSources = productSourceRepository.findByProductId(productId);
+        ProductSourceService.ProductSourceSnapshot sourceSnapshot = productSourceService.buildUpdateSourceSnapshot(productId);
 
-        List<Long> sourceIds = productSources.stream()
-            .map(ps -> ps.getSource().getId())
-            .toList();
-
-        Map<Long, Double> sourcePrices = new HashMap<>();
-        Map<Long, Integer> sourceStockQuantities = new HashMap<>();
-        Map<Long, Integer> sourceLowStockThresholds = new HashMap<>();
-
-        Integer defaultStockQuantity = 0;
-        Integer defaultLowStockThreshold = PRODUCT_SOURCE_THRESHOLD;
-        if (!productSources.isEmpty()) {
-            defaultStockQuantity = productSources.get(0).getStockQuantity();
-            defaultLowStockThreshold = productSources.get(0).getLowStockThreshold();
-        }
-
-        for (ProductSource productSource : productSources) {
-            Long sourceId = productSource.getSource().getId();
-            sourceStockQuantities.put(sourceId, productSource.getStockQuantity());
-            sourceLowStockThresholds.put(sourceId, productSource.getLowStockThreshold());
-
-            if (productSource.getPrice() != null && productSource.getPrice().getAmount() != null) {
-                sourcePrices.put(sourceId, productSource.getPrice().getAmount().doubleValue());
-            }
-        }
-
-        Double currentPrice = product.getCurrentPrice() != null && product.getCurrentPrice().getAmount() != null
-            ? product.getCurrentPrice().getAmount().doubleValue()
-            : 0D;
-        Map<String, String> templateValues = productTemplateFieldValueRepository.findByProductId(productId)
-            .stream()
-            .filter(value -> value.getTemplateField() != null && value.getTemplateField().getFieldKey() != null)
-            .collect(
-                java.util.stream.Collectors.toMap(
-                    value -> value.getTemplateField().getFieldKey(),
-                    ProductTemplateFieldValue::getFieldValue,
-                    (left, right) -> right,
-                    LinkedHashMap::new
-                )
-            );
+        BigDecimal currentPrice = product.getCurrentPrice() != null && product.getCurrentPrice().getAmount() != null
+            ? product.getCurrentPrice().getAmount()
+            : BigDecimal.ZERO;
+        Map<String, String> templateValues = productTemplateService.buildTemplateValuesMap(productId);
 
         return new UpdateProductForm(
             product.getSku(),
@@ -203,16 +112,16 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
             product.getDescription(),
             product.getCategory().getId(),
             product.getMainImageUrl(),
-            sourceIds,
-            defaultStockQuantity,
-            defaultLowStockThreshold,
+            sourceSnapshot.sourceIds(),
+            sourceSnapshot.defaultStockQuantity(),
+            sourceSnapshot.defaultLowStockThreshold(),
             currentPrice,
             product.getProductTypeCode(),
             List.of(),
             List.of(),
-            sourcePrices,
-            sourceStockQuantities,
-            sourceLowStockThresholds,
+            sourceSnapshot.sourcePrices(),
+            sourceSnapshot.sourceStockQuantities(),
+            sourceSnapshot.sourceLowStockThresholds(),
             templateValues,
             product.isActive(),
             product.isVisible(),
@@ -224,133 +133,37 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
         );
     }
 
-    protected Price newProductPrice(Product product, Double amount) {
-        String defaultCurrency = resolveDefaultCurrency();
-        Long actorUserId = authenticatedUserProvider.currentUserId();
-
-        Price price = new Price();
-        price.setAmount(BigDecimal.valueOf(amount));
-        price.setCurrency(defaultCurrency);
-        price.setProduct(product);
-        price.setValidFrom(Instant.now());
-        price.setCreatedBy(actorUserId);
-        return priceRepository.save(price);
-    }
-
-
-    protected void addProductSource(
-        Product product,
-        List<Source> source,
-        Map<Long, Double> sourcePrices,
-        Map<Long, Integer> sourceStockQuantities,
-        Map<Long, Integer> sourceLowStockThresholds,
-        Integer stockQuantity,
-        Integer lowStockThreshold,
-        boolean sync
-    ) {
-        String defaultCurrency = resolveDefaultCurrency();
-        Long actorUserId = authenticatedUserProvider.currentUserId();
-
-        if (sync) {
-            List<ProductSource> existingProductSources = productSourceRepository.findByProductId(product.getId());
-            Set<Long> requestedSourceIds = new HashSet<>();
-            source.forEach(currentSource -> requestedSourceIds.add(currentSource.getId()));
-            List<Long> removedSourceIds = existingProductSources.stream()
-                .map(productSource -> productSource.getSource().getId())
-                .filter(existingSourceId -> !requestedSourceIds.contains(existingSourceId))
-                .distinct()
-                .toList();
-
-            productSourceRepository.deleteByProductId(product.getId());
-            productSourceRepository.flush();
-
-            if (!removedSourceIds.isEmpty()) {
-                priceRepository.deleteByProductIdAndSourceIdIn(product.getId(), removedSourceIds);
-            }
-        }
-        source.stream()
-            .forEach((Source currentSource) -> {
-                ProductSource productSource = new ProductSource();
-                productSource.setProduct(product);
-                productSource.setSource(currentSource);
-                Long sourceId = currentSource.getId();
-
-                Integer sourceStock = sourceStockQuantities == null ? null : sourceStockQuantities.get(sourceId);
-                Integer sourceThreshold = sourceLowStockThresholds == null ? null : sourceLowStockThresholds.get(sourceId);
-                Double sourcePrice = sourcePrices == null ? null : sourcePrices.get(sourceId);
-
-                productSource.setStockQuantity(sourceStock != null ? sourceStock : (stockQuantity != null ? stockQuantity : 0));
-                productSource.setLowStockThreshold(
-                    sourceThreshold != null ? sourceThreshold : (lowStockThreshold != null ? lowStockThreshold : PRODUCT_SOURCE_THRESHOLD)
-                );
-
-                productSource.setPrice(upsertSourcePrice(product, currentSource, sourcePrice, defaultCurrency, actorUserId));
-                productSourceRepository.save(productSource);
-            });
-    }
-
     public Product updateProduct(Long productId, UpdateProductForm form) {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new ProductNotFoundException(productId));
-
-        String sku = form.sku().trim();
-        String slug = form.slug().trim();
-
-        var existingBySku = productRepository.findBySku(sku);
-        if (existingBySku.isPresent() && !existingBySku.get().getId().equals(productId)) {
-            throw new ProductSkuExistsException(sku);
-        }
-
-        var existingBySlug = productRepository.findBySlug(slug);
-        if (existingBySlug.isPresent() && !existingBySlug.get().getId().equals(productId)) {
-            throw new ProductSlugExistsException(slug);
-        }
-
-        List<Source> source = form.sourceIds() == null || form.sourceIds().isEmpty()
-            ? sourceRepository.findAllBySystemManagedTrue()
-            : sourceRepository.findAllById(form.sourceIds());
-        source = deduplicateSources(source);
-
-        if (source.isEmpty()) {
-            throw new SourceNotFoundException(form.sourceIds());
-        }
-
-        var category = categoryRepository.findById(form.categoryId())
-            .orElseThrow(() -> new ProductCategoryNotFoundException(form.categoryId()));
-        ProductTemplate categoryTemplate = category.getDefaultTemplate();
-
-        product.setSku(sku);
-        product.setName(form.name().trim());
-        product.setSlug(slug);
-        product.setDescription(trimToNull(form.description()));
-        product.setCategory(category);
-        product.setMainImageUrl(trimToNull(form.mainImageUrl()));
-        product.setActive(form.active());
-        product.setVisible(form.visible());
-        product.setListable(form.isListable());
-        product.setSearchable(form.isPurchasable());
-        product.setPurchasableAlone(form.isPurchasableAlone());
-        product.setTemplate(categoryTemplate);
+        ProductUpdateContext updateContext = buildUpdateContext(productId, form);
+        Product product = updateContext.product();
+        List<com.cookiesstore.common.entities.Source> sources = updateContext.sources();
 
         try {
-            upsertProductCurrentPrice(product, form.price());
-            Map<Long, Double> resolvedSourcePrices = resolveSourcePricesWithBaseFallback(
-                source,
-                form.sourcePrices(),
-                form.price()
-            );
-            addProductSource(
+            Currency defaultCurrency = productPriceService.resolveDefaultCurrency();
+            productPriceService.upsertProductCurrentPrice(
                 product,
-                source,
+                form.price(),
+                defaultCurrency,
+                authenticatedUserProvider.currentUserId()
+            );
+            Map<Long, BigDecimal> resolvedSourcePrices = productSourceService.resolveSourcePricesForSelectedSources(
+                sources,
+                form.sourcePrices()
+            );
+            productSourceService.upsertProductSources(
+                product,
+                sources,
                 resolvedSourcePrices,
                 form.sourceStockQuantities(),
                 form.sourceLowStockThresholds(),
                 form.stockQuantity(),
                 form.lowStockThreshold(),
+                defaultCurrency,
+                authenticatedUserProvider.currentUserId(),
                 true
             );
             Product persisted = productRepository.save(product);
-            syncTemplateFieldValues(persisted, form.templateValues());
+            productTemplateService.syncTemplateFieldValues(persisted, form.templateValues());
             return persisted;
         } catch (DataIntegrityViolationException ex) {
             throw mapDataIntegrityViolation(ex);
@@ -384,82 +197,6 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
         return value.trim();
     }
 
-    private String resolveDefaultCurrency() {
-        String configuredCurrency = trimToNull(pricingProperties.getDefaultCurrency());
-        if (configuredCurrency == null || configuredCurrency.length() != 3) {
-            throw new IllegalStateException("Invalid admin.pricing.default-currency configuration");
-        }
-        return configuredCurrency.toUpperCase();
-    }
-
-    private void upsertProductCurrentPrice(Product product, Double amount) {
-        if (amount == null) {
-            return;
-        }
-
-        String currency = resolveDefaultCurrency();
-        Price openBasePrice = priceRepository
-            .findFirstByProductIdAndSourceIdIsNullAndCurrencyAndValidToIsNull(product.getId(), currency)
-            .orElse(null);
-
-        BigDecimal requestedAmount = BigDecimal.valueOf(amount);
-        if (openBasePrice != null
-            && openBasePrice.getAmount() != null
-            && openBasePrice.getAmount().compareTo(requestedAmount) == 0) {
-            product.setCurrentPrice(openBasePrice);
-            return;
-        }
-
-        if (openBasePrice != null) {
-            openBasePrice.setValidTo(Instant.now());
-            priceRepository.save(openBasePrice);
-        }
-
-        Price currentPrice = newProductPrice(product, amount);
-        product.setCurrentPrice(currentPrice);
-    }
-
-    private Price upsertSourcePrice(
-        Product product,
-        Source source,
-        Double amount,
-        String currency,
-        Long actorUserId
-    ) {
-        Price openSourcePrice = priceRepository
-            .findFirstByProductIdAndSourceIdAndCurrencyAndValidToIsNull(product.getId(), source.getId(), currency)
-            .orElse(null);
-
-        if (amount == null) {
-            if (openSourcePrice != null) {
-                openSourcePrice.setValidTo(Instant.now());
-                priceRepository.save(openSourcePrice);
-            }
-            return null;
-        }
-
-        BigDecimal requestedAmount = BigDecimal.valueOf(amount);
-        if (openSourcePrice != null
-            && openSourcePrice.getAmount() != null
-            && openSourcePrice.getAmount().compareTo(requestedAmount) == 0) {
-            return openSourcePrice;
-        }
-
-        if (openSourcePrice != null) {
-            openSourcePrice.setValidTo(Instant.now());
-            priceRepository.save(openSourcePrice);
-        }
-
-        Price price = new Price();
-        price.setSource(source);
-        price.setAmount(requestedAmount);
-        price.setCurrency(currency);
-        price.setProduct(product);
-        price.setValidFrom(Instant.now());
-        price.setCreatedBy(actorUserId);
-        return priceRepository.save(price);
-    }
-
     private RuntimeException mapDataIntegrityViolation(DataIntegrityViolationException ex) {
         String message = ex.getMostSpecificCause() != null
             ? ex.getMostSpecificCause().getMessage()
@@ -476,114 +213,94 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
         return ex;
     }
 
-    private List<Source> deduplicateSources(List<Source> sources) {
-        if (sources == null || sources.isEmpty()) {
-            return List.of();
-        }
-        return new java.util.ArrayList<>(
-            sources.stream()
-                .collect(
-                    java.util.stream.Collectors.toMap(
-                        Source::getId,
-                        source -> source,
-                        (left, right) -> left,
-                        LinkedHashMap::new
-                    )
-                )
-                .values()
-        );
+    private ProductCreateContext buildCreateContext(CreateProductForm form) {
+        String sku = form.sku().trim();
+        String slug = form.slug().trim();
+
+        ensureSkuAndSlugAreUnique(sku, slug);
+
+        List<com.cookiesstore.common.entities.Source> sources = productSourceService.resolveSources(form.sourceIds());
+        var resolvedCategory = categoryRepository.findById(form.categoryId())
+            .orElseThrow(() -> new ProductCategoryNotFoundException(form.categoryId()));
+        ProductTemplate categoryTemplate = resolvedCategory.getDefaultTemplate();
+
+        Product product = new Product();
+        product.setProductTypeCode(form.productTypeCode());
+        product.setSku(sku);
+        product.setName(form.name().trim());
+        product.setSlug(slug);
+        product.setDescription(trimToNull(form.description()));
+        product.setCategory(resolvedCategory);
+        product.setMainImageUrl(trimToNull(form.mainImageUrl()));
+        product.setActive(form.active());
+        product.setVisible(form.visible());
+        product.setListable(form.isListable());
+        product.setSearchable(form.isPurchasable());
+        product.setPurchasableAlone(form.isPurchasableAlone());
+        product.setTemplate(categoryTemplate);
+
+        return new ProductCreateContext(product, sources);
     }
 
-    private Map<Long, Double> resolveSourcePricesWithBaseFallback(
-        List<Source> selectedSources,
-        Map<Long, Double> sourcePrices,
-        Double basePrice
+    private ProductUpdateContext buildUpdateContext(Long productId, UpdateProductForm form) {
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new ProductNotFoundException(productId));
+
+        String sku = form.sku().trim();
+        String slug = form.slug().trim();
+        ensureSkuAndSlugAreUniqueForUpdate(productId, sku, slug);
+
+        List<com.cookiesstore.common.entities.Source> sources = productSourceService.resolveSources(form.sourceIds());
+        var resolvedCategory = categoryRepository.findById(form.categoryId())
+            .orElseThrow(() -> new ProductCategoryNotFoundException(form.categoryId()));
+        ProductTemplate categoryTemplate = resolvedCategory.getDefaultTemplate();
+
+        product.setSku(sku);
+        product.setName(form.name().trim());
+        product.setSlug(slug);
+        product.setDescription(trimToNull(form.description()));
+        product.setCategory(resolvedCategory);
+        product.setMainImageUrl(trimToNull(form.mainImageUrl()));
+        product.setActive(form.active());
+        product.setVisible(form.visible());
+        product.setListable(form.isListable());
+        product.setSearchable(form.isPurchasable());
+        product.setPurchasableAlone(form.isPurchasableAlone());
+        product.setTemplate(categoryTemplate);
+
+        return new ProductUpdateContext(product, sources);
+    }
+
+    private void ensureSkuAndSlugAreUnique(String sku, String slug) {
+        if (productRepository.findBySku(sku).isPresent()) {
+            throw new ProductSkuExistsException(sku);
+        }
+        if (productRepository.findBySlug(slug).isPresent()) {
+            throw new ProductSlugExistsException(slug);
+        }
+    }
+
+    private void ensureSkuAndSlugAreUniqueForUpdate(Long productId, String sku, String slug) {
+        var existingBySku = productRepository.findBySku(sku);
+        if (existingBySku.isPresent() && !existingBySku.get().getId().equals(productId)) {
+            throw new ProductSkuExistsException(sku);
+        }
+
+        var existingBySlug = productRepository.findBySlug(slug);
+        if (existingBySlug.isPresent() && !existingBySlug.get().getId().equals(productId)) {
+            throw new ProductSlugExistsException(slug);
+        }
+    }
+
+    private record ProductCreateContext(
+        Product product,
+        List<com.cookiesstore.common.entities.Source> sources
     ) {
-        Map<Long, Double> resolved = new HashMap<>();
-        if (sourcePrices != null && !sourcePrices.isEmpty()) {
-            resolved.putAll(sourcePrices);
-        }
-
-        if (basePrice == null || selectedSources == null || selectedSources.isEmpty()) {
-            return resolved;
-        }
-
-        for (Source source : selectedSources) {
-            Double value = resolved.get(source.getId());
-            if (value == null || value.doubleValue() == 0D) {
-                resolved.put(source.getId(), basePrice);
-            }
-        }
-        return resolved;
     }
 
-    private void syncTemplateFieldValues(Product product, Map<String, String> requestedValues) {
-        ProductTemplate template = product.getTemplate();
-        if (template == null || template.getId() == null) {
-            productTemplateFieldValueRepository.deleteByProductId(product.getId());
-            return;
-        }
-
-        Map<String, String> values = requestedValues == null ? Map.of() : requestedValues;
-        List<ProductTemplateField> templateFields = productTemplateFieldRepository.findByTemplateIdOrderBySortOrderAsc(template.getId());
-        Map<Long, ProductTemplateFieldValue> existingByFieldId = productTemplateFieldValueRepository.findByProductId(product.getId())
-            .stream()
-            .filter(value -> value.getTemplateField() != null && value.getTemplateField().getId() != null)
-            .collect(
-                java.util.stream.Collectors.toMap(
-                    value -> value.getTemplateField().getId(),
-                    value -> value,
-                    (left, right) -> left
-                )
-            );
-
-        List<ProductTemplateFieldValue> toSave = new java.util.ArrayList<>();
-        List<ProductTemplateFieldValue> toDelete = new java.util.ArrayList<>();
-
-        for (ProductTemplateField field : templateFields) {
-            String normalizedValue = normalizeTemplateFieldValue(values.get(field.getFieldKey()));
-            if (field.isRequired() && !StringUtils.hasText(normalizedValue)) {
-                throw new ProductTemplateValidationException(field.getLabel());
-            }
-            ProductTemplateFieldValue existing = existingByFieldId.remove(field.getId());
-
-            if (!StringUtils.hasText(normalizedValue)) {
-                if (existing != null) {
-                    toDelete.add(existing);
-                }
-                continue;
-            }
-
-            if (existing != null) {
-                existing.setFieldValue(normalizedValue);
-                toSave.add(existing);
-                continue;
-            }
-
-            ProductTemplateFieldValue created = new ProductTemplateFieldValue();
-            created.setProduct(product);
-            created.setTemplateField(field);
-            created.setFieldValue(normalizedValue);
-            toSave.add(created);
-        }
-
-        if (!existingByFieldId.isEmpty()) {
-            toDelete.addAll(existingByFieldId.values());
-        }
-
-        if (!toDelete.isEmpty()) {
-            productTemplateFieldValueRepository.deleteAllInBatch(toDelete);
-        }
-        if (!toSave.isEmpty()) {
-            productTemplateFieldValueRepository.saveAll(toSave);
-        }
+    private record ProductUpdateContext(
+        Product product,
+        List<com.cookiesstore.common.entities.Source> sources
+    ) {
     }
-
-    private String normalizeTemplateFieldValue(String raw) {
-        if (!StringUtils.hasText(raw)) {
-            return null;
-        }
-        return raw.trim();
-    }
-
 }

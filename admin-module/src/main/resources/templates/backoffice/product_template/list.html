@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(#{admin.product_templates.title}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <th:block th:replace="~{backoffice/fragments/searching :: searchBox('q', #{admin.product_templates.search.placeholder}, ${searchQuery}, 'productTemplatesSortForm')}"></th:block>
+            <a th:href="@{/admin/product-template/new}" class="px-4 py-2 bg-[#8b4513] hover:bg-[#6f370f] text-white rounded-lg text-sm font-bold whitespace-nowrap" th:text="#{admin.product_templates.add}">
+                Add template
+            </a>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 space-y-6">
+            <div th:if="${successMessage}" class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+
+            <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
+                <header class="px-6 py-4 border-b border-[#e6dad1] flex items-center justify-between">
+                    <h3 class="font-bold" th:text="#{admin.product_templates.directory}">Templates directory</h3>
+                    <span class="text-sm text-[#956d50]" th:text="#{admin.product_templates.totalCount(${productTemplates.totalElements})}">0 templates</span>
+                </header>
+
+                <form method="get" th:action="@{/admin/product-template}" id="productTemplatesSortForm">
+                    <input type="hidden" name="page" value="0">
+                    <input type="hidden" name="size" th:value="${productTemplates.size}">
+                    <input type="hidden" name="q" th:value="${searchQuery}">
+                </form>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
+                        <tr>
+                            <th class="px-6 py-3">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_templates.col.id}, 'id', true, ${sortParams}, 'productTemplatesSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-3">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_templates.col.code}, 'code', true, ${sortParams}, 'productTemplatesSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-3">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_templates.col.name}, 'name', true, ${sortParams}, 'productTemplatesSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-3" th:text="#{admin.product_templates.col.fields}">Fields</th>
+                            <th class="px-6 py-3">
+                                <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_templates.col.status}, 'active', true, ${sortParams}, 'productTemplatesSortForm')}"></th:block>
+                            </th>
+                            <th class="px-6 py-3 text-right" th:text="#{admin.product_templates.col.actions}">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#f3ece8] text-sm">
+                        <tr th:if="${productTemplates.totalElements == 0}">
+                            <td colspan="6" class="px-6 py-8 text-center text-[#956d50]" th:text="#{admin.product_templates.empty}">No templates found.</td>
+                        </tr>
+                        <tr th:each="template : ${productTemplates.content}">
+                            <td class="px-6 py-4 font-semibold" th:text="${template.id}">1</td>
+                            <td class="px-6 py-4 text-[#956d50]" th:text="${template.code}">cookie_base</td>
+                            <td class="px-6 py-4" th:text="${template.name}">Cookie template</td>
+                            <td class="px-6 py-4 text-[#956d50]" th:text="${template.fields == null ? 0 : template.fields.size()}">0</td>
+                            <td class="px-6 py-4" th:text="${template.active} ? #{admin.product_templates.status.active} : #{admin.product_templates.status.inactive}"
+                                th:classappend="${template.active} ? ' text-green-700 font-semibold' : ' text-slate-600 font-semibold'">Active</td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="inline-flex items-center gap-4" th:if="${template.active}">
+                                    <a th:href="@{'/admin/product-template/' + ${template.id}}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.product_templates.action.edit}">Edit</a>
+                                    <form th:action="@{'/admin/product-template/' + ${template.id} + '/deactivate'}" method="post" class="inline">
+                                        <button type="submit" class="text-red-700 font-semibold hover:underline" th:text="#{admin.product_templates.action.deactivate}">Deactivate</button>
+                                    </form>
+                                </div>
+                                <div class="inline-flex items-center gap-4" th:if="${!template.active}">
+                                    <a th:href="@{'/admin/product-template/' + ${template.id}}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.product_templates.action.edit}">Edit</a>
+                                    <form th:action="@{'/admin/product-template/' + ${template.id} + '/enable'}" method="post" class="inline">
+                                        <button type="submit" class="text-green-700 font-semibold hover:underline" th:text="#{admin.product_templates.action.enable}">Enable</button>
+                                    </form>
+                                    <form th:action="@{'/admin/product-template/' + ${template.id} + '/delete'}" method="post" class="inline">
+                                        <button type="submit" class="text-red-700 font-semibold hover:underline" th:text="#{admin.product_templates.action.delete}">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <th:block th:replace="~{backoffice/fragments/sorting :: script}"></th:block>
+                <th:block th:replace="~{backoffice/fragments/searching :: script}"></th:block>
+                <th:block th:if="${productTemplates.totalElements > 0}"
+                          th:replace="~{backoffice/fragments/pagination :: pager(${productTemplates}, '/admin/product-template')}"></th:block>
+            </article>
+        </section>
+    </th:block>
+</th:block>
+</html>

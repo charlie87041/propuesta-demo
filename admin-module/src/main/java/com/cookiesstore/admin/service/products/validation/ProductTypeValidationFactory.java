@@ -14,20 +14,30 @@ import org.springframework.stereotype.Component;
 public class ProductTypeValidationFactory {
 
     private final Map<String, ProductTypeValidationStrategy> strategiesByType;
+    private final ProductTypeValidationStrategy commonStrategy;
     private final ProductTypeValidationStrategy defaultStrategy;
 
     public ProductTypeValidationFactory(List<ProductTypeValidationStrategy> strategies) {
         this.strategiesByType = strategies.stream()
             .collect(Collectors.toMap(ProductTypeValidationStrategy::supportedTypeCode, Function.identity()));
+        this.commonStrategy = resolveCommon(strategiesByType);
         this.defaultStrategy = resolveDefault(strategiesByType);
     }
 
     public void validateCreate(String typeCode, CreateProductForm form) {
-        resolve(typeCode).validateCreate(form);
+        commonStrategy.validateCreate(form);
+        ProductTypeValidationStrategy specific = resolve(typeCode);
+        if (!specific.supportedTypeCode().equals(commonStrategy.supportedTypeCode())) {
+            specific.validateCreate(form);
+        }
     }
 
     public void validateUpdate(String typeCode, Long productId, UpdateProductForm form) {
-        resolve(typeCode).validateUpdate(productId, form);
+        commonStrategy.validateUpdate(productId, form);
+        ProductTypeValidationStrategy specific = resolve(typeCode);
+        if (!specific.supportedTypeCode().equals(commonStrategy.supportedTypeCode())) {
+            specific.validateUpdate(productId, form);
+        }
     }
 
     private ProductTypeValidationStrategy resolve(String typeCode) {
@@ -54,5 +64,13 @@ public class ProductTypeValidationFactory {
         return strategies.values().stream()
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("No ProductTypeValidationStrategy beans found"));
+    }
+
+    private ProductTypeValidationStrategy resolveCommon(Map<String, ProductTypeValidationStrategy> strategies) {
+        ProductTypeValidationStrategy simple = strategies.get(SimpleProductService.TYPE_CODE);
+        if (simple == null) {
+            throw new IllegalStateException("Missing SIMPLE ProductTypeValidationStrategy");
+        }
+        return simple;
     }
 }

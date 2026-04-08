@@ -1,8 +1,11 @@
 package com.cookiesstore.admin.service.products.validation;
 
+import com.cookiesstore.admin.service.products.ProductPriceValidationException;
 import com.cookiesstore.admin.service.products.SimpleProductService;
 import com.cookiesstore.admin.web.dto.products.CreateProductForm;
 import com.cookiesstore.admin.web.dto.products.UpdateProductForm;
+import java.math.BigDecimal;
+import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,11 +18,30 @@ public class SimpleProductValidationStrategy implements ProductTypeValidationStr
 
     @Override
     public void validateCreate(CreateProductForm form) {
-        // No type-specific validations for SIMPLE products at this layer.
+        validateMonetaryFields(form.price(), form.sourcePrices());
     }
 
     @Override
     public void validateUpdate(Long productId, UpdateProductForm form) {
-        // No type-specific validations for SIMPLE products at this layer.
+        validateMonetaryFields(form.price(), form.sourcePrices());
+    }
+
+    private void validateMonetaryFields(BigDecimal basePrice, Map<Long, BigDecimal> sourcePrices) {
+        if (basePrice == null || basePrice.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ProductPriceValidationException("admin.products.error.price.invalid");
+        }
+
+        if (sourcePrices == null || sourcePrices.isEmpty()) {
+            return;
+        }
+
+        for (BigDecimal sourcePrice : sourcePrices.values()) {
+            if (sourcePrice == null) {
+                continue;
+            }
+            if (sourcePrice.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new ProductPriceValidationException("admin.products.error.source.price.invalid");
+            }
+        }
     }
 }

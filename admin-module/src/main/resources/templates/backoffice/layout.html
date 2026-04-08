@@ -45,6 +45,10 @@
                    class="block px-3 py-1.5 rounded-lg text-[11px] uppercase tracking-wide"
                    th:classappend="${activeNav} == 'products' ? ' text-[#8b4513] font-bold' : ' text-[#956d50]/80 font-bold hover:text-[#8b4513]'"
                    th:text="#{admin.layout.nav.products}">Products</a>
+                <a th:href="@{/admin/product-template}"
+                   class="block px-3 py-1.5 rounded-lg text-[11px] uppercase tracking-wide"
+                   th:classappend="${activeNav} == 'product-templates' ? ' text-[#8b4513] font-bold' : ' text-[#956d50]/80 font-bold hover:text-[#8b4513]'"
+                   th:text="#{admin.layout.nav.product_templates}">Product templates</a>
                 <a th:href="@{/admin/catalog/stock}"
                    class="block px-3 py-1.5 rounded-lg text-[11px] uppercase tracking-wide"
                    th:classappend="${activeNav} == 'stock' ? ' text-[#8b4513] font-bold' : ' text-[#956d50]/80 font-bold hover:text-[#8b4513]'"

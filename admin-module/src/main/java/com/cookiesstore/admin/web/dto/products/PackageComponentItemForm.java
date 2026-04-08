@@ -1,6 +1,7 @@
 package com.cookiesstore.admin.web.dto.products;
 
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 public record PackageComponentItemForm(
     Long itemId,
@@ -9,6 +10,6 @@ public record PackageComponentItemForm(
     int sortOrder,
     boolean isDefault,
     @NotNull String extraPriceMode,
-    Double extraPrice
+    BigDecimal extraPrice
 ) {
 }

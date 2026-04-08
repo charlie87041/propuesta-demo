@@ -84,7 +84,6 @@ public class ProductsController {
         RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
-            System.out.println(bindingResult.getAllErrors());
             return "backoffice/products/form";
         }
 
