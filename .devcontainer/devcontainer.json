@@ -26,7 +26,8 @@
     "source=gradle-cache-local,target=/home/vscode/.gradle,type=volume"
   ],
   "containerEnv": {
-    "JAVA_HOME": "/usr/lib/jvm/msopenjdk-current"
+    "JAVA_HOME": "/usr/lib/jvm/msopenjdk-current",
+    "OPENROUTER_API_KEY": "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"
   },
   "appPort": [8080],
   "forwardPorts": [8080],
