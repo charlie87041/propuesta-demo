@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -93,6 +94,19 @@ public class ProductSourcesController {
         return "backoffice/product-sources/form";
     }
 
+    @GetMapping(value = "/admin/product-sources/{id}/manage", produces = "text/html", name = "admin.product-sources.manage.view")
+    public String manageProductSource(
+        @PathVariable("id") Long id,
+        @RequestParam(value = "section", defaultValue = "inventory") String section,
+        Model model
+    ) {
+        var source = sourceService.getSource(id);
+        String normalizedSection = normalizeSection(section);
+        model.addAttribute("source", source);
+        model.addAttribute("manageSection", normalizedSection);
+        return "backoffice/product-sources/manage";
+    }
+
     @PostMapping(value = "/admin/product-sources/{id}", produces = "text/html", name = "admin.product-sources.update")
     public String updateProductSource(
         @PathVariable("id") Long id,
@@ -118,5 +132,15 @@ public class ProductSourcesController {
 
     private String message(String key, Object... args) {
         return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
+    }
+
+    private String normalizeSection(String section) {
+        if (!StringUtils.hasText(section)) {
+            return "inventory";
+        }
+        return switch (section.trim().toLowerCase()) {
+            case "inventory", "movements", "purchase-orders", "transfers", "alerts" -> section.trim().toLowerCase();
+            default -> "inventory";
+        };
     }
 }

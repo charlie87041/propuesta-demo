@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(${pageTitle}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions"></th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 max-w-4xl mx-auto w-full space-y-6">
+            <nav class="text-sm text-[#956d50]">
+                <a th:href="@{/admin/settings/currencies}" class="hover:text-[#8b4513]" th:text="#{admin.settings.currencies.title}">Currencies</a>
+                <span class="mx-2">/</span>
+                <span th:text="${isEdit} ? #{admin.settings.currencies.edit.title} : #{admin.settings.currencies.create.title}">Create currency</span>
+            </nav>
+
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+
+            <form th:action="${formAction}" th:object="${form}" method="post" class="space-y-6">
+                <div class="bg-white rounded-xl border border-[#f3ece8] shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-[#f3ece8] bg-[#f3ece8]/30">
+                        <h4 class="font-bold text-[#8b4513]" th:text="#{admin.settings.currencies.form.section.details}">Currency details</h4>
+                    </div>
+
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <label class="flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.settings.currencies.form.code}">Code</span>
+                            <input name="code" type="text" maxlength="3"
+                                   class="uppercase rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"
+                                   th:field="*{code}" th:readonly="${isEdit}" required>
+                            <span th:if="${#fields.hasErrors('code')}" class="text-xs font-semibold text-red-700" th:errors="*{code}"></span>
+                        </label>
+
+                        <label class="flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.settings.currencies.form.name}">Name</span>
+                            <input name="name" type="text"
+                                   class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"
+                                   th:field="*{name}" required>
+                            <span th:if="${#fields.hasErrors('name')}" class="text-xs font-semibold text-red-700" th:errors="*{name}"></span>
+                        </label>
+
+                        <label class="flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.settings.currencies.form.symbol}">Symbol</span>
+                            <input name="symbol" type="text"
+                                   class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"
+                                   th:field="*{symbol}" required>
+                            <span th:if="${#fields.hasErrors('symbol')}" class="text-xs font-semibold text-red-700" th:errors="*{symbol}"></span>
+                        </label>
+
+                        <label class="flex flex-col gap-1.5">
+                            <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.settings.currencies.form.fractionDigits}">Fraction digits</span>
+                            <input name="fractionDigits" type="number" min="0" max="4"
+                                   class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm"
+                                   th:field="*{fractionDigits}" required>
+                            <span th:if="${#fields.hasErrors('fractionDigits')}" class="text-xs font-semibold text-red-700" th:errors="*{fractionDigits}"></span>
+                        </label>
+
+                        <div class="md:col-span-2 flex items-center justify-between border border-[#f3ece8] rounded-lg px-4 py-3 bg-[#fcfaf9]">
+                            <div>
+                                <p class="text-sm font-bold" th:text="#{admin.settings.currencies.form.status}">Status</p>
+                                <p class="text-xs text-[#956d50]" th:text="*{active} ? #{admin.settings.currencies.status.active} : #{admin.settings.currencies.status.inactive}">Active</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input class="sr-only peer" type="checkbox" th:field="*{active}"/>
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8b4513]"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3">
+                    <a th:href="@{/admin/settings/currencies}" class="px-5 py-2.5 text-sm font-bold text-[#956d50]" th:text="#{admin.settings.currencies.form.cancel}">Cancel</a>
+                    <button type="submit" class="px-6 py-2.5 text-sm font-bold text-white bg-[#8b4513] rounded-lg" th:text="${submitLabel}">Save</button>
+                </div>
+            </form>
+        </section>
+    </th:block>
+</th:block>
+</html>

@@ -8,10 +8,8 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import java.time.Instant;
-import org.hibernate.annotations.Immutable;
 
 @Entity
-@Immutable
 @Table(name = "currencies")
 public class Currency {
 
@@ -77,4 +75,32 @@ public class Currency {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
+    public void setActive(boolean active)
+    {
+        this.active = active;
+    }
+
+    public void setFractionDigits(int digits)
+    {
+        this.fractionDigits = digits;
+    }
+
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+
+    public void setCode(String code)
+    {
+        this.code = code;
+    }
+    public void setSymbol(String symbol)
+    {
+        this.symbol = symbol;
+    }
+
+
 }

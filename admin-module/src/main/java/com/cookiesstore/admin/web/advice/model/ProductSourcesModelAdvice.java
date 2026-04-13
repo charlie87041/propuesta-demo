@@ -54,6 +54,13 @@ public class ProductSourcesModelAdvice extends BaseAdviceSupport {
             model.addAttribute("sourceId", sourceId);
             model.addAttribute("formAction", "/admin/product-sources/" + sourceId);
             model.addAttribute("submitLabel", message("admin.product_sources.submit.edit"));
+            return;
+        }
+
+        if ("admin.product-sources.manage.view".equals(routeName)) {
+            model.addAttribute("pageTitle", message("admin.product_sources.manage.title"));
+            model.addAttribute("activeNav", "product-sources");
+            model.addAttribute("sourceId", sourceId);
         }
     }
 }

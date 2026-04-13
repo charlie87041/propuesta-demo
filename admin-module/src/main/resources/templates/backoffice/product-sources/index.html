@@ -67,6 +67,11 @@
                                 th:classappend="${source.systemManaged} ? ' text-amber-700 font-semibold' : ' text-slate-600'">No</td>
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-4">
+                                    <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'}"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       class="text-blue-700 font-semibold hover:underline"
+                                       th:text="#{admin.product_sources.action.manage}">Manage</a>
                                     <a th:href="@{'/admin/product-sources/' + ${source.id} + '/edit'}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.product_sources.action.edit}">Edit</a>
                                     <form th:if="${!source.systemManaged}" th:action="@{'/admin/product-sources/' + ${source.id} + '/delete'}" method="post" class="inline">
                                         <button type="submit" class="text-red-700 font-semibold hover:underline" th:text="#{admin.product_sources.action.delete}">Delete</button>
