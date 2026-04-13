@@ -15,4 +15,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, JpaSp
     Optional<Category> findBySlug(String slug);
 
     List<Category> findByActiveTrueOrderBySortOrderAscNameAsc();
+
+    List<Category> findByDefaultTemplateId(Long defaultTemplateId);
 }

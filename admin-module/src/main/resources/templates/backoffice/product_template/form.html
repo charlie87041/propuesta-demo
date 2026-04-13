@@ -83,7 +83,7 @@
                                 </tr>
                                 </thead>
                                 <tbody id="templateFieldsBody">
-                                <tr th:if="${form.fields().isEmpty()}" data-field-row>
+                                <tr th:if="${form.fields.empty}" data-field-row>
                                     <td class="px-3 py-3">
                                         <input type="hidden" name="fields[0].id" value="">
                                         <input type="hidden" name="fields[0].templateId" value="">
@@ -116,34 +116,34 @@
                                     </td>
                                 </tr>
 
-                                <tr th:each="field,iter : ${form.fields()}" data-field-row>
+                                <tr th:each="field,iter : ${form.fields}" data-field-row>
                                     <td class="px-3 py-3">
-                                        <input type="hidden" th:name="|fields[${iter.index}].id|" th:value="${field.id()}">
-                                        <input type="hidden" th:name="|fields[${iter.index}].templateId|" th:value="${field.templateId()}">
-                                        <input th:name="|fields[${iter.index}].fieldKey|" type="text" required class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full" th:value="${field.fieldKey()}">
+                                        <input type="hidden" th:name="|fields[${iter.index}].id|" th:value="${field.id}">
+                                        <input type="hidden" th:name="|fields[${iter.index}].templateId|" th:value="${field.templateId}">
+                                        <input th:name="|fields[${iter.index}].fieldKey|" type="text" required class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full" th:value="${field.fieldKey}">
                                     </td>
                                     <td class="px-3 py-3">
-                                        <input th:name="|fields[${iter.index}].label|" type="text" required class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full" th:value="${field.label()}">
+                                        <input th:name="|fields[${iter.index}].label|" type="text" required class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full" th:value="${field.label}">
                                     </td>
                                     <td class="px-3 py-3">
                                         <select th:name="|fields[${iter.index}].fieldType|" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full">
                                             <option th:each="fieldType : ${T(com.cookiesstore.common.entities.ProductTemplateFieldType).values()}"
                                                     th:value="${fieldType.name()}"
-                                                    th:selected="${field.fieldType() != null && field.fieldType().name() == fieldType.name()}"
+                                                    th:selected="${field.fieldType != null && field.fieldType.name() == fieldType.name()}"
                                                     th:text="${fieldType.name()}">TEXT</option>
                                         </select>
                                     </td>
                                     <td class="px-3 py-3 text-center">
-                                        <input th:name="|fields[${iter.index}].required|" type="checkbox" class="rounded border-[#f3ece8] text-[#8b4513] focus:ring-[#8b4513]/20" th:checked="${field.required()}">
+                                        <input th:name="|fields[${iter.index}].required|" type="checkbox" class="rounded border-[#f3ece8] text-[#8b4513] focus:ring-[#8b4513]/20" th:checked="${field.required}">
                                     </td>
                                     <td class="px-3 py-3">
-                                        <input th:name="|fields[${iter.index}].defaultValue|" type="text" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full" th:value="${field.defaultValue()}">
+                                        <input th:name="|fields[${iter.index}].defaultValue|" type="text" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full" th:value="${field.defaultValue}">
                                     </td>
                                     <td class="px-3 py-3">
-                                        <input th:name="|fields[${iter.index}].validationRules|" type="text" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full" th:value="${field.validationRules()}">
+                                        <input th:name="|fields[${iter.index}].validationRules|" type="text" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-full" th:value="${field.validationRules}">
                                     </td>
                                     <td class="px-3 py-3">
-                                        <input th:name="|fields[${iter.index}].sortOrder|" type="number" min="0" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-20" th:value="${field.sortOrder()}">
+                                        <input th:name="|fields[${iter.index}].sortOrder|" type="number" min="0" class="rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm w-20" th:value="${field.sortOrder}">
                                     </td>
                                     <td class="px-3 py-3 text-right">
                                         <button type="button" class="text-red-700 font-semibold remove-template-field-row" th:text="#{admin.product_templates.form.fields.remove}">Remove</button>

@@ -71,6 +71,6 @@ public class CategoriesModelAdvice extends BaseAdviceSupport {
         model.addAttribute("pageTitle", message(isEdit ? "admin.categories.edit.title" : "admin.categories.create.title"));
         model.addAttribute("formAction", isEdit ? "/admin/categories/" + categoryId : "/admin/categories");
         model.addAttribute("submitLabel", message(isEdit ? "admin.categories.submit.edit" : "admin.categories.submit.create"));
-        model.addAttribute("productTemplates", productTemplateRepository.findAll(Sort.by(Sort.Order.asc("name"))));
+        model.addAttribute("productTemplates", productTemplateRepository.findByLatestTrue(Sort.by(Sort.Order.asc("name"))));
     }
 }

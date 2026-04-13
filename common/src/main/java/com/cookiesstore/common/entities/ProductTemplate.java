@@ -15,13 +15,11 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.Set;
 
-import org.hibernate.annotations.ManyToAny;
-
 @Entity
 @Table(
     name = "product_templates",
     indexes = {
-        @Index(name = "idx_product_templates_code", columnList = "code", unique = true),
+        @Index(name = "idx_product_templates_code", columnList = "code"),
         @Index(name = "idx_product_templates_active", columnList = "active")
     }
 )
@@ -31,7 +29,7 @@ public class ProductTemplate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 80)
+    @Column(nullable = false, length = 80)
     private String code;
 
     @Column(nullable = false, length = 180)
@@ -42,6 +40,12 @@ public class ProductTemplate {
 
     @Column(nullable = false)
     private boolean active = true;
+
+    @Column(nullable = false)
+    private int version = 1;
+
+    @Column(name = "is_latest", nullable = false)
+    private boolean latest = true;
 
     @OneToMany(mappedBy = "template", fetch = FetchType.LAZY)
     private Set<ProductTemplateField> fields;
@@ -101,6 +105,22 @@ public class ProductTemplate {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public boolean isLatest() {
+        return latest;
+    }
+
+    public void setLatest(boolean latest) {
+        this.latest = latest;
     }
 
     public Set<ProductTemplateField> getFields() {

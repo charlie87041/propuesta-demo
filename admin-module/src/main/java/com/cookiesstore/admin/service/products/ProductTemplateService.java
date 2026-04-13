@@ -6,6 +6,8 @@ import com.cookiesstore.common.entities.Product;
 import com.cookiesstore.common.entities.ProductTemplate;
 import com.cookiesstore.common.entities.ProductTemplateField;
 import com.cookiesstore.common.entities.ProductTemplateFieldValue;
+import com.cookiesstore.common.repositories.CategoryRepository;
+import com.cookiesstore.common.repositories.ProductRepository;
 import com.cookiesstore.common.repositories.ProductTemplateFieldRepository;
 import com.cookiesstore.common.repositories.ProductTemplateFieldValueRepository;
 import com.cookiesstore.common.repositories.ProductTemplateRepository;
@@ -30,15 +32,21 @@ public class ProductTemplateService {
     private final ProductTemplateFieldRepository productTemplateFieldRepository;
     private final ProductTemplateFieldValueRepository productTemplateFieldValueRepository;
     private final ProductTemplateRepository productTemplateRepository;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     public ProductTemplateService(
         ProductTemplateFieldRepository productTemplateFieldRepository,
         ProductTemplateFieldValueRepository productTemplateFieldValueRepository,
-        ProductTemplateRepository productTemplateRepository
+        ProductTemplateRepository productTemplateRepository,
+        ProductRepository productRepository,
+        CategoryRepository categoryRepository
     ) {
         this.productTemplateFieldRepository = productTemplateFieldRepository;
         this.productTemplateFieldValueRepository = productTemplateFieldValueRepository;
         this.productTemplateRepository = productTemplateRepository;
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public ProductTemplate findById(Long id) {
@@ -47,17 +55,21 @@ public class ProductTemplateService {
     }
 
     public List<ProductTemplate> getAllProductTemplates() {
-        return productTemplateRepository.findAll();
+        return productTemplateRepository.findByLatestTrue(org.springframework.data.domain.Sort.by("name"));
     }
 
 
     public Page<ProductTemplate> pageAllProductTemplates(Pageable pageable) {
-        return productTemplateRepository.findAll(pageable);
+        return productTemplateRepository.findByLatestTrue(pageable);
     }
 
 
     public Page<ProductTemplate> pageAllProductTemplates(Pageable pageable, Specification<ProductTemplate> specification) {
-        return productTemplateRepository.findAll(specification, pageable);
+        Specification<ProductTemplate> latestSpec = (root, query, builder) -> builder.isTrue(root.get("latest"));
+        Specification<ProductTemplate> combined = specification == null
+            ? latestSpec
+            : Specification.where(latestSpec).and(specification);
+        return productTemplateRepository.findAll(combined, pageable);
     }
 
     public void enableProductTemplate(Long productTemplateId) {
@@ -89,35 +101,64 @@ public class ProductTemplateService {
     @Transactional
     public ProductTemplate updateProductTemplate(UpdateProductTemplateForm form, Long productTemplateId) {
         ProductTemplate productTemplate = findById(productTemplateId);
-        String code = form.code().trim();
-        var existingByCode = productTemplateRepository.findByCode(code);
-        if (existingByCode.isPresent() && !existingByCode.get().getId().equals(productTemplateId)) {
+        String code = form.getCode().trim();
+        boolean inUse = productRepository.existsByTemplateId(productTemplateId);
+
+        if (inUse) {
+            if (!productTemplate.getCode().equals(code)) {
+                throw new ProductTemplateCodeLockedException(code);
+            }
+            ProductTemplate latestTemplate = productTemplateRepository.findTopByCodeOrderByVersionDesc(productTemplate.getCode())
+                .orElse(productTemplate);
+            int nextVersion = latestTemplate.getVersion() + 1;
+            productTemplateRepository.findByCodeAndLatestTrue(productTemplate.getCode())
+                .ifPresent(currentLatest -> {
+                    currentLatest.setLatest(false);
+                    productTemplateRepository.saveAndFlush(currentLatest);
+                });
+
+            ProductTemplate newTemplate = new ProductTemplate();
+            newTemplate.setCode(productTemplate.getCode());
+            newTemplate.setName(form.getName().trim());
+            newTemplate.setDescription(trimToNull(form.getDescription()));
+            newTemplate.setActive(form.isActive());
+            newTemplate.setVersion(nextVersion);
+            newTemplate.setLatest(true);
+            productTemplateRepository.save(newTemplate);
+            syncTemplateFields(form.getFields(), newTemplate);
+            updateCategoriesDefaultTemplate(productTemplateId, newTemplate);
+            return newTemplate;
+        }
+
+        if (!productTemplate.getCode().equals(code) && productTemplateRepository.existsByCode(code)) {
             throw new ProductTemplateCodeExistsException(code);
         }
 
         productTemplate.setCode(code);
-        productTemplate.setName(form.name().trim());
-        productTemplate.setDescription(trimToNull(form.description()));
-        productTemplate.setActive(form.active());
+        productTemplate.setName(form.getName().trim());
+        productTemplate.setDescription(trimToNull(form.getDescription()));
+        productTemplate.setActive(form.isActive());
         productTemplateRepository.save(productTemplate);
-        syncTemplateFields(form.fields(), productTemplate);
+        syncTemplateFields(form.getFields(), productTemplate);
         return findById(productTemplateId);
     }
 
     @Transactional
     public ProductTemplate createProductTemplate(UpdateProductTemplateForm form) {
-        String code = form.code().trim();
-        if (productTemplateRepository.findByCode(code).isPresent()) {
+        String code = form.getCode().trim();
+        if (productTemplateRepository.existsByCode(code)) {
             throw new ProductTemplateCodeExistsException(code);
         }
 
         ProductTemplate productTemplate = new ProductTemplate();
         productTemplate.setCode(code);
-        productTemplate.setName(form.name().trim());
-        productTemplate.setDescription(trimToNull(form.description()));
-        productTemplate.setActive(form.active());
+        productTemplate.setName(form.getName().trim());
+        productTemplate.setDescription(trimToNull(form.getDescription()));
+        productTemplate.setActive(form.isActive());
+        productTemplate.setVersion(1);
+        productTemplate.setLatest(true);
         productTemplateRepository.save(productTemplate);
-        syncTemplateFields(form.fields(), productTemplate);
+        syncTemplateFields(form.getFields(), productTemplate);
         return findById(productTemplate.getId());
     }
 
@@ -201,31 +242,33 @@ public class ProductTemplateService {
         List<ProductTemplateField> toSave = new java.util.ArrayList<>();
         Set<Long> incomingExistingIds = new java.util.HashSet<>();
         for (var fieldForm : fields) {
-            String normalizedFieldKey = normalizeFieldKey(fieldForm.fieldKey());
+            String normalizedFieldKey = normalizeFieldKey(fieldForm.getFieldKey());
             if (!normalizedFieldKeys.add(normalizedFieldKey)) {
                 throw new ProductTemplateDuplicateFieldKeyException(normalizedFieldKey);
             }
 
             ProductTemplateField field;
-            if (fieldForm.id() != null) {
-                field = productTemplateFieldRepository.findById(fieldForm.id())
-                    .orElseThrow(() -> new ProductTemplateFieldNotFoundException(fieldForm.id()));
-                if (field.getTemplate() == null || !productTemplate.getId().equals(field.getTemplate().getId())) {
-                    throw new ProductTemplateFieldInvalidReferenceException(fieldForm.id(), productTemplate.getId());
+            if (fieldForm.getId() != null) {
+                System.out.println("field "+ fieldForm.getId());
+                field = productTemplateFieldRepository.findById(fieldForm.getId())
+                    .orElseThrow(() -> new ProductTemplateFieldNotFoundException(fieldForm.getId()));
+                if (!productTemplate.getId().equals(field.getTemplate().getId())) {
+                    field = new ProductTemplateField();
+                } else{
+                    incomingExistingIds.add(fieldForm.getId());
                 }
-                incomingExistingIds.add(fieldForm.id());
             } else {
                 field = new ProductTemplateField();
             }
 
             field.setTemplate(productTemplate);
             field.setFieldKey(normalizedFieldKey);
-            field.setLabel(fieldForm.label().trim());
-            field.setFieldType(fieldForm.fieldType());
-            field.setRequired(fieldForm.required());
-            field.setDefaultValue(trimToNull(fieldForm.defaultValue()));
-            field.setValidationRules(trimToNull(fieldForm.validationRules()));
-            field.setSortOrder(Byte.toUnsignedInt(fieldForm.sortOrder()));
+            field.setLabel(fieldForm.getLabel().trim());
+            field.setFieldType(fieldForm.getFieldType());
+            field.setRequired(fieldForm.isRequired());
+            field.setDefaultValue(trimToNull(fieldForm.getDefaultValue()));
+            field.setValidationRules(trimToNull(fieldForm.getValidationRules()));
+            field.setSortOrder(Byte.toUnsignedInt(fieldForm.getSortOrder()));
             toSave.add(field);
         }
 
@@ -239,6 +282,17 @@ public class ProductTemplateService {
         if (!toSave.isEmpty()) {
             productTemplateFieldRepository.saveAll(toSave);
         }
+    }
+
+    private void updateCategoriesDefaultTemplate(Long previousTemplateId, ProductTemplate newTemplate) {
+        var categories = categoryRepository.findByDefaultTemplateId(previousTemplateId);
+        if (categories.isEmpty()) {
+            return;
+        }
+        for (var category : categories) {
+            category.setDefaultTemplate(newTemplate);
+        }
+        categoryRepository.saveAll(categories);
     }
 
 

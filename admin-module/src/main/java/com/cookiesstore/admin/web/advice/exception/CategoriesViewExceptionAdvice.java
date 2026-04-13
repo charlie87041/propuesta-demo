@@ -64,7 +64,7 @@ public class CategoriesViewExceptionAdvice {
             model.addAttribute("pageTitle", message(isEdit ? "admin.categories.edit.title" : "admin.categories.create.title"));
             model.addAttribute("formAction", isEdit ? path : "/admin/categories");
             model.addAttribute("submitLabel", message(isEdit ? "admin.categories.submit.edit" : "admin.categories.submit.create"));
-            model.addAttribute("productTemplates", productTemplateRepository.findAll(Sort.by(Sort.Order.asc("name"))));
+            model.addAttribute("productTemplates", productTemplateRepository.findByLatestTrue(Sort.by(Sort.Order.asc("name"))));
             model.addAttribute("form", buildFormFromRequest(request, isEdit));
             return new ModelAndView("backoffice/categories/form");
         }

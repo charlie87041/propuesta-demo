@@ -33,6 +33,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     boolean existsByCategoryId(Long categoryId);
 
+    boolean existsByTemplateId(Long templateId);
+
     Page<Product> findByNameContainingIgnoreCaseOrSkuContainingIgnoreCase(String name, String sku, Pageable pageable);
 
     Optional<Product> findByIdAndProductTypeCode(Long id, String productTypeCode);
