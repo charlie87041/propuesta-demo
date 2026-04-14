@@ -1,6 +1,7 @@
 package com.cookiesstore.common.entities;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -8,9 +9,11 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.Email;
@@ -55,6 +58,9 @@ public class Customer {
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    private Set<CustomerAddress> addresses;
 
     public void setPassword(String rawPassword) {
         if (rawPassword == null || rawPassword.isBlank()) {
@@ -133,6 +139,13 @@ public class Customer {
         return this.createdAt;
     }
 
+    public Instant getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public Set<CustomerAddress> getAddresses() {
+        return addresses;
+    }
 
     
 }

@@ -11,6 +11,8 @@
                 <span th:text="${isEdit} ? #{admin.customers.edit.title} : #{admin.customers.create}">Create customer</span>
             </nav>
 
+            <div th:if="${successMessage}" class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700" th:text="${successMessage}"></div>
+            <div th:if="${warningMessage}" class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700" th:text="${warningMessage}"></div>
             <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
 
             <form th:action="${isEdit} ? @{/admin/customers/{customerId}(customerId=${customerId})} : @{/admin/customers}" th:object="${form}" method="post" enctype="multipart/form-data" class="space-y-6">
@@ -80,6 +82,92 @@
                     <button type="submit" class="px-6 py-2.5 text-sm font-bold text-white bg-[#8b4513] rounded-lg" th:text="${isEdit} ? #{admin.customers.save} : #{admin.customers.create}">Create customer</button>
                 </div>
             </form>
+
+            <div id="customer-addresses" th:if="${isEdit}" class="space-y-5">
+                <div class="bg-white rounded-xl border border-[#f3ece8] shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-[#f3ece8] bg-[#f3ece8]/30 flex items-center justify-between">
+                        <h4 class="font-bold text-[#8b4513] flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">location_on</span>
+                            <span th:text="#{admin.customers.addresses.manage.title}">Manage Addresses</span>
+                        </h4>
+                    </div>
+
+                    <form th:action="@{/admin/customers/{customerId}/addresses(customerId=${customerId})}" method="post" class="p-6 grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-[#f3ece8]">
+                        <h5 class="md:col-span-3 text-sm font-bold text-[#8b4513]" th:text="#{admin.customers.addresses.add.title}">Add address</h5>
+                        <input name="firstName" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.firstName}" th:value="${addressForm != null ? addressForm.firstName() : ''}" required>
+                        <input name="lastName" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.lastName}" th:value="${addressForm != null ? addressForm.lastName() : ''}" required>
+                        <input name="companyName" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.addresses.companyName}" th:value="${addressForm != null ? addressForm.companyName() : ''}">
+                        <input name="address1" type="text" class="rounded-lg border-[#f3ece8] text-sm md:col-span-2" th:placeholder="#{admin.customers.addresses.address1}" th:value="${addressForm != null ? addressForm.address1() : ''}" required>
+                        <input name="address2" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.addresses.address2}" th:value="${addressForm != null ? addressForm.address2() : ''}">
+                        <input name="city" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.addresses.city}" th:value="${addressForm != null ? addressForm.city() : ''}" required>
+                        <input name="state" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.addresses.state}" th:value="${addressForm != null ? addressForm.state() : ''}">
+                        <input name="postcode" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.addresses.postcode}" th:value="${addressForm != null ? addressForm.postcode() : ''}">
+                        <input name="country" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.addresses.country}" th:value="${addressForm != null ? addressForm.country() : ''}">
+                        <input name="email" type="email" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.email}" th:value="${addressForm != null ? addressForm.email() : ''}">
+                        <input name="phone" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.phone}" th:value="${addressForm != null ? addressForm.phone() : ''}">
+                        <input name="vatId" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.addresses.vatId}" th:value="${addressForm != null ? addressForm.vatId() : ''}">
+                        <input name="gender" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:placeholder="#{admin.customers.addresses.gender}" th:value="${addressForm != null ? addressForm.gender() : ''}">
+                        <select name="addressType" class="rounded-lg border-[#f3ece8] text-sm">
+                            <option th:each="type : ${addressTypes}" th:value="${type.name()}" th:text="${type.name()}" th:selected="${addressForm != null && addressForm.addressType() == type}">SHIPPING</option>
+                        </select>
+                        <label class="flex items-center gap-2 text-sm text-[#8b4513]">
+                            <input name="defaultAddress" type="checkbox" class="rounded border-[#f3ece8]" th:checked="${addressForm != null && addressForm.defaultAddress()}">
+                            <span th:text="#{admin.customers.addresses.defaultAddress}">Default address</span>
+                        </label>
+                        <div class="md:col-span-3 flex justify-end">
+                            <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-[#8b4513] rounded-lg" th:text="#{admin.customers.addresses.add.submit}">Add address</button>
+                        </div>
+                    </form>
+
+                    <div th:if="${#lists.isEmpty(customerAddresses)}" class="p-6 text-sm text-[#956d50]" th:text="#{admin.customers.addresses.empty}">
+                        No addresses yet.
+                    </div>
+
+                    <div th:each="address : ${customerAddresses}" class="p-6 border-t border-[#f3ece8]">
+                        <form th:action="@{/admin/customers/{customerId}/addresses/{addressId}(customerId=${customerId},addressId=${address.id})}" method="post" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-3 flex items-center justify-between">
+                                <p class="text-sm font-bold text-[#8b4513]">
+                                    <span th:text="#{admin.customers.addresses.version}">Version</span>
+                                    <span th:text="${address.version}">1</span>
+                                    <span th:if="${address.defaultAddress}" class="ml-2 text-xs px-2 py-0.5 rounded bg-green-100 text-green-700" th:text="#{admin.customers.address.default}">Default</span>
+                                </p>
+                            </div>
+
+                            <input name="firstName" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.firstName}" required>
+                            <input name="lastName" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.lastName}" required>
+                            <input name="companyName" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.companyName}">
+                            <input name="address1" type="text" class="rounded-lg border-[#f3ece8] text-sm md:col-span-2" th:value="${address.address1}" required>
+                            <input name="address2" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.address2}">
+                            <input name="city" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.city}" required>
+                            <input name="state" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.state}">
+                            <input name="postcode" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.postcode}">
+                            <input name="country" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.country}">
+                            <input name="email" type="email" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.email}">
+                            <input name="phone" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.phone}">
+                            <input name="vatId" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.vatId}">
+                            <input name="gender" type="text" class="rounded-lg border-[#f3ece8] text-sm" th:value="${address.gender}">
+                            <select name="addressType" class="rounded-lg border-[#f3ece8] text-sm">
+                                <option th:each="type : ${addressTypes}" th:value="${type.name()}" th:text="${type.name()}" th:selected="${address.addressType == type}">SHIPPING</option>
+                            </select>
+                            <label class="flex items-center gap-2 text-sm text-[#8b4513]">
+                                <input name="defaultAddress" type="checkbox" class="rounded border-[#f3ece8]" th:checked="${address.defaultAddress}">
+                                <span th:text="#{admin.customers.addresses.defaultAddress}">Default address</span>
+                            </label>
+
+                            <div class="md:col-span-3 flex items-center justify-end gap-2">
+                                <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-[#8b4513] rounded-lg" th:text="#{admin.customers.addresses.edit.submit}">Save address</button>
+                                <button type="submit"
+                                        formmethod="post"
+                                        th:formaction="@{/admin/customers/{customerId}/addresses/{addressId}/delete(customerId=${customerId},addressId=${address.id})}"
+                                        class="px-4 py-2 text-sm font-bold border border-red-200 text-red-700 rounded-lg hover:bg-red-50"
+                                        th:text="#{admin.customers.addresses.delete}">
+                                    Delete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <script>

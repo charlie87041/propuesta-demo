@@ -125,6 +125,11 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end items-center gap-2">
+                                    <a th:href="@{/admin/customers/{customerId}/addresses(customerId=${customer.id})}"
+                                       class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg hover:bg-[#8b4513]/10 hover:text-[#8b4513] transition-all"
+                                       th:text="#{admin.customers.action.manageAddresses}">
+                                        Manage addresses
+                                    </a>
                                     <a th:href="@{/admin/customers/{customerId}/edit(customerId=${customer.id})}"
                                        class="p-1.5 hover:bg-white rounded-lg text-slate-400 hover:text-[#8b4513] transition-all"
                                        th:title="#{admin.customers.action.edit}">

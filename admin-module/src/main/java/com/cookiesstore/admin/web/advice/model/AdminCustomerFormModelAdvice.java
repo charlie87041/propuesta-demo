@@ -1,8 +1,12 @@
 package com.cookiesstore.admin.web.advice.model;
 
 import com.cookiesstore.admin.service.users.AdminUserService;
+import com.cookiesstore.admin.service.customers.CustomerAddressService;
 import com.cookiesstore.admin.web.advice.support.BaseAdviceSupport;
 import com.cookiesstore.admin.web.controllers.AdminCustomerViewController;
+import com.cookiesstore.admin.web.controllers.CustomerAddressController;
+import com.cookiesstore.admin.web.dto.customers.CustomerAddressForm;
+import com.cookiesstore.common.entities.CustomerAddress.AddressType;
 import java.util.List;
 import org.springframework.context.MessageSource;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -12,14 +16,20 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@ControllerAdvice(assignableTypes = AdminCustomerViewController.class)
+@ControllerAdvice(assignableTypes = {AdminCustomerViewController.class, CustomerAddressController.class})
 public class AdminCustomerFormModelAdvice extends BaseAdviceSupport {
 
     private final AdminUserService adminUserService;
+    private final CustomerAddressService customerAddressService;
 
-    public AdminCustomerFormModelAdvice(AdminUserService adminUserService, MessageSource messageSource) {
+    public AdminCustomerFormModelAdvice(
+        AdminUserService adminUserService,
+        CustomerAddressService customerAddressService,
+        MessageSource messageSource
+    ) {
         super(messageSource);
         this.adminUserService = adminUserService;
+        this.customerAddressService = customerAddressService;
     }
 
     @ModelAttribute
@@ -52,6 +62,31 @@ public class AdminCustomerFormModelAdvice extends BaseAdviceSupport {
             model.addAttribute("activeNav", "customers");
             model.addAttribute("isEdit", true);
             model.addAttribute("customerId", customerId);
+            if (customerId != null) {
+                if (!model.containsAttribute("customerAddresses")) {
+                    model.addAttribute("customerAddresses", customerAddressService.findLatestByCustomerId(customerId));
+                }
+                if (!model.containsAttribute("addressForm")) {
+                    model.addAttribute("addressForm", new CustomerAddressForm(
+                        "",
+                        "",
+                        null,
+                        null,
+                        "",
+                        null,
+                        "",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        AddressType.SHIPPING,
+                        false
+                    ));
+                }
+                model.addAttribute("addressTypes", AddressType.values());
+            }
         }
         
     }
