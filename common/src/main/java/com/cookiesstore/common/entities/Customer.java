@@ -62,6 +62,9 @@ public class Customer {
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private Set<CustomerAddress> addresses;
 
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    private Set<Order> orders;
+
     public void setPassword(String rawPassword) {
         if (rawPassword == null || rawPassword.isBlank()) {
             throw new IllegalArgumentException("Password cannot be blank");
@@ -147,5 +150,8 @@ public class Customer {
         return addresses;
     }
 
-    
+    public Set<Order> getOrders() {
+        return orders;
+    }
+
 }
