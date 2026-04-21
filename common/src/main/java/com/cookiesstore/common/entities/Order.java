@@ -59,8 +59,6 @@ public class Order {
     @Column(name = "coupon_code", length = 100)
     private String couponCode;
 
-    @Column(name = "is_gift", nullable = false)
-    private boolean gift;
 
     @Column(name = "total_item_count", nullable = false)
     private Integer totalItemCount = 0;
@@ -182,13 +180,7 @@ public class Order {
         this.couponCode = couponCode;
     }
 
-    public boolean isGift() {
-        return gift;
-    }
-
-    public void setGift(boolean gift) {
-        this.gift = gift;
-    }
+  
 
     public Integer getTotalItemCount() {
         return totalItemCount;

@@ -13,6 +13,9 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.Map;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -36,6 +39,13 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private OrderItem parent;
+
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_id")
+    private Source source;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -84,8 +94,9 @@ public class OrderItem {
     @JoinColumn(name = "currency_code", nullable = false)
     private Currency currency;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "additional", columnDefinition = "jsonb")
-    private String additional;
+    private Map<String, Object> additional;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -245,11 +256,11 @@ public class OrderItem {
         this.currency = currency;
     }
 
-    public String getAdditional() {
+    public Map<String, Object> getAdditional() {
         return additional;
     }
 
-    public void setAdditional(String additional) {
+    public void setAdditional(Map<String, Object> additional) {
         this.additional = additional;
     }
 
@@ -260,5 +271,13 @@ public class OrderItem {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
-}
 
+    public Source getSource()
+    {
+        return this.source;
+    }
+
+    public void setSource(Source source) {
+        this.source = source;
+    }
+}

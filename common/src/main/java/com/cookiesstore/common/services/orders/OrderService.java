@@ -14,6 +14,8 @@ import com.cookiesstore.common.entities.OrderStatusHistory;
 import com.cookiesstore.common.entities.Price;
 import com.cookiesstore.common.entities.Product;
 import com.cookiesstore.common.entities.ProductSource;
+import com.cookiesstore.common.entities.Source;
+import com.cookiesstore.common.events.OrderUpdated;
 import com.cookiesstore.common.repositories.CurrencyRepository;
 import com.cookiesstore.common.repositories.CustomerRepository;
 import com.cookiesstore.common.repositories.OrderAddressRepository;
@@ -21,6 +23,8 @@ import com.cookiesstore.common.repositories.OrderItemRepository;
 import com.cookiesstore.common.repositories.OrderRepository;
 import com.cookiesstore.common.repositories.OrderStatusHistoryRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
+import com.cookiesstore.common.repositories.SourceRepository;
+
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +33,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.util.StringUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -44,6 +49,8 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final OrderAddressRepository orderAddressRepository;
     private final OrderStatusHistoryRepository orderStatusHistoryRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final SourceRepository sourceRepository;
 
     public OrderService(
         ProductRepository productRepository,
@@ -52,7 +59,9 @@ public class OrderService {
         CurrencyRepository currencyRepository,
         OrderItemRepository orderItemRepository,
         OrderAddressRepository orderAddressRepository,
-        OrderStatusHistoryRepository orderStatusHistoryRepository
+        OrderStatusHistoryRepository orderStatusHistoryRepository,
+        ApplicationEventPublisher applicationEventPublisher,
+        SourceRepository sourceRepository
     ) {
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
@@ -61,6 +70,8 @@ public class OrderService {
         this.orderItemRepository = orderItemRepository;
         this.orderAddressRepository = orderAddressRepository;
         this.orderStatusHistoryRepository = orderStatusHistoryRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
+        this.sourceRepository = sourceRepository;
     }
 
     public Order putOrder(CreateOrderForm form) {
@@ -68,7 +79,7 @@ public class OrderService {
             if (CollectionUtils.isEmpty(form.products())) {
                 throw new OrderItemsRequiredException();
             }
-            OrderContext context = buildCreateContext(form);
+            OrderContext context = OrderContext.buildCreateContext(form, this);
             return createOrder(context, form);
         }
         if (CollectionUtils.isEmpty(form.products())) {
@@ -77,7 +88,7 @@ public class OrderService {
             orderRepository.delete(order);
             return null;
         }
-        OrderContext context = buildUpdateContext(form);
+        OrderContext context = OrderContext.buildUpdateContext(form, this);
         return updateOrderProducts(context, form);
     }
 
@@ -99,6 +110,9 @@ public class OrderService {
         order.setCustomer(customer);
         orderRepository.save(order);
         applyAddressesIfProvided(order, form.addresses());
+        this.applicationEventPublisher.publishEvent(
+            new OrderUpdated(order.getId(), order.getStatus(), buildOrderItemSnapshots(incomingItems))
+        );
 
         return orderRepository.findById(order.getId())
             .orElseThrow(() -> new OrderNotFoundException(order.getId()));
@@ -117,7 +131,6 @@ public class OrderService {
         order.setCustomerEmail(form.customerEmail());
         order.setCustomerFirstName(form.customerFirstName());
         order.setCustomerLastName(form.customerLastName());
-        order.setGift(false);
         order.setCouponCode(form.couponCode());
         order.setOrderCurrency(currency);
         applyOrderTotals(order, orderItems);
@@ -131,6 +144,10 @@ public class OrderService {
 
 	    applyAddressesIfProvided(order, form.addresses());
         updateNewOrderStatus(order);
+
+        this.applicationEventPublisher.publishEvent(
+            new OrderUpdated(order.getId(), order.getStatus(), buildOrderItemSnapshots(orderItems))
+        );
 
         return orderRepository.findById(order.getId())
             .orElseThrow(() -> new OrderNotFoundException(order.getId()));
@@ -219,6 +236,8 @@ public class OrderService {
         int quantity = requestedQuantity;
         long lineSubTotalMinor = unitPriceMinor * quantity;
 
+        Source source = sourceRepository.findById(form.sourceId()).orElseThrow();
+
         item.setProduct(product);
         item.setSku(product.getSku());
         item.setProductName(product.getName());
@@ -234,6 +253,7 @@ public class OrderService {
         item.setLineTaxMinor(0L);
         item.setLineTotalMinor(lineSubTotalMinor);
         item.setCurrency(currency);
+        item.setSource(source);
         return item;
     }
 
@@ -282,38 +302,20 @@ public class OrderService {
         }
     }
 
-    private OrderContext buildCreateContext(CreateOrderForm form) {
-        Customer customer = customerRepository.findById(form.customerId())
-            .orElseThrow(() -> new OrderCustomerNotFoundException(form.customerId()));
-        List<OrderItem> incomingItems = form.products()
-            .stream()
-            .map(orderProduct -> productItemFromForm(orderProduct, null))
+    private List<OrderUpdated.OrderItemSnapshot> buildOrderItemSnapshots(List<OrderItem> items) {
+        if (items == null || items.isEmpty()) {
+            return List.of();
+        }
+        return items.stream()
+            .map(item -> new OrderUpdated.OrderItemSnapshot(
+                item.getProduct() == null ? null : item.getProduct().getId(),
+                item.getSource() == null ? null : item.getSource().getId(),
+                item.getQuantityOrdered()
+            ))
             .toList();
-        Set<Long> incomingIds = incomingItems.stream()
-            .map(OrderItem::getId)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
-        Currency currency = currencyRepository.findById(form.orderCurrencyCode())
-            .orElseThrow(() -> new OrderCurrencyNotFoundException(form.orderCurrencyCode()));
-        validateAddressesCount(form.addresses());
-        return new OrderContext(null, customer, incomingItems, incomingIds, currency);
     }
 
-    private OrderContext buildUpdateContext(CreateOrderForm form) {
-        Order order = orderRepository.findById(form.id())
-            .orElseThrow(() -> new OrderNotFoundException(form.id()));
-        Customer customer = customerRepository.findById(form.customerId())
-            .orElseThrow(() -> new OrderCustomerNotFoundException(form.customerId()));
-        List<OrderItem> incomingItems = form.products()
-            .stream()
-            .map(orderProduct -> productItemFromForm(orderProduct, order))
-            .toList();
-        Set<Long> incomingIds = incomingItems.stream()
-            .map(OrderItem::getId)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
-        return new OrderContext(order, customer, incomingItems, incomingIds, null);
-    }
+
 
     private static final class OrderContext {
         private final Order order;
@@ -334,6 +336,39 @@ public class OrderService {
             this.incomingItems = incomingItems;
             this.incomingIds = incomingIds;
             this.currency = currency;
+        }
+
+        private static OrderContext buildCreateContext(CreateOrderForm form, OrderService parent) {
+            Customer customer = parent.customerRepository.findById(form.customerId())
+                .orElseThrow(() -> new OrderCustomerNotFoundException(form.customerId()));
+            List<OrderItem> incomingItems = form.products()
+                .stream()
+                .map(orderProduct -> parent.productItemFromForm(orderProduct, null))
+                .toList();
+            Set<Long> incomingIds = incomingItems.stream()
+                .map(OrderItem::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+            Currency currency = parent.currencyRepository.findById(form.orderCurrencyCode())
+                .orElseThrow(() -> new OrderCurrencyNotFoundException(form.orderCurrencyCode()));
+            parent.validateAddressesCount(form.addresses());
+            return new OrderContext(null, customer, incomingItems, incomingIds, currency);
+        }
+
+        private static OrderContext buildUpdateContext(CreateOrderForm form, OrderService parent) {
+            Order order = parent.orderRepository.findById(form.id())
+                .orElseThrow(() -> new OrderNotFoundException(form.id()));
+            Customer customer = parent.customerRepository.findById(form.customerId())
+                .orElseThrow(() -> new OrderCustomerNotFoundException(form.customerId()));
+            List<OrderItem> incomingItems = form.products()
+                .stream()
+                .map(orderProduct -> parent.productItemFromForm(orderProduct, order))
+                .toList();
+            Set<Long> incomingIds = incomingItems.stream()
+                .map(OrderItem::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+            return new OrderContext(order, customer, incomingItems, incomingIds, null);
         }
     }
 }

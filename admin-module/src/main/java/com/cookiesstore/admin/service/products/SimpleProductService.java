@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -57,6 +58,7 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
             .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public Product createProduct(CreateProductForm form) {
         ProductCreateContext createContext = buildCreateContext(form);
         Product product = createContext.product();
@@ -133,6 +135,7 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
         );
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public Product updateProduct(Long productId, UpdateProductForm form) {
         ProductUpdateContext updateContext = buildUpdateContext(productId, form);
         Product product = updateContext.product();
@@ -196,6 +199,7 @@ public class SimpleProductService implements ProductTypeService<CreateProductFor
         }
         return value.trim();
     }
+    
 
     private RuntimeException mapDataIntegrityViolation(DataIntegrityViolationException ex) {
         String message = ex.getMostSpecificCause() != null

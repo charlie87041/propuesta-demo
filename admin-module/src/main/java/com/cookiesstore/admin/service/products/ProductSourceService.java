@@ -5,16 +5,26 @@ import com.cookiesstore.common.entities.Currency;
 import com.cookiesstore.common.entities.Product;
 import com.cookiesstore.common.entities.ProductSource;
 import com.cookiesstore.common.entities.Source;
+import com.cookiesstore.common.events.ProductSourceCreated;
+import com.cookiesstore.common.events.ProductSourceRemoved;
+import com.cookiesstore.common.events.ProductSourceUpdated;
 import com.cookiesstore.common.repositories.PriceRepository;
 import com.cookiesstore.common.repositories.ProductSourceRepository;
 import com.cookiesstore.common.repositories.SourceRepository;
+
+import jakarta.transaction.Transactional;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,17 +36,20 @@ public class ProductSourceService {
     private final ProductSourceRepository productSourceRepository;
     private final PriceRepository priceRepository;
     private final ProductPriceService productPriceService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public ProductSourceService(
         SourceRepository sourceRepository,
         ProductSourceRepository productSourceRepository,
         PriceRepository priceRepository,
-        ProductPriceService productPriceService
+        ProductPriceService productPriceService,
+        ApplicationEventPublisher applicationEventPublisher
     ) {
         this.sourceRepository = sourceRepository;
         this.productSourceRepository = productSourceRepository;
         this.priceRepository = priceRepository;
         this.productPriceService = productPriceService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     public List<Source> resolveSources(List<Long> sourceIds) {
@@ -70,7 +83,7 @@ public class ProductSourceService {
         }
         return resolved;
     }
-
+    @Transactional
     public void upsertProductSources(
         Product product,
         List<Source> sources,
@@ -83,17 +96,25 @@ public class ProductSourceService {
         Long actorUserId,
         boolean sync
     ) {
+        List<Source> requestedSources = sources == null ? List.of() : sources;
+        List<ProductSource> existingProductSources = productSourceRepository.findByProductId(product.getId());
+        Map<Long, ProductSource> existingBySourceId = existingProductSources.stream()
+            .collect(Collectors.toMap(ps -> ps.getSource().getId(), ps -> ps, (left, right) -> left));
+
+        List<ProductSource> removedSources = List.of();
         if (sync) {
-            List<ProductSource> existingProductSources = productSourceRepository.findByProductId(product.getId());
             Set<Long> requestedSourceIds = new HashSet<>();
-            for (Source source : sources) {
+            for (Source source : requestedSources) {
                 requestedSourceIds.add(source.getId());
             }
-            List<Long> removedSourceIds = existingProductSources.stream()
-                .map(productSource -> productSource.getSource().getId())
-                .filter(existingSourceId -> !requestedSourceIds.contains(existingSourceId))
+            removedSources = existingProductSources.stream()
+                .filter(existingSource -> !requestedSourceIds.contains(existingSource.getSource().getId()))
                 .distinct()
                 .toList();
+
+            var removedSourceIds = removedSources.stream()
+                .map(removedproductSource -> removedproductSource.getSource().getId())
+                .toList();       
 
             productSourceRepository.deleteByProductId(product.getId());
             productSourceRepository.flush();
@@ -101,9 +122,21 @@ public class ProductSourceService {
             if (!removedSourceIds.isEmpty()) {
                 priceRepository.deleteByProductIdAndSourceIdIn(product.getId(), removedSourceIds);
             }
+
+            removedSources.forEach(removed ->
+                applicationEventPublisher.publishEvent(
+                    new ProductSourceRemoved(
+                        product.getId(),
+                        removed.getSource().getId(),
+                        removed.getSource().getCode(),
+                        removed.getStockQuantity(),
+                        actorUserId
+                    )
+                )
+            );
         }
 
-        for (Source currentSource : sources) {
+        for (Source currentSource : requestedSources) {
             ProductSource productSource = new ProductSource();
             productSource.setProduct(product);
             productSource.setSource(currentSource);
@@ -127,6 +160,29 @@ public class ProductSourceService {
                 defaultCurrency,
                 actorUserId
             ));
+            if (existingProductSources.size() > 0) {
+                ProductSource previous = existingBySourceId.get(sourceId);
+                    if (previous != null && !Objects.equals(previous.getStockQuantity(), productSource.getStockQuantity())) {
+                        applicationEventPublisher.publishEvent(
+                            new ProductSourceUpdated(
+                                product.getId(),
+                                sourceId,
+                                previous.getStockQuantity(),
+                                productSource.getStockQuantity(),
+                                actorUserId
+                            )
+                        );
+                    } 
+            } else {
+                applicationEventPublisher.publishEvent(
+                            new ProductSourceCreated(
+                                product.getId(),
+                                sourceId,
+                                productSource.getStockQuantity(),
+                                actorUserId
+                            )
+                        );
+            }
             productSourceRepository.save(productSource);
         }
     }

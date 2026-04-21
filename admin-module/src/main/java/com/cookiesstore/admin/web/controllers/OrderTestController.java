@@ -6,22 +6,28 @@ import com.cookiesstore.common.entities.CustomerAddress;
 import com.cookiesstore.common.entities.Order;
 import com.cookiesstore.common.entities.OrderAddress;
 import com.cookiesstore.common.entities.OrderAddressType;
+import com.cookiesstore.common.entities.OrderItem;
 import com.cookiesstore.common.entities.OrderStatus;
 import com.cookiesstore.common.entities.OrderStatusHistory;
 import com.cookiesstore.common.entities.Price;
 import com.cookiesstore.common.entities.Product;
+import com.cookiesstore.common.events.OrderUpdated;
 import com.cookiesstore.common.dto.orders.CreateOrderForm;
 import com.cookiesstore.common.dto.orders.OrderAddressForm;
 import com.cookiesstore.common.dto.orders.OrderItemForm;
 import com.cookiesstore.common.repositories.CustomerAddressRepository;
 import com.cookiesstore.common.repositories.CustomerRepository;
 import com.cookiesstore.common.repositories.OrderAddressRepository;
+import com.cookiesstore.common.repositories.OrderItemRepository;
+import com.cookiesstore.common.repositories.OrderRepository;
 import com.cookiesstore.common.repositories.OrderStatusHistoryRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
 import com.cookiesstore.common.services.orders.OrderService;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -37,23 +43,32 @@ public class OrderTestController {
     private final CustomerRepository customerRepository;
     private final CustomerAddressRepository customerAddressRepository;
     private final OrderAddressRepository orderAddressRepository;
+    private final OrderItemRepository orderItemRepository;
     private final OrderStatusHistoryRepository orderStatusHistoryRepository;
+    private final OrderRepository orderRepository;
     private final OrderService orderService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public OrderTestController(
         ProductRepository productRepository,
         CustomerRepository customerRepository,
         CustomerAddressRepository customerAddressRepository,
         OrderAddressRepository orderAddressRepository,
+        OrderItemRepository orderItemRepository,
         OrderStatusHistoryRepository orderStatusHistoryRepository,
-        OrderService orderService
+        OrderService orderService,
+        ApplicationEventPublisher applicationEventPublisher,
+        OrderRepository orderRepository
     ) {
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
         this.customerAddressRepository = customerAddressRepository;
         this.orderAddressRepository = orderAddressRepository;
+        this.orderItemRepository = orderItemRepository;
         this.orderStatusHistoryRepository = orderStatusHistoryRepository;
         this.orderService = orderService;
+        this.orderRepository = orderRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @PostMapping("/public/api/dev/orders/bootstrap")
@@ -124,9 +139,11 @@ public class OrderTestController {
         );
 
         Order order = orderService.putOrder(form);
-
-
-       
+        order.setStatus(OrderStatus.COMPLETED);
+        orderRepository.save(order);
+         this.applicationEventPublisher.publishEvent(
+            new OrderUpdated(order.getId(), order.getStatus(), buildOrderItemSnapshots(orderItemRepository.findByOrderId(order.getId())))
+        );
 
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("orderId", order.getId());
@@ -199,5 +216,19 @@ public class OrderTestController {
         String trimmed = fullName.trim();
         int firstSpace = trimmed.indexOf(' ');
         return firstSpace > 0 ? trimmed.substring(firstSpace + 1).trim() : "Unknown";
+    }
+
+
+    private List<OrderUpdated.OrderItemSnapshot> buildOrderItemSnapshots(List<OrderItem> items) {
+        if (items == null || items.isEmpty()) {
+            return List.of();
+        }
+        return items.stream()
+            .map(item -> new OrderUpdated.OrderItemSnapshot(
+                item.getProduct() == null ? null : item.getProduct().getId(),
+                item.getSource() == null ? null : item.getSource().getId(),
+                item.getQuantityOrdered()
+            ))
+            .toList();
     }
 }

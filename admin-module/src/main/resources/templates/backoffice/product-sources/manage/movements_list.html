@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(${pageTitle}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <th:block th:replace="~{backoffice/fragments/searching :: searchBox('q', #{admin.product_sources.search.placeholder}, ${searchQuery}, 'sourceMovementsSortForm')}"></th:block>
+            <a th:href="@{/admin/product-sources}" class="px-3 py-2 border border-[#e6dad1] rounded-lg text-sm font-semibold text-[#8b4513] hover:bg-[#8b4513]/10" th:text="#{admin.product_sources.manage.back}">
+                Back
+            </a>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+
+            <nav class="text-sm text-[#956d50]">
+                <a th:href="@{/admin/product-sources}" class="hover:text-[#8b4513]" th:text="#{admin.product_sources.title}">Source management</a>
+                <span class="mx-2">/</span>
+                <span th:text="#{admin.product_sources.manage.title}">Source product management</span>
+            </nav>
+
+            <div class="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+                <aside class="bg-white rounded-xl border border-[#e6dad1] shadow-sm p-4 h-fit">
+                    <p class="text-xs uppercase tracking-wider text-[#956d50] px-2" th:text="#{admin.product_sources.manage.currentSource}">Current source</p>
+                    <p class="font-bold text-[#8b4513] px-2 mt-1" th:text="${source.name}">Warehouse North</p>
+                    <p class="text-xs text-[#956d50] px-2 mb-4" th:text="${source.code}">WAREHOUSE_NORTH</p>
+
+                    <nav class="space-y-1">
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='inventory')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.inventory}">Inventory</a>
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/movements'}" class="block px-3 py-2 rounded-lg text-sm font-semibold bg-[#8b4513]/10 text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.movements}">Movements</a>
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='purchase-orders')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.purchaseOrders}">Purchase orders</a>
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='transfers')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.transfers}">Transfers</a>
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='alerts')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.alerts}">Alerts</a>
+                    </nav>
+                </aside>
+
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl border border-[#e6dad1] shadow-sm p-6">
+                        <h3 class="text-xl font-bold text-[#1b130e]" th:text="#{admin.product_sources.manage.header}">Source-level product operations</h3>
+                    </div>
+
+                    <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
+                        <header class="px-6 py-4 border-b border-[#e6dad1] flex items-center justify-between">
+                            <h4 class="font-bold" th:text="#{admin.product_sources.manage.movements.title}">Recent stock movements</h4>
+                            <span class="text-sm text-[#956d50]" th:text="${stockPage.totalElements}">0</span>
+                        </header>
+
+                        <form method="get" th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/movements'}" id="sourceMovementsSortForm">
+                            <input type="hidden" name="page" value="0">
+                            <input type="hidden" name="size" th:value="${stockPage.size}">
+                            <input type="hidden" name="q" th:value="${searchQuery}">
+                        </form>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
+                                    <tr>
+                                        <th class="px-6 py-3">
+                                            <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_sources.manage.movements.col.date}, 'createdAt', true, ${sortParams}, 'sourceMovementsSortForm')}"></th:block>
+                                        </th>
+                                        <th class="px-6 py-3" th:text="#{admin.product_sources.manage.movements.col.product}">Product</th>
+                                        <th class="px-6 py-3">
+                                            <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_sources.manage.movements.col.type}, 'movementType', true, ${sortParams}, 'sourceMovementsSortForm')}"></th:block>
+                                        </th>
+                                        <th class="px-6 py-3 text-right">
+                                            <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_sources.manage.movements.col.qty}, 'quantityDelta', true, ${sortParams}, 'sourceMovementsSortForm')}"></th:block>
+                                        </th>
+                                        <th class="px-6 py-3 text-right">
+                                            <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_sources.manage.movements.col.balance}, 'balanceAfter', true, ${sortParams}, 'sourceMovementsSortForm')}"></th:block>
+                                        </th>
+                                        <th class="px-6 py-3">
+                                            <th:block th:replace="~{backoffice/fragments/sorting :: columnHeader(#{admin.product_sources.manage.movements.col.reference}, 'referenceCode', true, ${sortParams}, 'sourceMovementsSortForm')}"></th:block>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-[#f3ece8]">
+                                    <tr th:if="${stockPage.totalElements == 0}">
+                                        <td colspan="6" class="px-6 py-8 text-center text-[#956d50]" th:text="#{admin.product_sources.empty}">No rows found.</td>
+                                    </tr>
+                                    <tr th:each="movement : ${stockPage.content}">
+                                        <td class="px-6 py-4 text-[#956d50]" th:text="${#temporals.format(movement.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-12 15:12</td>
+                                        <td class="px-6 py-4 font-semibold" th:text="${movement.product != null ? movement.product.name : '-'}">Chocolate Chip Cookie</td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex px-2 py-1 rounded-full text-xs"
+                                                  th:switch="${movement.movementType != null ? movement.movementType.name() : ''}"
+                                                  th:classappend="${movement.movementType != null && movement.movementType.name() == 'SALE'} ? ' bg-red-100 text-red-700' :
+                                                                  (${movement.movementType != null && movement.movementType.name() == 'RESTOCK'} ? ' bg-emerald-100 text-emerald-700' : ' bg-amber-100 text-amber-700')"
+                                                  th:text="${movement.movementType != null ? movement.movementType.name() : '-'}">ADJUSTMENT</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right font-semibold"
+                                            th:classappend="${movement.quantityDelta != null && movement.quantityDelta > 0} ? ' text-emerald-700' :
+                                                            (${movement.quantityDelta != null && movement.quantityDelta < 0} ? ' text-red-700' : ' text-[#956d50]')"
+                                            th:text="${movement.quantityDelta != null && movement.quantityDelta > 0 ? '+' + movement.quantityDelta : movement.quantityDelta}">+0</td>
+                                        <td class="px-6 py-4 text-right" th:text="${movement.balanceAfter}">0</td>
+                                        <td class="px-6 py-4 text-[#956d50]" th:text="${movement.referenceCode} ?: '-'">PO-22019</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <th:block th:replace="~{backoffice/fragments/sorting :: script}"></th:block>
+                        <th:block th:replace="~{backoffice/fragments/searching :: script}"></th:block>
+                        <th:block th:if="${stockPage.totalElements > 0}"
+                                  th:replace="~{backoffice/fragments/pagination :: pager(${stockPage}, '/admin/product-sources/' + source.id + '/manage/movements')}"></th:block>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</th:block>
+</html>

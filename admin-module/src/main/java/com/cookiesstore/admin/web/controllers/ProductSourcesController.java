@@ -102,6 +102,9 @@ public class ProductSourcesController {
     ) {
         var source = sourceService.getSource(id);
         String normalizedSection = normalizeSection(section);
+        if ("movements".equals(normalizedSection)) {
+            return "redirect:/admin/product-sources/" + id + "/manage/movements";
+        }
         model.addAttribute("source", source);
         model.addAttribute("manageSection", normalizedSection);
         return "backoffice/product-sources/manage";
