@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(${pageTitle}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <div class="flex items-center gap-2">
+            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'}"
+               class="px-4 py-2 border border-[#e6dad1] rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10"
+               th:text="#{admin.product_sources.manage.transfers.new.action.discard}">Discard</a>
+            <button type="submit"
+                    form="transfer-form"
+                    class="px-4 py-2 rounded-lg bg-[#8b4513] hover:bg-[#6f370f] text-white text-sm font-semibold"
+                    th:text="#{admin.product_sources.manage.transfers.new.action.submit}">Initiate transfer</button>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+            <nav class="text-sm text-[#956d50]">
+                <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'}"
+                   class="hover:text-[#8b4513]"
+                   th:text="#{admin.product_sources.manage.transfers.title}">Transfers</a>
+                <span class="mx-2">/</span>
+                <span th:text="#{admin.product_sources.manage.transfers.new.breadcrumb}">New Stock Transfer</span>
+            </nav>
+
+            <h2 class="text-3xl font-extrabold text-[#1b130e]" th:text="#{admin.product_sources.manage.transfers.new.title}">
+                Create New Stock Transfer
+            </h2>
+
+            <form id="transfer-form"
+                  th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers/create'}"
+                  th:object="${form}"
+                  method="post"
+                  class="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-6">
+                <div class="space-y-6">
+                    <article class="bg-white rounded-xl border border-[#e6dad1] p-6 space-y-5">
+                        <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]"
+                            th:text="#{admin.product_sources.manage.transfers.new.route.title}">Route details</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-sm font-bold text-[#4d617f]"
+                                       th:text="#{admin.product_sources.manage.transfers.new.route.source}">Source location</label>
+                                <div class="rounded-lg border border-[#dbe4ef] bg-[#f7fafc] px-4 py-3 flex items-center gap-2 text-[#1b130e] font-semibold">
+                                    <span class="material-symbols-outlined text-[#8b4513]">location_on</span>
+                                    <span th:text="${source.name}">Warehouse North</span>
+                                </div>
+                                <p class="text-xs text-[#8a9cb7]" th:text="#{admin.product_sources.manage.transfers.new.route.sourceHelp}">
+                                    Current facility primary.
+                                </p>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="destinationSourceId"
+                                       class="text-sm font-bold text-[#4d617f]"
+                                       th:text="#{admin.product_sources.manage.transfers.new.route.destination}">Destination facility</label>
+                                <select id="destinationSourceId"
+                                        th:field="*{destinationSourceId}"
+                                        class="w-full rounded-lg border border-[#dbe4ef] bg-white px-4 py-3 text-[#1b130e]">
+                                    <option value="" th:text="#{admin.product_sources.manage.transfers.new.route.destination.placeholder}">Select destination...</option>
+                                    <option th:each="destinationSource : ${destinationSources}"
+                                            th:value="${destinationSource.id}"
+                                            th:text="${destinationSource.name + ' (' + destinationSource.code + ')'}">
+                                        Destination
+                                    </option>
+                                </select>
+                                <p th:if="${#fields.hasErrors('destinationSourceId')}"
+                                   th:errors="*{destinationSourceId}"
+                                   class="text-xs text-red-600">Invalid destination</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
+                        <header class="px-6 py-4 border-b border-[#e6dad1] flex items-center justify-between">
+                            <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]"
+                                th:text="#{admin.product_sources.manage.transfers.new.items.title}">Inventory line items</h3>
+                            <button id="open-product-modal"
+                                    type="button"
+                                    class="inline-flex items-center gap-1 text-[#8b4513] font-semibold text-sm">
+                                <span class="material-symbols-outlined text-base">add</span>
+                                <span th:text="#{admin.product_sources.manage.transfers.new.items.action.add}">Add product</span>
+                            </button>
+                        </header>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
+                                    <tr>
+                                        <th class="px-6 py-3" th:text="#{admin.product_sources.manage.transfers.new.items.col.product}">Product / SKU</th>
+                                        <th class="px-6 py-3" th:text="#{admin.product_sources.manage.transfers.new.items.col.qty}">Quantity</th>
+                                        <th class="px-6 py-3" th:text="#{admin.product_sources.manage.transfers.new.items.col.status}">Status</th>
+                                        <th class="px-6 py-3 text-right" th:text="#{admin.product_sources.manage.transfers.new.items.col.action}">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transfer-items-body" class="divide-y divide-[#f3ece8]">
+                                    <tr th:if="${#lists.isEmpty(form.items)}" class="empty-row">
+                                        <td colspan="4" class="px-6 py-6 text-center text-[#956d50]">
+                                            No products selected yet.
+                                        </td>
+                                    </tr>
+                                    <tr class="transfer-item-row"
+                                        th:each="item,iter : *{items}"
+                                        th:attr="data-product-id=${item.productId}">
+                                        <td class="px-6 py-4">
+                                            <p class="font-bold text-[#1b130e]" data-role="product-name" th:text="${item.productName}">Product</p>
+                                            <p class="text-xs text-[#8a9cb7]" data-role="sku">SKU unavailable</p>
+                                            <input type="hidden" data-field="productId" th:name="|items[${iter.index}].productId|" th:value="${item.productId}" />
+                                            <input type="hidden" data-field="productName" th:name="|items[${iter.index}].productName|" th:value="${item.productName}" />
+                                            <input type="hidden" data-field="status" th:name="|items[${iter.index}].status|" th:value="${item.status}" />
+                                            <input type="text"
+                                                   data-field="description"
+                                                   th:name="|items[${iter.index}].description|"
+                                                   th:value="${item.description}"
+                                                   placeholder="Internal note"
+                                                   required
+                                                   class="mt-2 w-full rounded-lg border border-[#dbe4ef] px-3 py-2 text-xs text-[#1b130e]" />
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <input type="number"
+                                                   min="1"
+                                                   data-field="amount"
+                                                   th:name="|items[${iter.index}].amount|"
+                                                   th:value="${item.amount}"
+                                                   required
+                                                   class="w-24 rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e]" />
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-700 border border-emerald-200"
+                                                  data-role="status-badge"
+                                                  th:text="${item.status}">
+                                                ACTIVE
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <button type="button" class="remove-item-button text-[#8a9cb7] hover:text-red-600" title="Remove item">
+                                                <span class="material-symbols-outlined">delete</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p th:if="${#fields.hasErrors('items')}" class="px-6 py-3 text-xs text-red-600" th:errors="*{items}">
+                            Invalid items
+                        </p>
+                    </article>
+                </div>
+
+                <aside class="space-y-4">
+                    <article class="rounded-xl bg-[#254a9a] text-white p-6">
+                        <h3 class="text-xs font-bold uppercase tracking-[0.2em]"
+                            th:text="#{admin.product_sources.manage.transfers.new.summary.title}">Transfer summary</h3>
+                        <div class="mt-4 space-y-3 text-sm">
+                            <div class="flex justify-between border-b border-white/20 pb-2">
+                                <span>Estimated Transit Time</span>
+                                <input th:field="*{transitTime}"
+                                       type="number"
+                                       min="0"
+                                       placeholder="hours"
+                                       class="w-24 rounded border border-white/30 bg-white/10 px-2 py-1 text-right text-white placeholder-white/70" />
+                            </div>
+                            <div class="flex justify-between border-b border-white/20 pb-2">
+                                <span>Total Items</span>
+                                <strong id="summary-items">0</strong>
+                            </div>
+                            <div class="flex justify-between border-b border-white/20 pb-2">
+                                <span>Total Quantity</span>
+                                <strong id="summary-qty">0</strong>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Weight Class</span>
+                                <input th:field="*{weightClass}"
+                                       type="text"
+                                       placeholder="Optional"
+                                       class="w-32 rounded border border-white/30 bg-white/10 px-2 py-1 text-right text-white placeholder-white/70" />
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="rounded-xl border border-[#d7e0eb] bg-[#f8fbff] p-5 space-y-3">
+                        <label class="block text-[#1b130e] text-sm font-semibold">Notes</label>
+                        <textarea th:field="*{notes}"
+                                  rows="4"
+                                  class="w-full rounded-lg border border-[#c7d5e6] bg-white px-3 py-2 text-sm text-[#1b130e]"
+                                  placeholder="Optional notes for the destination team"></textarea>
+                    </article>
+                </aside>
+            </form>
+        </section>
+
+        <div id="product-modal" class="fixed inset-0 z-50 hidden">
+            <div id="product-modal-overlay" class="absolute inset-0 bg-black/40"></div>
+            <div class="relative mx-auto mt-20 w-[92%] max-w-2xl rounded-xl border border-[#e6dad1] bg-white shadow-2xl">
+                <header class="flex items-center justify-between border-b border-[#e6dad1] px-5 py-4">
+                    <h4 class="text-base font-bold text-[#1b130e]">Add Products To Transfer</h4>
+                    <button id="close-product-modal" type="button" class="text-[#956d50] hover:text-[#1b130e]">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </header>
+                <div class="max-h-[60vh] overflow-y-auto p-4">
+                    <p th:if="${#lists.isEmpty(sourceProducts)}" class="text-sm text-[#956d50]">
+                        This source has no active products to add.
+                    </p>
+                    <div class="space-y-2">
+                        <div th:each="sourceProduct : ${sourceProducts}"
+                             class="flex items-center justify-between rounded-lg border border-[#f1e8e2] px-4 py-3">
+                            <div>
+                                <p class="font-semibold text-[#1b130e]" th:text="${sourceProduct.product.name}">Product</p>
+                                <p class="text-xs text-[#8a9cb7]" th:text="${sourceProduct.product.sku + ' · Stock: ' + sourceProduct.stockQuantity}">SKU · Stock</p>
+                            </div>
+                            <button type="button"
+                                    class="add-product-button rounded-lg border border-[#8b4513]/20 px-3 py-1.5 text-xs font-semibold text-[#8b4513] hover:bg-[#8b4513]/10"
+                                    th:attr="data-product-id=${sourceProduct.product.id},
+                                             data-product-name=${sourceProduct.product.name},
+                                             data-product-sku=${sourceProduct.product.sku},
+                                             data-product-stock=${sourceProduct.stockQuantity},
+                                             data-product-status=${sourceProduct.status.name()}">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function () {
+                const modal = document.getElementById("product-modal");
+                const openModalButton = document.getElementById("open-product-modal");
+                const closeModalButton = document.getElementById("close-product-modal");
+                const modalOverlay = document.getElementById("product-modal-overlay");
+                const itemsBody = document.getElementById("transfer-items-body");
+                const summaryItems = document.getElementById("summary-items");
+                const summaryQty = document.getElementById("summary-qty");
+
+                function selectedProductIds() {
+                    return new Set(Array.from(itemsBody.querySelectorAll(".transfer-item-row"))
+                        .map((row) => row.dataset.productId));
+                }
+
+                function syncAddButtons() {
+                    const selected = selectedProductIds();
+                    document.querySelectorAll(".add-product-button").forEach((button) => {
+                        const productId = button.dataset.productId;
+                        const alreadySelected = selected.has(productId);
+                        button.disabled = alreadySelected;
+                        button.classList.toggle("opacity-40", alreadySelected);
+                        button.classList.toggle("cursor-not-allowed", alreadySelected);
+                    });
+                }
+
+                function removeEmptyRow() {
+                    const emptyRow = itemsBody.querySelector(".empty-row");
+                    if (emptyRow) {
+                        emptyRow.remove();
+                    }
+                }
+
+                function ensureEmptyRow() {
+                    if (itemsBody.querySelector(".transfer-item-row")) {
+                        return;
+                    }
+                    if (itemsBody.querySelector(".empty-row")) {
+                        return;
+                    }
+                    const row = document.createElement("tr");
+                    row.className = "empty-row";
+                    row.innerHTML = '<td colspan="4" class="px-6 py-6 text-center text-[#956d50]">No products selected yet.</td>';
+                    itemsBody.appendChild(row);
+                }
+
+                function reindexRows() {
+                    itemsBody.querySelectorAll(".transfer-item-row").forEach((row, index) => {
+                        row.querySelectorAll("[data-field]").forEach((field) => {
+                            field.name = "items[" + index + "]." + field.dataset.field;
+                        });
+                    });
+                }
+
+                function recalcSummary() {
+                    const rows = itemsBody.querySelectorAll(".transfer-item-row");
+                    summaryItems.textContent = String(rows.length);
+                    const qty = Array.from(rows).reduce((total, row) => {
+                        const input = row.querySelector('[data-field="amount"]');
+                        const value = input ? Number.parseInt(input.value || "0", 10) : 0;
+                        return total + (Number.isNaN(value) ? 0 : value);
+                    }, 0);
+                    summaryQty.textContent = String(qty);
+                }
+
+                function buildRow(product) {
+                    const safeName = escapeHtml(product.name);
+                    const safeSku = escapeHtml(product.sku);
+                    const safeStatus = escapeHtml(product.status);
+                    const row = document.createElement("tr");
+                    row.className = "transfer-item-row";
+                    row.dataset.productId = product.id;
+                    row.innerHTML = [
+                        '<td class="px-6 py-4">',
+                        '  <p class="font-bold text-[#1b130e]" data-role="product-name">' + safeName + "</p>",
+                        '  <p class="text-xs text-[#8a9cb7]" data-role="sku">' + safeSku + "</p>",
+                        '  <input type="hidden" data-field="productId" value="' + product.id + '" />',
+                        '  <input type="hidden" data-field="productName" value="' + safeName + '" />',
+                        '  <input type="hidden" data-field="status" value="' + safeStatus + '" />',
+                        '  <input type="text" data-field="description" value="Transfer item" required placeholder="Internal note" class="mt-2 w-full rounded-lg border border-[#dbe4ef] px-3 py-2 text-xs text-[#1b130e]" />',
+                        "</td>",
+                        '<td class="px-6 py-4">',
+                        '  <input type="number" data-field="amount" min="1" max="' + product.stock + '" value="1" required class="w-24 rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e]" />',
+                        "</td>",
+                        '<td class="px-6 py-4">',
+                        '  <span class="inline-flex px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-700 border border-emerald-200" data-role="status-badge">' + safeStatus + "</span>",
+                        "</td>",
+                        '<td class="px-6 py-4 text-right">',
+                        '  <button type="button" class="remove-item-button text-[#8a9cb7] hover:text-red-600" title="Remove item">',
+                        '      <span class="material-symbols-outlined">delete</span>',
+                        "  </button>",
+                        "</td>"
+                    ].join("");
+                    return row;
+                }
+
+                function escapeHtml(value) {
+                    return String(value)
+                        .replaceAll("&", "&amp;")
+                        .replaceAll("<", "&lt;")
+                        .replaceAll(">", "&gt;")
+                        .replaceAll('"', "&quot;")
+                        .replaceAll("'", "&#39;");
+                }
+
+                function openModal() {
+                    modal.classList.remove("hidden");
+                    syncAddButtons();
+                }
+
+                function closeModal() {
+                    modal.classList.add("hidden");
+                }
+
+                openModalButton.addEventListener("click", openModal);
+                closeModalButton.addEventListener("click", closeModal);
+                modalOverlay.addEventListener("click", closeModal);
+
+                document.querySelectorAll(".add-product-button").forEach((button) => {
+                    button.addEventListener("click", function () {
+                        if (button.disabled) {
+                            return;
+                        }
+                        const product = {
+                            id: button.dataset.productId,
+                            name: button.dataset.productName,
+                            sku: button.dataset.productSku,
+                            stock: button.dataset.productStock,
+                            status: button.dataset.productStatus
+                        };
+                        removeEmptyRow();
+                        itemsBody.appendChild(buildRow(product));
+                        reindexRows();
+                        recalcSummary();
+                        syncAddButtons();
+                    });
+                });
+
+                itemsBody.addEventListener("click", function (event) {
+                    const target = event.target.closest(".remove-item-button");
+                    if (!target) {
+                        return;
+                    }
+                    const row = target.closest(".transfer-item-row");
+                    if (!row) {
+                        return;
+                    }
+                    row.remove();
+                    reindexRows();
+                    ensureEmptyRow();
+                    recalcSummary();
+                    syncAddButtons();
+                });
+
+                itemsBody.addEventListener("input", function (event) {
+                    if (event.target && event.target.dataset.field === "amount") {
+                        recalcSummary();
+                    }
+                });
+
+                reindexRows();
+                recalcSummary();
+                syncAddButtons();
+            })();
+        </script>
+    </th:block>
+</th:block>
+</html>

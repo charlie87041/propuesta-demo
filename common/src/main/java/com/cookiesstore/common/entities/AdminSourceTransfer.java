@@ -45,15 +45,6 @@ public class AdminSourceTransfer {
     @Column(name = "reference_code", length = 80)
     private String referenceCode;
 
-    @Column(name = "requested_at")
-    private Instant requestedAt;
-
-    @Column(name = "shipped_at")
-    private Instant shippedAt;
-
-    @Column(name = "received_at")
-    private Instant receivedAt;
-
     @Column(columnDefinition = "TEXT")
     private String notes;
 
@@ -62,12 +53,6 @@ public class AdminSourceTransfer {
 
     @Column(name = "total_quantity", nullable = false)
     private Integer totalQuantity = 0;
-
-    @Column(name = "created_by_admin_user_id")
-    private Long createdByAdminUserId;
-
-    @Column(name = "updated_by_admin_user_id")
-    private Long updatedByAdminUserId;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -123,30 +108,6 @@ public class AdminSourceTransfer {
         this.referenceCode = referenceCode;
     }
 
-    public Instant getRequestedAt() {
-        return requestedAt;
-    }
-
-    public void setRequestedAt(Instant requestedAt) {
-        this.requestedAt = requestedAt;
-    }
-
-    public Instant getShippedAt() {
-        return shippedAt;
-    }
-
-    public void setShippedAt(Instant shippedAt) {
-        this.shippedAt = shippedAt;
-    }
-
-    public Instant getReceivedAt() {
-        return receivedAt;
-    }
-
-    public void setReceivedAt(Instant receivedAt) {
-        this.receivedAt = receivedAt;
-    }
-
     public String getNotes() {
         return notes;
     }
@@ -169,22 +130,6 @@ public class AdminSourceTransfer {
 
     public void setTotalQuantity(Integer totalQuantity) {
         this.totalQuantity = totalQuantity;
-    }
-
-    public Long getCreatedByAdminUserId() {
-        return createdByAdminUserId;
-    }
-
-    public void setCreatedByAdminUserId(Long createdByAdminUserId) {
-        this.createdByAdminUserId = createdByAdminUserId;
-    }
-
-    public Long getUpdatedByAdminUserId() {
-        return updatedByAdminUserId;
-    }
-
-    public void setUpdatedByAdminUserId(Long updatedByAdminUserId) {
-        this.updatedByAdminUserId = updatedByAdminUserId;
     }
 
     public Instant getCreatedAt() {

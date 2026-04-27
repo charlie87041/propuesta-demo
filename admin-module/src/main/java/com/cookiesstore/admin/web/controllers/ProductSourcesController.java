@@ -105,6 +105,12 @@ public class ProductSourcesController {
         if ("movements".equals(normalizedSection)) {
             return "redirect:/admin/product-sources/" + id + "/manage/movements";
         }
+        if ("transfers".equals(normalizedSection)) {
+            return "redirect:/admin/product-sources/" + id + "/manage/transfers";
+        }
+        if ("incidents".equals(normalizedSection)) {
+            return "redirect:/admin/product-sources/" + id + "/manage/incidents";
+        }
         model.addAttribute("source", source);
         model.addAttribute("manageSection", normalizedSection);
         return "backoffice/product-sources/manage";
@@ -142,7 +148,7 @@ public class ProductSourcesController {
             return "inventory";
         }
         return switch (section.trim().toLowerCase()) {
-            case "inventory", "movements", "purchase-orders", "transfers", "alerts" -> section.trim().toLowerCase();
+            case "inventory", "movements", "purchase-orders", "transfers", "incidents", "alerts" -> section.trim().toLowerCase();
             default -> "inventory";
         };
     }

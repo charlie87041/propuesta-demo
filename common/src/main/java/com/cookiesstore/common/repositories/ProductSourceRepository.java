@@ -10,12 +10,24 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import jakarta.persistence.LockModeType;
 
 @Repository
 public interface ProductSourceRepository extends JpaRepository<ProductSource, Long>, JpaSpecificationExecutor<ProductSource>  {
 
     Optional<ProductSource> findByProductIdAndSourceId(Long productId, Long sourceId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+        select ps
+        from ProductSource ps
+        where ps.product.id = :productId and ps.source.id = :sourceId
+    """)
+    Optional<ProductSource> findForUpdateByProductIdAndSourceId(@Param("productId") Long productId, @Param("sourceId") Long sourceId);
 
     List<ProductSource> findByProductId(Long productId);
 

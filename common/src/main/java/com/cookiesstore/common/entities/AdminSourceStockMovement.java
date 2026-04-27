@@ -42,6 +42,10 @@ public class AdminSourceStockMovement {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transfer_id")
+    private AdminSourceTransfer transfer;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "movement_type", nullable = false, length = 40)
     private AdminSourceStockMovementType movementType;
@@ -171,5 +175,13 @@ public class AdminSourceStockMovement {
     public void setOrder(Order order)
     {
         this.order = order;
+    }
+
+    public AdminSourceTransfer getTransfer() {
+        return transfer;
+    }
+
+    public void setTransfer(AdminSourceTransfer transfer) {
+        this.transfer = transfer;
     }
 }

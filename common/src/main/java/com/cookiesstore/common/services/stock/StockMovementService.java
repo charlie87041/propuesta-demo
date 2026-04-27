@@ -6,7 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cookiesstore.common.entities.AdminSourceStockMovement;
 import com.cookiesstore.common.entities.AdminSourceStockMovementType;
+import com.cookiesstore.common.entities.AdminSourceTransfer;
 import com.cookiesstore.common.entities.ProductSource;
+import com.cookiesstore.common.entities.ProductSourceStatus;
 import com.cookiesstore.common.repositories.AdminSourceStockMovementRepository;
 import com.cookiesstore.common.repositories.OrderRepository;
 import com.cookiesstore.common.repositories.ProductRepository;
@@ -76,7 +78,7 @@ public class StockMovementService
         return adminSourceStockMovementRepository.saveAndFlush(movement);
     }
 
-
+    
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public AdminSourceStockMovement registerInitialStock(
@@ -137,6 +139,217 @@ public class StockMovementService
         movement.setReferenceCode(referenceCode);
         movement.setCreatedByAdminUserId(actorUserId);
         return movement;
+    }
+
+    @Transactional
+    public AdminSourceStockMovement registerTransferIn(
+        AdminSourceTransfer transfer,
+        Long productId,
+        Long destinationSourceId,
+        Integer quantity,
+        Long actorUserId,
+        String note
+    ) {
+        if (quantity == null || quantity <= 0) {
+            return null;
+        }
+        if (adminSourceStockMovementRepository.existsByTransferIdAndProductIdAndSourceIdAndMovementType(
+            transfer.getId(),
+            productId,
+            destinationSourceId,
+            AdminSourceStockMovementType.TRANSFER_IN
+        )) {
+            return null;
+        }
+
+        ProductSource destinationProductSource = productSourceRepository
+            .findForUpdateByProductIdAndSourceId(productId, destinationSourceId)
+            .orElseGet(() -> createDestinationProductSource(productId, destinationSourceId));
+
+        int balanceBefore = destinationProductSource.getStockQuantity();
+        int balanceAfter = balanceBefore + quantity;
+        destinationProductSource.setStockQuantity(balanceAfter);
+        productSourceRepository.save(destinationProductSource);
+
+        AdminSourceStockMovement movement = new AdminSourceStockMovement();
+        movement.setSource(destinationProductSource.getSource());
+        movement.setProduct(destinationProductSource.getProduct());
+        movement.setTransfer(transfer);
+        movement.setMovementType(AdminSourceStockMovementType.TRANSFER_IN);
+        movement.setReferenceType(AdminSourceStockMovementType.TRANSFER_IN.name());
+        movement.setReferenceCode(transfer.getReferenceCode());
+        movement.setQuantityDelta(quantity);
+        movement.setBalanceAfter(balanceAfter);
+        movement.setCreatedByAdminUserId(actorUserId);
+        movement.setNote(note);
+        movement.setMetadata("{\"transferId\":" + transfer.getId() + "}");
+
+        return adminSourceStockMovementRepository.saveAndFlush(movement);
+    }
+
+    @Transactional
+    public AdminSourceStockMovement registerTransferOut(
+        AdminSourceTransfer transfer,
+        Long productId,
+        Long originSourceId,
+        Integer quantity,
+        Long actorUserId,
+        String note
+    ) {
+        if (quantity == null || quantity <= 0) {
+            return null;
+        }
+        if (adminSourceStockMovementRepository.existsByTransferIdAndProductIdAndSourceIdAndMovementType(
+            transfer.getId(),
+            productId,
+            originSourceId,
+            AdminSourceStockMovementType.TRANSFER_OUT
+        )) {
+            return null;
+        }
+
+        ProductSource originProductSource = productSourceRepository
+            .findForUpdateByProductIdAndSourceId(productId, originSourceId)
+            .orElseThrow(() -> new StockMovementProductSourceNotFoundException(productId, originSourceId));
+
+        int balanceBefore = originProductSource.getStockQuantity();
+        if (balanceBefore < quantity) {
+            throw new StockMovementInsufficientStockException(productId, originSourceId, quantity, balanceBefore);
+        }
+        int balanceAfter = balanceBefore - quantity;
+        originProductSource.setStockQuantity(balanceAfter);
+        productSourceRepository.save(originProductSource);
+
+        AdminSourceStockMovement movement = new AdminSourceStockMovement();
+        movement.setSource(originProductSource.getSource());
+        movement.setProduct(originProductSource.getProduct());
+        movement.setTransfer(transfer);
+        movement.setMovementType(AdminSourceStockMovementType.TRANSFER_OUT);
+        movement.setReferenceType(AdminSourceStockMovementType.TRANSFER_OUT.name());
+        movement.setReferenceCode(transfer.getReferenceCode());
+        movement.setQuantityDelta(-quantity);
+        movement.setBalanceAfter(balanceAfter);
+        movement.setCreatedByAdminUserId(actorUserId);
+        movement.setNote(note);
+        movement.setMetadata("{\"transferId\":" + transfer.getId() + "}");
+
+        return adminSourceStockMovementRepository.saveAndFlush(movement);
+    }
+
+    @Transactional
+    public AdminSourceStockMovement registerTransferOutReversal(
+        AdminSourceTransfer transfer,
+        Long productId,
+        Long originSourceId,
+        Integer quantity,
+        Long actorUserId,
+        String note
+    ) {
+        if (quantity == null || quantity <= 0) {
+            return null;
+        }
+        boolean hadTransferOut = adminSourceStockMovementRepository.existsByTransferIdAndProductIdAndSourceIdAndMovementType(
+            transfer.getId(),
+            productId,
+            originSourceId,
+            AdminSourceStockMovementType.TRANSFER_OUT
+        );
+        if (!hadTransferOut) {
+            return null;
+        }
+        boolean alreadyReverted = adminSourceStockMovementRepository.existsByTransferIdAndProductIdAndSourceIdAndMovementType(
+            transfer.getId(),
+            productId,
+            originSourceId,
+            AdminSourceStockMovementType.TRANSFER_IN
+        );
+        if (alreadyReverted) {
+            return null;
+        }
+
+        ProductSource originProductSource = productSourceRepository
+            .findForUpdateByProductIdAndSourceId(productId, originSourceId)
+            .orElseGet(() -> createDestinationProductSource(productId, originSourceId));
+
+        int balanceBefore = originProductSource.getStockQuantity();
+        int balanceAfter = balanceBefore + quantity;
+        originProductSource.setStockQuantity(balanceAfter);
+        productSourceRepository.save(originProductSource);
+
+        AdminSourceStockMovement movement = new AdminSourceStockMovement();
+        movement.setSource(originProductSource.getSource());
+        movement.setProduct(originProductSource.getProduct());
+        movement.setTransfer(transfer);
+        movement.setMovementType(AdminSourceStockMovementType.TRANSFER_IN);
+        movement.setReferenceType("TRANSFER_CANCEL_REVERT");
+        movement.setReferenceCode(transfer.getReferenceCode());
+        movement.setQuantityDelta(quantity);
+        movement.setBalanceAfter(balanceAfter);
+        movement.setCreatedByAdminUserId(actorUserId);
+        movement.setNote(note);
+        movement.setMetadata("{\"transferId\":" + transfer.getId() + ",\"reversal\":true}");
+
+        return adminSourceStockMovementRepository.saveAndFlush(movement);
+    }
+
+    private ProductSource createDestinationProductSource(Long productId, Long destinationSourceId) {
+        ProductSource productSource = new ProductSource();
+        productSource.setProduct(productRepository.getReferenceById(productId));
+        productSource.setSource(sourceRepository.getReferenceById(destinationSourceId));
+        productSource.setStatus(ProductSourceStatus.ACTIVE);
+        productSource.setStockQuantity(0);
+        productSource.setLowStockThreshold(0);
+        return productSourceRepository.saveAndFlush(productSource);
+    }
+
+    @Transactional
+    public AdminSourceStockMovement registerIncidentRevertAdjustment(
+        AdminSourceTransfer transfer,
+        Long sourceId,
+        Long productId,
+        Integer quantityDelta,
+        Long actorUserId,
+        String note
+    ) {
+        if (quantityDelta == null || quantityDelta == 0) {
+            return null;
+        }
+
+        ProductSource productSource = productSourceRepository
+            .findForUpdateByProductIdAndSourceId(productId, sourceId)
+            .orElseGet(() -> createDestinationProductSource(productId, sourceId));
+
+        int balanceBefore = productSource.getStockQuantity();
+        int balanceAfter = balanceBefore + quantityDelta;
+        if (balanceAfter < 0) {
+            throw new StockMovementInsufficientStockException(productId, sourceId, -quantityDelta, balanceBefore);
+        }
+        productSource.setStockQuantity(balanceAfter);
+        productSourceRepository.save(productSource);
+
+        AdminSourceStockMovement movement = new AdminSourceStockMovement();
+        movement.setTransfer(transfer);
+        movement.setSource(productSource.getSource());
+        movement.setProduct(productSource.getProduct());
+        movement.setMovementType(AdminSourceStockMovementType.ADJUSTMENT);
+        movement.setReferenceType("TRANSFER_INCIDENT_REVERT");
+        movement.setReferenceCode(transfer.getReferenceCode());
+        movement.setQuantityDelta(quantityDelta);
+        movement.setBalanceAfter(balanceAfter);
+        movement.setCreatedByAdminUserId(actorUserId);
+        movement.setNote(note);
+        movement.setMetadata("{\"transferId\":" + transfer.getId() + ",\"incidentRevert\":true}");
+
+        return adminSourceStockMovementRepository.saveAndFlush(movement);
+    }
+
+    public boolean hasTransferOutMovement(Long transferId, Long productId, Long sourceId) {
+        return adminSourceStockMovementRepository.existsByTransferIdAndProductIdAndSourceIdAndMovementType(
+            transferId,
+            productId,
+            sourceId,
+            AdminSourceStockMovementType.TRANSFER_OUT
+        );
     }
     
 }

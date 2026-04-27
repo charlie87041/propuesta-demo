@@ -1,6 +1,7 @@
 package com.cookiesstore.common.repositories;
 
 import com.cookiesstore.common.entities.AdminSourceStockMovement;
+import com.cookiesstore.common.entities.AdminSourceStockMovementType;
 
 import java.util.List;
 
@@ -14,6 +15,12 @@ import org.springframework.stereotype.Repository;
 public interface AdminSourceStockMovementRepository extends JpaRepository<AdminSourceStockMovement, Long>, JpaSpecificationExecutor<AdminSourceStockMovement>
 {
     public AdminSourceStockMovement findByOrderIdAndProductIdAndSourceId(Long orderId, Long productId, Long sourceId);
+    boolean existsByTransferIdAndProductIdAndSourceIdAndMovementType(
+        Long transferId,
+        Long productId,
+        Long sourceId,
+        AdminSourceStockMovementType movementType
+    );
 
     public List<AdminSourceStockMovement> findAllBySourceId(Long sourceId, Pageable page, Specification<AdminSourceStockMovement> specification );
     public List<AdminSourceStockMovement> findAllBySourceId(Long sourceId, Pageable page);

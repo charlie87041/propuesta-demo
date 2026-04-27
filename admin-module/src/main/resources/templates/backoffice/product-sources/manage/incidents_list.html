@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(${pageTitle}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <a th:href="@{/admin/product-sources}" class="px-3 py-2 border border-[#e6dad1] rounded-lg text-sm font-semibold text-[#8b4513] hover:bg-[#8b4513]/10" th:text="#{admin.product_sources.manage.back}">
+            Back
+        </a>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+
+            <nav class="text-sm text-[#956d50]">
+                <a th:href="@{/admin/product-sources}" class="hover:text-[#8b4513]" th:text="#{admin.product_sources.title}">Source management</a>
+                <span class="mx-2">/</span>
+                <span th:text="#{admin.product_sources.manage.title}">Source product management</span>
+            </nav>
+
+            <div class="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+                <aside class="bg-white rounded-xl border border-[#e6dad1] shadow-sm p-4 h-fit">
+                    <p class="text-xs uppercase tracking-wider text-[#956d50] px-2" th:text="#{admin.product_sources.manage.currentSource}">Current source</p>
+                    <p class="font-bold text-[#8b4513] px-2 mt-1" th:text="${source.name}">Warehouse North</p>
+                    <p class="text-xs text-[#956d50] px-2 mb-4" th:text="${source.code}">WAREHOUSE_NORTH</p>
+
+                    <nav class="space-y-1">
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='inventory')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.inventory}">Inventory</a>
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/movements'}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.movements}">Movements</a>
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='purchase-orders')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.purchaseOrders}">Purchase orders</a>
+                        <div>
+                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'}" class="block px-3 py-2 rounded-lg text-sm font-semibold bg-[#8b4513]/10 text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.transfers}">Transfers</a>
+                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/incidents'}" class="block mt-1 ml-3 px-3 py-1.5 rounded-lg text-sm font-semibold bg-[#8b4513]/10 text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.incidents}">Incidents</a>
+                        </div>
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='alerts')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.alerts}">Alerts</a>
+                    </nav>
+                </aside>
+
+                <div class="space-y-6">
+                    <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
+                        <header class="px-6 py-4 border-b border-[#e6dad1] flex items-center justify-between">
+                            <h4 class="font-bold" th:text="#{admin.product_sources.manage.incidents.title}">Transfer incidents</h4>
+                            <span class="text-sm text-[#956d50]" th:text="${incidentPage.totalElements}">0</span>
+                        </header>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
+                                    <tr>
+                                        <th class="px-4 py-3" th:text="#{admin.product_sources.manage.incidents.col.transfer}">Transfer</th>
+                                        <th class="px-4 py-3" th:text="#{admin.product_sources.manage.incidents.col.product}">Product</th>
+                                        <th class="px-4 py-3 text-right" th:text="#{admin.product_sources.manage.incidents.col.expected}">Expected</th>
+                                        <th class="px-4 py-3 text-right" th:text="#{admin.product_sources.manage.incidents.col.missing}">Missing</th>
+                                        <th class="px-4 py-3 text-right" th:text="#{admin.product_sources.manage.incidents.col.received}">Received</th>
+                                        <th class="px-4 py-3" th:text="#{admin.product_sources.manage.incidents.col.type}">Type</th>
+                                        <th class="px-4 py-3" th:text="#{admin.product_sources.manage.incidents.col.created}">Created</th>
+                                        <th class="px-4 py-3" th:text="#{admin.product_sources.manage.incidents.col.status}">Status</th>
+                                        <th class="px-4 py-3 text-right" th:text="#{admin.product_sources.manage.incidents.col.actions}">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-[#f3ece8]">
+                                    <tr th:if="${incidentPage.totalElements == 0}">
+                                        <td colspan="9" class="px-4 py-8 text-center text-[#956d50]" th:text="#{admin.product_sources.empty}">No rows found.</td>
+                                    </tr>
+                                    <tr th:each="item : ${incidentPage.content}">
+                                        <td class="px-4 py-3 align-top">
+                                            <p class="font-semibold text-[#1b130e]" th:text="${item.incident.transfer.referenceCode} ?: '-'">TRF-001</p>
+                                            <p class="text-xs text-[#956d50]" th:text="${item.incident.transfer.sourceFrom.code + ' -> ' + item.incident.transfer.sourceTo.code}">SRC -> DST</p>
+                                            <p class="text-xs text-[#956d50] mt-1 line-clamp-2" th:text="${item.incident.description}">Description</p>
+                                        </td>
+                                        <td class="px-4 py-3 align-top">
+                                            <p class="font-semibold text-[#1b130e]" th:text="${item.product != null ? item.product.name : item.productName}">Product</p>
+                                            <p class="text-xs text-[#956d50]" th:text="${item.product != null ? item.product.sku : '-'}">SKU</p>
+                                        </td>
+                                        <td class="px-4 py-3 text-right font-semibold" th:text="${item.expectedQuantity}">0</td>
+                                        <td class="px-4 py-3 text-right font-semibold text-amber-700" th:text="${item.missingQuantity}">0</td>
+                                        <td class="px-4 py-3 text-right font-semibold text-emerald-700" th:text="${item.receivedQuantity}">0</td>
+                                        <td class="px-4 py-3">
+                                            <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold border"
+                                                  th:classappend="${item.incident.incidentType != null && item.incident.incidentType.name() == 'CANCEL'} ? ' bg-red-50 text-red-700 border-red-200' : ' bg-blue-50 text-blue-700 border-blue-200'"
+                                                  th:text="${item.incident.incidentType}">COMPLETE</span>
+                                        </td>
+                                        <td class="px-4 py-3 text-[#956d50]" th:text="${#temporals.format(item.incident.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-26 14:00</td>
+                                        <td class="px-4 py-3">
+                                            <span th:if="${item.archived}"
+                                                  class="inline-flex px-2 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200"
+                                                  th:text="#{admin.product_sources.manage.incidents.status.closed}">Closed</span>
+                                            <span th:if="${!item.archived and item.revertedAt != null}"
+                                                  class="inline-flex px-2 py-1 rounded-full text-xs font-semibold border bg-amber-50 text-amber-700 border-amber-200"
+                                                  th:text="#{admin.product_sources.manage.incidents.status.reverted}">Reverted</span>
+                                            <span th:if="${!item.archived and item.revertedAt == null}"
+                                                  class="inline-flex px-2 py-1 rounded-full text-xs font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200"
+                                                  th:text="#{admin.product_sources.manage.incidents.status.open}">Open</span>
+                                        </td>
+                                        <td class="px-4 py-3 text-right">
+                                            <div class="inline-flex items-center gap-2" th:if="${!item.archived}">
+                                                <form method="post"
+                                                      th:if="${item.missingQuantity != null and item.missingQuantity > 0 and item.revertedAt == null}"
+                                                      th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers/incidents/' + ${item.id} + '/revert'}">
+                                                    <input type="hidden" name="view" value="incidents" />
+                                                    <button type="submit" class="px-3 py-1.5 rounded border border-amber-200 bg-amber-50 text-amber-700 text-xs font-semibold hover:bg-amber-100"
+                                                            th:text="#{admin.product_sources.manage.incidents.action.revert}">Revert</button>
+                                                </form>
+                                                <form method="post"
+                                                      th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers/incidents/' + ${item.id} + '/close'}">
+                                                    <input type="hidden" name="view" value="incidents" />
+                                                    <button type="submit" class="px-3 py-1.5 rounded border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100"
+                                                            th:text="#{admin.product_sources.manage.incidents.action.close}">Close</button>
+                                                </form>
+                                            </div>
+                                            <span th:if="${item.archived}" class="text-xs text-[#956d50]">-</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div th:if="${incidentPage.totalElements > 0}"
+                             class="px-4 py-3 border-t border-[#e6dad1] flex items-center justify-between text-sm">
+                            <p class="text-[#956d50]"
+                               th:text="#{admin.pagination.summary(${incidentPage.number * incidentPage.size + 1}, ${incidentPage.number * incidentPage.size + incidentPage.numberOfElements}, ${incidentPage.totalElements})}">
+                                Showing 1 to 10 of 42 items
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <a class="px-3 py-1.5 rounded border border-[#e6dad1] text-[#956d50] hover:bg-[#8b4513]/10"
+                                   th:classappend="${incidentPage.hasPrevious()} ? '' : ' opacity-50 pointer-events-none'"
+                                   th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/incidents'(page=${incidentPage.number - 1}, size=${incidentPage.size})}">
+                                    Prev
+                                </a>
+                                <a class="px-3 py-1.5 rounded border border-[#e6dad1] text-[#956d50] hover:bg-[#8b4513]/10"
+                                   th:classappend="${incidentPage.hasNext()} ? '' : ' opacity-50 pointer-events-none'"
+                                   th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/incidents'(page=${incidentPage.number + 1}, size=${incidentPage.size})}">
+                                    Next
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</th:block>
+</html>

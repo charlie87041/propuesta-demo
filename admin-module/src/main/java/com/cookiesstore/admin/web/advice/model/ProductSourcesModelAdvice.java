@@ -61,6 +61,8 @@ public class ProductSourcesModelAdvice extends BaseAdviceSupport {
             model.addAttribute("pageTitle", message("admin.product_sources.manage.title"));
             model.addAttribute("activeNav", "product-sources");
             model.addAttribute("sourceId", sourceId);
+            return;
         }
+
     }
 }

@@ -15,6 +15,7 @@
         "vscjava.vscode-java-dependency",
         "vscjava.vscode-java-pack",
         "GitHub.vscode-pull-request-github",
+        "redhat.java",
         "openai.chatgpt"
       ]
     }
