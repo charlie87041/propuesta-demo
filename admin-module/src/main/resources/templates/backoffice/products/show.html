@@ -110,9 +110,35 @@
                                 <p class="text-xs text-[#956d50]" th:text="#{admin.products.form.lowStockThreshold}">Low stock threshold</p>
                                 <p class="text-sm font-semibold text-[#1b130e]" th:text="${selectedSourceData.lowStockThreshold}">0</p>
                             </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-3 py-2">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.products.show.lastPurchaseCost}">Last purchase cost</p>
+                                <p class="text-sm font-semibold text-[#1b130e]"
+                                   th:text="${selectedSourceData.lastPurchaseCostAmount != null ? selectedSourceData.lastPurchaseCostAmount + (selectedSourceDisplayCurrency != null ? ' ' + selectedSourceDisplayCurrency : '') : '-'}">
+                                    -
+                                </p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-3 py-2">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.products.show.averagePurchaseCost}">Average purchase cost</p>
+                                <p class="text-sm font-semibold text-[#1b130e]"
+                                   th:text="${selectedSourceData.averagePurchaseCostAmount != null ? selectedSourceData.averagePurchaseCostAmount + (selectedSourceDisplayCurrency != null ? ' ' + selectedSourceDisplayCurrency : '') : '-'}">
+                                    -
+                                </p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-3 py-2">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.products.show.lastPurchaseAt}">Last purchase receipt</p>
+                                <p class="text-sm font-semibold text-[#1b130e]"
+                                   th:text="${selectedSourceData.lastPurchaseAt != null ? #temporals.format(selectedSourceData.lastPurchaseAt, 'yyyy-MM-dd HH:mm') : '-'}">
+                                    -
+                                </p>
+                            </div>
                             <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-3 py-2 md:col-span-4">
                                 <p class="text-xs text-[#956d50]" th:text="#{admin.products.show.sourceStatus}">Source status</p>
                                 <p class="text-sm font-semibold text-[#1b130e]" th:text="${selectedSourceData.status}">ACTIVE</p>
+                            </div>
+                            <div class="rounded-lg border border-dashed border-[#e6dad1] bg-[#fffaf6] px-3 py-2 md:col-span-4">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.products.show.purchaseCostHelp}">
+                                    Calculated from received purchase orders for this source.
+                                </p>
                             </div>
                         </div>
                     </div>

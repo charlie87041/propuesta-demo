@@ -98,10 +98,14 @@ public class ProductSourcesController {
     public String manageProductSource(
         @PathVariable("id") Long id,
         @RequestParam(value = "section", defaultValue = "inventory") String section,
+        @RequestParam(value = "poStatus", required = false) String poStatus,
         Model model
     ) {
         var source = sourceService.getSource(id);
         String normalizedSection = normalizeSection(section);
+        if ("inventory".equals(normalizedSection)) {
+            return "redirect:/admin/product-sources/" + id + "/manage/inventory";
+        }
         if ("movements".equals(normalizedSection)) {
             return "redirect:/admin/product-sources/" + id + "/manage/movements";
         }
@@ -110,6 +114,10 @@ public class ProductSourcesController {
         }
         if ("incidents".equals(normalizedSection)) {
             return "redirect:/admin/product-sources/" + id + "/manage/incidents";
+        }
+        if ("purchase-orders".equals(normalizedSection)) {
+            String poStatusParam = (poStatus == null || poStatus.isBlank()) ? "ALL" : poStatus.trim().toUpperCase();
+            return "redirect:/admin/product-sources/" + id + "/manage/purchase-orders?poStatus=" + poStatusParam;
         }
         model.addAttribute("source", source);
         model.addAttribute("manageSection", normalizedSection);
@@ -152,4 +160,5 @@ public class ProductSourcesController {
             default -> "inventory";
         };
     }
+
 }

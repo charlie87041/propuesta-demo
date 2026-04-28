@@ -9,6 +9,10 @@
 
     <th:block th:fragment="content">
         <section class="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+            <div th:if="${warningMessage}" class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" th:text="${warningMessage}"></div>
+            <div th:if="${successMessage}" class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" th:text="${successMessage}"></div>
+
             <nav class="text-sm text-[#956d50]">
                 <a th:href="@{/admin/product-sources}" class="hover:text-[#8b4513]" th:text="#{admin.product_sources.title}">Source management</a>
                 <span class="mx-2">/</span>
@@ -22,7 +26,7 @@
                     <p class="text-xs text-[#956d50] px-2 mb-4" th:text="${source.code}">WAREHOUSE_NORTH</p>
 
                     <nav class="space-y-1">
-                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='inventory')}"
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/inventory'}"
                            class="block px-3 py-2 rounded-lg text-sm font-semibold"
                            th:classappend="${manageSection == 'inventory'} ? ' bg-[#8b4513]/10 text-[#8b4513]' : ' text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
                            th:text="#{admin.product_sources.manage.nav.inventory}">Inventory</a>
@@ -91,13 +95,190 @@
                     </div>
 
                     <div th:if="${manageSection == 'purchase-orders'}" class="space-y-6">
-                        <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
-                            <header class="px-6 py-4 border-b border-[#e6dad1]">
-                                <h4 class="font-bold" th:text="#{admin.product_sources.manage.purchaseOrders.title}">Purchase orders</h4>
-                            </header>
-                            <div class="p-6 text-sm text-[#956d50]" th:text="#{admin.product_sources.manage.purchaseOrders.body}">
-                                Static purchase order list scoped to current source.
+                        <article class="bg-white rounded-xl border border-[#e6dad1] p-6 space-y-6">
+                            <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                                <div class="space-y-2">
+                                    <p class="text-sm text-[#956d50]">
+                                        <span th:text="${source.name}">Warehouse North</span>
+                                        <span class="mx-2">/</span>
+                                        <span th:text="#{admin.product_sources.manage.purchaseOrders.title}">Purchase orders</span>
+                                    </p>
+                                    <h4 class="text-2xl font-bold text-[#1b130e]" th:text="#{admin.product_sources.manage.purchaseOrders.title}">Purchase orders</h4>
+                                    <p class="text-sm text-[#956d50]" th:text="#{admin.product_sources.manage.purchaseOrders.body}">
+                                        Static purchase order list scoped to current source.
+                                    </p>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-3">
+                                    <button type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[#e6dad1] text-sm font-semibold text-[#8b4513] bg-white hover:bg-[#8b4513]/10">
+                                        <span class="material-symbols-outlined text-base">download</span>
+                                        <span th:text="#{admin.product_sources.manage.purchaseOrders.action.export}">Export data</span>
+                                    </button>
+                                    <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/purchase-orders/new'}"
+                                       class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#8b4513] hover:bg-[#6f370f]">
+                                        <span class="material-symbols-outlined text-base">add</span>
+                                        <span th:text="#{admin.product_sources.manage.purchaseOrders.action.new}">New purchase order</span>
+                                    </a>
+                                </div>
                             </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <article class="rounded-xl border border-[#e6dad1] bg-[#fcfaf9] p-4 flex items-center gap-4">
+                                    <div class="h-12 w-12 rounded-xl bg-[#8b4513]/10 text-[#8b4513] flex items-center justify-center">
+                                        <span class="material-symbols-outlined">shopping_bag</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs uppercase tracking-wider text-[#956d50]" th:text="#{admin.product_sources.manage.purchaseOrders.kpi.activeOrders}">Active orders</p>
+                                        <p class="text-3xl font-extrabold text-[#1b130e]"
+                                           th:text="${purchaseOrderStatusCounts['ALL'] - purchaseOrderStatusCounts['RECEIVED'] - purchaseOrderStatusCounts['CANCELED']}">0</p>
+                                    </div>
+                                </article>
+                                <article class="rounded-xl border border-[#e6dad1] bg-[#fcfaf9] p-4 flex items-center gap-4">
+                                    <div class="h-12 w-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                                        <span class="material-symbols-outlined">event_upcoming</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs uppercase tracking-wider text-[#956d50]" th:text="#{admin.product_sources.manage.purchaseOrders.kpi.pendingReceipts}">Pending receipts</p>
+                                        <p class="text-3xl font-extrabold text-[#1b130e]"
+                                           th:text="${purchaseOrderStatusCounts['SUBMITTED'] + purchaseOrderStatusCounts['PARTIALLY_RECEIVED']}">0</p>
+                                    </div>
+                                </article>
+                                <article class="rounded-xl border border-[#e6dad1] bg-[#fcfaf9] p-4 flex items-center gap-4">
+                                    <div class="h-12 w-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                                        <span class="material-symbols-outlined">payments</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs uppercase tracking-wider text-[#956d50]" th:text="#{admin.product_sources.manage.purchaseOrders.kpi.orders}">Orders</p>
+                                        <p class="text-3xl font-extrabold text-[#1b130e]" th:text="${purchaseOrderStatusCounts['ALL']}">0</p>
+                                    </div>
+                                </article>
+                            </div>
+                        </article>
+
+                        <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
+                            <header class="px-4 md:px-6 py-4 border-b border-[#e6dad1]">
+                                <div class="flex gap-2 overflow-x-auto">
+                                    <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='purchase-orders')}"
+                                       class="px-3 py-2 text-sm font-semibold rounded-lg whitespace-nowrap border"
+                                       th:classappend="${purchaseOrderStatusFilter == 'ALL'} ? ' bg-[#8b4513]/10 text-[#8b4513] border-[#8b4513]/20' : ' text-[#956d50] border-transparent hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+                                       th:text="${#messages.msg('admin.product_sources.manage.purchaseOrders.filters.all', purchaseOrderStatusCounts['ALL'])}">All orders</a>
+                                    <a th:each="status : ${purchaseOrderStatuses}"
+                                       th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='purchase-orders',poStatus=${status.name()})}"
+                                       class="px-3 py-2 text-sm font-semibold rounded-lg whitespace-nowrap border"
+                                       th:classappend="${purchaseOrderStatusFilter == status.name()} ? ' bg-[#8b4513]/10 text-[#8b4513] border-[#8b4513]/20' : ' text-[#956d50] border-transparent hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+                                       th:text="${#messages.msg('admin.product_sources.manage.purchaseOrders.filters.status', #messages.msg('admin.product_sources.manage.purchaseOrders.status.' + #strings.toLowerCase(status.name())), purchaseOrderStatusCounts[status.name()])}">
+                                        Status
+                                    </a>
+                                </div>
+                            </header>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-sm min-w-[980px]">
+                                    <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
+                                        <tr>
+                                            <th class="px-4 md:px-6 py-3" th:text="#{admin.product_sources.manage.purchaseOrders.table.poNumber}">PO number</th>
+                                            <th class="px-4 md:px-6 py-3" th:text="#{admin.product_sources.manage.purchaseOrders.table.supplier}">Supplier</th>
+                                            <th class="px-4 md:px-6 py-3" th:text="#{admin.product_sources.manage.purchaseOrders.table.issueDate}">Issue date</th>
+                                            <th class="px-4 md:px-6 py-3" th:text="#{admin.product_sources.manage.purchaseOrders.table.expectedDelivery}">Expected delivery</th>
+                                            <th class="px-4 md:px-6 py-3 text-right" th:text="#{admin.product_sources.manage.purchaseOrders.table.totalAmount}">Total amount</th>
+                                            <th class="px-4 md:px-6 py-3" th:text="#{admin.product_sources.manage.purchaseOrders.table.status}">Status</th>
+                                            <th class="px-4 md:px-6 py-3 text-right" th:text="#{admin.product_sources.manage.purchaseOrders.table.actions}">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-[#f3ece8]">
+                                        <tr th:if="${#lists.isEmpty(purchaseOrders)}">
+                                            <td colspan="7" class="px-4 md:px-6 py-8 text-center text-[#956d50]" th:text="#{admin.product_sources.empty}">
+                                                No rows found.
+                                            </td>
+                                        </tr>
+                                        <tr th:each="purchaseOrder : ${purchaseOrders}"
+                                            th:with="totalMinor=${purchaseOrderTotalsMinorById[purchaseOrder.id] != null ? purchaseOrderTotalsMinorById[purchaseOrder.id] : 0}">
+                                            <td class="px-4 md:px-6 py-4 font-semibold text-[#1b130e]"
+                                                th:text="${purchaseOrder.supplierReference != null and purchaseOrder.supplierReference != '' ? purchaseOrder.supplierReference : 'PO-' + purchaseOrder.id}">
+                                                PO-1
+                                            </td>
+                                            <td class="px-4 md:px-6 py-4 text-[#956d50]" th:text="${purchaseOrder.supplierName}">Supplier</td>
+                                            <td class="px-4 md:px-6 py-4 text-[#956d50]" th:text="${#temporals.format(purchaseOrder.createdAt, 'yyyy-MM-dd')}">2026-04-24</td>
+                                            <td class="px-4 md:px-6 py-4 text-[#956d50]" th:text="${purchaseOrder.expectedAt != null ? #temporals.format(purchaseOrder.expectedAt, 'yyyy-MM-dd') : '--'}">--</td>
+                                            <td class="px-4 md:px-6 py-4 text-right font-semibold"
+                                                th:text="${'$' + #numbers.formatDecimal(totalMinor / 100.0, 1, 2)}">$0.00</td>
+                                            <td class="px-4 md:px-6 py-4">
+                                                <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold border"
+                                                      th:classappend="${purchaseOrder.status.name() == 'RECEIVED'} ? ' bg-emerald-50 text-emerald-700 border-emerald-200'
+                                                            : (${purchaseOrder.status.name() == 'PARTIALLY_RECEIVED'} ? ' bg-amber-50 text-amber-700 border-amber-200'
+                                                            : (${purchaseOrder.status.name() == 'SUBMITTED'} ? ' bg-sky-50 text-sky-700 border-sky-200'
+                                                            : (${purchaseOrder.status.name() == 'CANCELED'} ? ' bg-rose-50 text-rose-700 border-rose-200'
+                                                            : ' bg-slate-100 text-slate-700 border-slate-200')))"
+                                                      th:text="${#messages.msg('admin.product_sources.manage.purchaseOrders.status.' + #strings.toLowerCase(purchaseOrder.status.name()))}">
+                                                    DRAFT
+                                                </span>
+                                            </td>
+                                            <td class="px-4 md:px-6 py-4 text-right">
+                                                <a th:if="${purchaseOrder.status.name() == 'DRAFT'}"
+                                                   th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/purchase-orders/' + ${purchaseOrder.id} + '/edit'}"
+                                                   class="text-[#8b4513] hover:text-[#6f370f] font-semibold"
+                                                   th:text="#{admin.product_sources.manage.purchaseOrders.actions.editDraft}">
+                                                    Edit draft
+                                                </a>
+                                                <form th:if="${purchaseOrder.status.name() == 'DRAFT'}"
+                                                      method="post"
+                                                      th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/purchase-orders/' + ${purchaseOrder.id} + '/submit'}"
+                                                      class="inline">
+                                                    <button type="submit"
+                                                            class="ml-3 text-sky-700 hover:text-sky-900 font-semibold"
+                                                            th:text="#{admin.product_sources.manage.purchaseOrders.actions.submit}">
+                                                        Submit
+                                                    </button>
+                                                </form>
+                                                <form th:if="${purchaseOrder.status.name() == 'SUBMITTED'}"
+                                                      method="post"
+                                                      th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/purchase-orders/' + ${purchaseOrder.id} + '/partial-receive'}"
+                                                      class="inline">
+                                                    <button type="submit"
+                                                            class="ml-3 text-amber-700 hover:text-amber-900 font-semibold"
+                                                            th:text="#{admin.product_sources.manage.purchaseOrders.actions.markPartial}">
+                                                        Mark Partial
+                                                    </button>
+                                                </form>
+                                                <form th:if="${purchaseOrder.status.name() == 'SUBMITTED' or purchaseOrder.status.name() == 'PARTIALLY_RECEIVED'}"
+                                                      method="post"
+                                                      th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/purchase-orders/' + ${purchaseOrder.id} + '/receive'}"
+                                                      class="inline">
+                                                    <button type="submit"
+                                                            class="ml-3 text-emerald-700 hover:text-emerald-900 font-semibold"
+                                                            th:text="#{admin.product_sources.manage.purchaseOrders.actions.receive}">
+                                                        Receive
+                                                    </button>
+                                                </form>
+                                                <a th:if="${purchaseOrder.status.name() == 'PARTIALLY_RECEIVED'}"
+                                                   th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/purchase-orders/' + ${purchaseOrder.id} + '/resolve-adhoc'}"
+                                                   class="ml-3 text-indigo-700 hover:text-indigo-900 font-semibold"
+                                                   th:text="#{admin.product_sources.manage.purchaseOrders.actions.createProducts}">
+                                                    Create Products
+                                                </a>
+                                                <form th:if="${purchaseOrder.status.name() == 'DRAFT' or purchaseOrder.status.name() == 'SUBMITTED'}"
+                                                      method="post"
+                                                      th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/purchase-orders/' + ${purchaseOrder.id} + '/cancel'}"
+                                                      class="inline">
+                                                    <button type="submit"
+                                                            class="ml-3 text-rose-700 hover:text-rose-900 font-semibold"
+                                                            th:text="#{admin.product_sources.manage.purchaseOrders.actions.cancel}">
+                                                        Cancel
+                                                    </button>
+                                                </form>
+                                                <span th:if="${purchaseOrder.status.name() != 'DRAFT' and purchaseOrder.status.name() != 'SUBMITTED' and purchaseOrder.status.name() != 'PARTIALLY_RECEIVED'}"
+                                                      class="text-[#956d50]">-</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <footer class="px-4 md:px-6 py-4 border-t border-[#e6dad1] flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <p class="text-sm text-[#956d50]"
+                                   th:text="${#messages.msg('admin.product_sources.manage.purchaseOrders.footer.showing', #lists.size(purchaseOrders), purchaseOrderStatusCounts[purchaseOrderStatusFilter])}">
+                                    Showing 0 orders
+                                </p>
+                            </footer>
                         </article>
                     </div>
 

@@ -2,6 +2,8 @@ package com.cookiesstore.common.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,6 +34,10 @@ public class AdminSourcePurchaseOrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "item_type", nullable = false, length = 30)
+    private AdminSourcePurchaseOrderItemType itemType = AdminSourcePurchaseOrderItemType.CATALOG_PRODUCT;
 
     @Column(length = 80)
     private String sku;
@@ -76,6 +82,14 @@ public class AdminSourcePurchaseOrderItem {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public AdminSourcePurchaseOrderItemType getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(AdminSourcePurchaseOrderItemType itemType) {
+        this.itemType = itemType;
     }
 
     public String getSku() {

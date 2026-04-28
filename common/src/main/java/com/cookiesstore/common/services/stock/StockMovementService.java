@@ -1,5 +1,9 @@
 package com.cookiesstore.common.services.stock;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Instant;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -292,6 +296,47 @@ public class StockMovementService
         return adminSourceStockMovementRepository.saveAndFlush(movement);
     }
 
+    @Transactional
+    public AdminSourceStockMovement registerPurchaseReceipt(
+        Long purchaseOrderId,
+        Long sourceId,
+        Long productId,
+        Integer quantity,
+        Long unitCostMinor,
+        Instant receivedAt,
+        Long actorUserId,
+        String note,
+        String referenceCode
+    ) {
+        if (quantity == null || quantity <= 0) {
+            return null;
+        }
+
+        ProductSource productSource = productSourceRepository
+            .findForUpdateByProductIdAndSourceId(productId, sourceId)
+            .orElseGet(() -> createDestinationProductSource(productId, sourceId));
+
+        int balanceBefore = productSource.getStockQuantity();
+        int balanceAfter = balanceBefore + quantity;
+        productSource.setStockQuantity(balanceAfter);
+        updatePurchaseCostSnapshots(productSource, balanceBefore, quantity, unitCostMinor, receivedAt);
+        productSourceRepository.save(productSource);
+
+        AdminSourceStockMovement movement = new AdminSourceStockMovement();
+        movement.setSource(productSource.getSource());
+        movement.setProduct(productSource.getProduct());
+        movement.setMovementType(AdminSourceStockMovementType.PURCHASE_RECEIPT);
+        movement.setReferenceType(AdminSourceStockMovementType.PURCHASE_RECEIPT.name());
+        movement.setReferenceCode(referenceCode);
+        movement.setQuantityDelta(quantity);
+        movement.setBalanceAfter(balanceAfter);
+        movement.setCreatedByAdminUserId(actorUserId);
+        movement.setNote(note);
+        movement.setMetadata("{\"purchaseOrderId\":" + purchaseOrderId + "}");
+
+        return adminSourceStockMovementRepository.saveAndFlush(movement);
+    }
+
     private ProductSource createDestinationProductSource(Long productId, Long destinationSourceId) {
         ProductSource productSource = new ProductSource();
         productSource.setProduct(productRepository.getReferenceById(productId));
@@ -300,6 +345,54 @@ public class StockMovementService
         productSource.setStockQuantity(0);
         productSource.setLowStockThreshold(0);
         return productSourceRepository.saveAndFlush(productSource);
+    }
+
+    private void updatePurchaseCostSnapshots(
+        ProductSource productSource,
+        int balanceBefore,
+        int receivedQuantity,
+        Long unitCostMinor,
+        Instant receivedAt
+    ) {
+        if (receivedQuantity <= 0 || unitCostMinor == null || unitCostMinor < 0) {
+            return;
+        }
+
+        productSource.setLastPurchaseCostMinor(unitCostMinor);
+        productSource.setLastPurchaseAt(receivedAt != null ? receivedAt : Instant.now());
+        productSource.setAveragePurchaseCostMinor(
+            calculateWeightedAverageMinor(
+                balanceBefore,
+                productSource.getAveragePurchaseCostMinor(),
+                receivedQuantity,
+                unitCostMinor
+            )
+        );
+    }
+
+    private long calculateWeightedAverageMinor(
+        int balanceBefore,
+        Long currentAverageMinor,
+        int receivedQuantity,
+        long receivedUnitCostMinor
+    ) {
+        if (receivedQuantity <= 0) {
+            return currentAverageMinor == null ? 0L : currentAverageMinor;
+        }
+        if (balanceBefore <= 0 || currentAverageMinor == null) {
+            return receivedUnitCostMinor;
+        }
+
+        BigDecimal previousValue = BigDecimal.valueOf(currentAverageMinor)
+            .multiply(BigDecimal.valueOf(balanceBefore));
+        BigDecimal receivedValue = BigDecimal.valueOf(receivedUnitCostMinor)
+            .multiply(BigDecimal.valueOf(receivedQuantity));
+        BigDecimal totalQuantity = BigDecimal.valueOf((long) balanceBefore + receivedQuantity);
+
+        return previousValue
+            .add(receivedValue)
+            .divide(totalQuantity, 0, RoundingMode.HALF_UP)
+            .longValue();
     }
 
     @Transactional

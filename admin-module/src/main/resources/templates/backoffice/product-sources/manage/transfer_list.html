@@ -24,7 +24,7 @@
                     <p class="text-xs text-[#956d50] px-2 mb-4" th:text="${source.code}">WAREHOUSE_NORTH</p>
 
                     <nav class="space-y-1">
-                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='inventory')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.inventory}">Inventory</a>
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/inventory'}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.inventory}">Inventory</a>
                         <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/movements'}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.movements}">Movements</a>
                         <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='purchase-orders')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.purchaseOrders}">Purchase orders</a>
                         <div>
@@ -53,7 +53,7 @@
                                      th:classappend="${direction == 'inbound'} ? ' ring-1 ring-[#8b4513]/30' : ''">
                                 <header class="px-4 py-3 border-b border-[#e6dad1] flex items-center justify-between">
                                     <h5 class="font-bold text-[#1b130e]" th:text="#{admin.product_sources.manage.transfers.inbound}">Inbound transfers</h5>
-                                    <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'(direction='inbound')}"
+                                    <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'(direction='inbound',status=${transferStatusFilter})}"
                                        class="text-xs font-semibold px-2 py-1 rounded-full bg-[#fcfaf9] border border-[#e6dad1] text-[#8b4513] hover:bg-[#8b4513]/10"
                                        th:text="#{admin.product_sources.manage.transfers.see(${inboundCount})}">See 0</a>
                                 </header>
@@ -67,7 +67,8 @@
                                                 <p class="text-xs uppercase tracking-wider text-[#956d50]">ORIGIN -> <span class="font-bold text-[#8b4513]" th:text="${inboundPreview.sourceFrom.code}">ORIGIN</span></p>
                                                 <p class="font-bold text-[#1b130e]" th:text="${inboundPreview.sourceFrom.name}">Warehouse North</p>
                                             </div>
-                                            <span class="text-xs font-semibold px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200" th:text="${inboundPreview.status}">IN_TRANSIT</span>
+                                            <span class="text-xs font-semibold px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200"
+                                                  th:text="${#messages.msg('admin.product_sources.manage.transfers.status.' + #strings.toLowerCase(inboundPreview.status.name()))}">IN_TRANSIT</span>
                                         </div>
                                         <div class="grid grid-cols-3 gap-3 mt-4 text-sm">
                                             <div class="rounded-lg bg-white border border-[#f3ece8] px-3 py-2">
@@ -91,7 +92,7 @@
                                      th:classappend="${direction == 'outbound'} ? ' ring-1 ring-[#8b4513]/30' : ''">
                                 <header class="px-4 py-3 border-b border-[#e6dad1] flex items-center justify-between">
                                     <h5 class="font-bold text-[#1b130e]" th:text="#{admin.product_sources.manage.transfers.outbound}">Outbound transfers</h5>
-                                    <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'(direction='outbound')}"
+                                    <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'(direction='outbound',status=${transferStatusFilter})}"
                                        class="text-xs font-semibold px-2 py-1 rounded-full bg-[#fcfaf9] border border-[#e6dad1] text-[#8b4513] hover:bg-[#8b4513]/10"
                                        th:text="#{admin.product_sources.manage.transfers.see(${outboundCount})}">See 0</a>
                                 </header>
@@ -105,7 +106,8 @@
                                                 <p class="text-xs uppercase tracking-wider text-[#956d50]"><span class="font-bold text-[#8b4513]" th:text="${outboundPreview.sourceFrom.code}">SOURCE</span> -> DESTINATION</p>
                                                 <p class="font-bold text-[#1b130e]" th:text="${outboundPreview.sourceTo.name}">Warehouse South</p>
                                             </div>
-                                            <span class="text-xs font-semibold px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200" th:text="${outboundPreview.status}">IN_TRANSIT</span>
+                                            <span class="text-xs font-semibold px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200"
+                                                  th:text="${#messages.msg('admin.product_sources.manage.transfers.status.' + #strings.toLowerCase(outboundPreview.status.name()))}">IN_TRANSIT</span>
                                         </div>
                                         <div class="mt-4 h-2 rounded-full bg-[#f3ece8] overflow-hidden">
                                             <div class="h-full w-3/5 bg-amber-500"></div>
@@ -134,6 +136,23 @@
                                 <h5 class="font-bold text-[#1b130e]" th:text="#{admin.product_sources.manage.transfers.list.title}">Transfer list</h5>
                                 <span class="text-xs font-semibold px-2 py-1 rounded-full bg-[#fcfaf9] border border-[#e6dad1]" th:text="${transferPage.totalElements}">0</span>
                             </header>
+                            <div class="px-4 py-3 border-b border-[#e6dad1]">
+                                <div class="flex gap-2 overflow-x-auto">
+                                    <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'(direction=${direction},status='ALL')}"
+                                       class="px-3 py-2 text-sm font-semibold rounded-lg whitespace-nowrap border"
+                                       th:classappend="${transferStatusFilter == 'ALL'} ? ' bg-[#8b4513]/10 text-[#8b4513] border-[#8b4513]/20' : ' text-[#956d50] border-transparent hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+                                       th:text="${#messages.msg('admin.product_sources.manage.transfers.filters.all', transferStatusCounts['ALL'])}">
+                                        All transfers
+                                    </a>
+                                    <a th:each="status : ${transferStatuses}"
+                                       th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'(direction=${direction},status=${status.name()})}"
+                                       class="px-3 py-2 text-sm font-semibold rounded-lg whitespace-nowrap border"
+                                       th:classappend="${transferStatusFilter == status.name()} ? ' bg-[#8b4513]/10 text-[#8b4513] border-[#8b4513]/20' : ' text-[#956d50] border-transparent hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+                                       th:text="${#messages.msg('admin.product_sources.manage.transfers.filters.status', #messages.msg('admin.product_sources.manage.transfers.status.' + #strings.toLowerCase(status.name())), transferStatusCounts[status.name()])}">
+                                        Status
+                                    </a>
+                                </div>
+                            </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left text-sm">
                                     <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
@@ -164,7 +183,7 @@
                                             <td class="px-4 py-3 text-right font-semibold" th:text="${transfer.totalQuantity}">0</td>
                                             <td class="px-4 py-3">
                                                 <span class="inline-flex px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 text-xs font-semibold"
-                                                      th:text="${transfer.status}">IN_TRANSIT</span>
+                                                      th:text="${#messages.msg('admin.product_sources.manage.transfers.status.' + #strings.toLowerCase(transfer.status.name()))}">IN_TRANSIT</span>
                                             </td>
                                             <td class="px-4 py-3 text-[#956d50]" th:text="${#temporals.format(transfer.updatedAt, 'yyyy-MM-dd HH:mm')}">2026-04-22 11:20</td>
                                             <td class="px-4 py-3 text-right"
@@ -181,6 +200,7 @@
                                                               th:if="${canDraftOps}"
                                                               th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers/' + ${transfer.id} + '/mark-in-transit'}">
                                                             <input type="hidden" name="direction" th:value="${direction}" />
+                                                            <input type="hidden" name="status" th:value="${transferStatusFilter}" />
                                                             <button type="submit"
                                                                     class="w-full text-left px-3 py-2 rounded border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100"
                                                                     th:text="#{admin.product_sources.manage.transfers.action.markInTransit}">
@@ -191,6 +211,7 @@
                                                               th:if="${canDraftOps}"
                                                               th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers/' + ${transfer.id} + '/delete'}">
                                                             <input type="hidden" name="direction" th:value="${direction}" />
+                                                            <input type="hidden" name="status" th:value="${transferStatusFilter}" />
                                                             <button type="submit"
                                                                     class="w-full text-left px-3 py-2 rounded border border-red-200 bg-red-50 text-red-700 text-xs font-semibold hover:bg-red-100"
                                                                     th:text="#{admin.product_sources.manage.transfers.action.delete}">
@@ -201,6 +222,7 @@
                                                               th:if="${canTransitOps}"
                                                               th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers/' + ${transfer.id} + '/cancel'}">
                                                             <input type="hidden" name="direction" th:value="${direction}" />
+                                                            <input type="hidden" name="status" th:value="${transferStatusFilter}" />
                                                             <button type="submit"
                                                                     class="w-full text-left px-3 py-2 rounded border border-amber-200 bg-amber-50 text-amber-700 text-xs font-semibold hover:bg-amber-100"
                                                                     th:text="#{admin.product_sources.manage.transfers.action.cancel}">
@@ -211,6 +233,7 @@
                                                               th:if="${canTransitOps}"
                                                               th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers/' + ${transfer.id} + '/complete'}">
                                                             <input type="hidden" name="direction" th:value="${direction}" />
+                                                            <input type="hidden" name="status" th:value="${transferStatusFilter}" />
                                                             <button type="submit"
                                                                     class="w-full text-left px-3 py-2 rounded border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100"
                                                                     th:text="#{admin.product_sources.manage.transfers.action.complete}">
@@ -224,6 +247,7 @@
                                                                 th:attr="data-transfer-id=${transfer.id},
                                                                          data-action-url=@{'/admin/product-sources/' + ${source.id} + '/manage/transfers/' + ${transfer.id} + '/cancel-with-incident'},
                                                                          data-direction=${direction},
+                                                                         data-status=${transferStatusFilter},
                                                                          data-mode='cancel'">
                                                             Cancelar con incidencia
                                                         </button>
@@ -234,6 +258,7 @@
                                                                 th:attr="data-transfer-id=${transfer.id},
                                                                          data-action-url=@{'/admin/product-sources/' + ${source.id} + '/manage/transfers/' + ${transfer.id} + '/complete-with-incident'},
                                                                          data-direction=${direction},
+                                                                         data-status=${transferStatusFilter},
                                                                          data-mode='complete'">
                                                             Completar con incidencia
                                                         </button>
@@ -263,12 +288,12 @@
                                 <div class="flex items-center gap-2">
                                     <a class="px-3 py-1.5 rounded border border-[#e6dad1] text-[#956d50] hover:bg-[#8b4513]/10"
                                        th:classappend="${transferPage.hasPrevious()} ? '' : ' opacity-50 pointer-events-none'"
-                                       th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'(direction=${direction}, page=${transferPage.number - 1}, size=${transferPage.size})}">
+                                       th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'(direction=${direction},status=${transferStatusFilter}, page=${transferPage.number - 1}, size=${transferPage.size})}">
                                         Prev
                                     </a>
                                     <a class="px-3 py-1.5 rounded border border-[#e6dad1] text-[#956d50] hover:bg-[#8b4513]/10"
                                        th:classappend="${transferPage.hasNext()} ? '' : ' opacity-50 pointer-events-none'"
-                                       th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'(direction=${direction}, page=${transferPage.number + 1}, size=${transferPage.size})}">
+                                       th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'(direction=${direction},status=${transferStatusFilter}, page=${transferPage.number + 1}, size=${transferPage.size})}">
                                         Next
                                     </a>
                                 </div>
@@ -290,6 +315,7 @@
                 </header>
                 <form id="incident-modal-form" method="post" class="p-5 space-y-4">
                     <input type="hidden" id="incident-modal-direction" name="direction" />
+                    <input type="hidden" id="incident-modal-status" name="status" />
                     <div class="space-y-2">
                         <label class="text-sm font-semibold text-[#4d617f]">Descripción</label>
                         <textarea id="incident-modal-description"
@@ -327,6 +353,7 @@
                 const form = document.getElementById("incident-modal-form");
                 const title = document.getElementById("incident-modal-title");
                 const directionInput = document.getElementById("incident-modal-direction");
+                const statusInput = document.getElementById("incident-modal-status");
                 const itemsContainer = document.getElementById("incident-modal-items");
                 const itemsError = document.getElementById("incident-modal-items-error");
                 const descriptionInput = document.getElementById("incident-modal-description");
@@ -400,6 +427,7 @@
                     const transferId = button.dataset.transferId;
                     const actionUrl = button.dataset.actionUrl;
                     const direction = button.dataset.direction || "outbound";
+                    const status = button.dataset.status || "ALL";
                     const mode = button.dataset.mode || "complete";
                     const itemsSource = document.getElementById("incident-items-" + transferId);
 
@@ -417,6 +445,7 @@
 
                     form.action = actionUrl;
                     directionInput.value = direction;
+                    statusInput.value = status;
                     title.textContent = mode === "cancel" ? "Cancelar con incidencia" : "Completar con incidencia";
                     submitBtn.textContent = mode === "cancel" ? "Cancelar con incidencia" : "Completar con incidencia";
                     modal.classList.remove("hidden");

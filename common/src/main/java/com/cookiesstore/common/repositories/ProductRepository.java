@@ -39,6 +39,9 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     Optional<Product> findByIdAndProductTypeCode(Long id, String productTypeCode);
 
+    @EntityGraph(attributePaths = {"currentPrice"})
+    List<Product> findByActiveTrueAndListableTrueOrderByNameAsc();
+
     @EntityGraph(attributePaths = {"components", "components.childProduct", "components.source"})
     @Query("select p from Product p where p.id = :id and p.productTypeCode = :productTypeCode")
     Optional<Product> findBundleByIdAndProductTypeCode(Long id, String productTypeCode);

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(${pageTitle}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <th:block th:replace="~{backoffice/fragments/searching :: searchBox('q', #{admin.product_sources.search.placeholder}, ${searchQuery}, 'sourceInventorySortForm')}"></th:block>
+            <a th:href="@{/admin/product-sources}" class="px-3 py-2 border border-[#e6dad1] rounded-lg text-sm font-semibold text-[#8b4513] hover:bg-[#8b4513]/10" th:text="#{admin.product_sources.manage.back}">
+                Back
+            </a>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" th:text="${successMessage}"></div>
+
+            <nav class="text-sm text-[#956d50]">
+                <a th:href="@{/admin/product-sources}" class="hover:text-[#8b4513]" th:text="#{admin.product_sources.title}">Source management</a>
+                <span class="mx-2">/</span>
+                <span th:text="#{admin.product_sources.manage.title}">Source product management</span>
+            </nav>
+
+            <div class="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+                <aside class="bg-white rounded-xl border border-[#e6dad1] shadow-sm p-4 h-fit">
+                    <p class="text-xs uppercase tracking-wider text-[#956d50] px-2" th:text="#{admin.product_sources.manage.currentSource}">Current source</p>
+                    <p class="font-bold text-[#8b4513] px-2 mt-1" th:text="${source.name}">Warehouse North</p>
+                    <p class="text-xs text-[#956d50] px-2 mb-4" th:text="${source.code}">WAREHOUSE_NORTH</p>
+
+                    <nav class="space-y-1">
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/inventory'}" class="block px-3 py-2 rounded-lg text-sm font-semibold bg-[#8b4513]/10 text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.inventory}">Inventory</a>
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/movements'}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.movements}">Movements</a>
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/purchase-orders'}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.purchaseOrders}">Purchase orders</a>
+                        <div>
+                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.transfers}">Transfers</a>
+                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/incidents'}" class="block mt-1 ml-3 px-3 py-1.5 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.incidents}">Incidents</a>
+                        </div>
+                        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='alerts')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.alerts}">Alerts</a>
+                    </nav>
+                </aside>
+
+                <div class="space-y-6">
+                    <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
+                        <header class="px-6 py-4 border-b border-[#e6dad1] flex items-center justify-between">
+                            <h4 class="font-bold" th:text="#{admin.product_sources.manage.inventory.list.title}">Inventory products by source</h4>
+                            <span class="text-sm text-[#956d50]" th:text="${#messages.msg('admin.product_sources.manage.inventory.list.total', stockPage.totalElements)}">0 rows</span>
+                        </header>
+
+                        <form method="get" th:action="@{'/admin/product-sources/' + ${source.id} + '/manage/inventory'}" id="sourceInventorySortForm">
+                            <input type="hidden" name="page" value="0">
+                            <input type="hidden" name="size" th:value="${stockPage.size}">
+                            <input type="hidden" name="q" th:value="${searchQuery}">
+                        </form>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm min-w-[980px]">
+                                <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
+                                <tr>
+                                    <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.productId}">Product ID</th>
+                                    <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.sku}">SKU</th>
+                                    <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.name}">Name</th>
+                                    <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.category}">Category</th>
+                                    <th class="px-6 py-3 text-right" th:text="#{admin.catalog.stock.col.stock}">Stock</th>
+                                    <th class="px-6 py-3 text-right" th:text="#{admin.catalog.stock.col.threshold}">Low Threshold</th>
+                                    <th class="px-6 py-3" th:text="#{admin.products.show.sourcePrice}">Source price</th>
+                                    <th class="px-6 py-3" th:text="#{admin.catalog.stock.col.status}">Status</th>
+                                    <th class="px-6 py-3 text-right" th:text="#{admin.catalog.stock.col.actions}">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody class="divide-y divide-[#f3ece8]">
+                                <tr th:if="${stockPage.totalElements == 0}">
+                                    <td colspan="9" class="px-6 py-8 text-center text-[#956d50]" th:text="#{admin.catalog.stock.empty}">No rows found.</td>
+                                </tr>
+                                <tr th:each="row : ${stockPage.content}">
+                                    <td class="px-6 py-4 font-semibold" th:text="${row.product.id}">1</td>
+                                    <td class="px-6 py-4 text-[#956d50]" th:text="${row.product.sku}">SKU-001</td>
+                                    <td class="px-6 py-4" th:text="${row.product.name}">Product</td>
+                                    <td class="px-6 py-4 text-[#956d50]" th:text="${row.product.category != null ? row.product.category.name : '-'}">Category</td>
+                                    <td class="px-6 py-4 text-right font-semibold text-[#1b130e]" th:text="${row.stockQuantity}">0</td>
+                                    <td class="px-6 py-4 text-right text-[#956d50]" th:text="${row.lowStockThreshold}">0</td>
+                                    <td class="px-6 py-4 text-[#956d50]"
+                                        th:text="${row.price != null && row.price.amount != null ? row.price.amount + ' ' + row.price.currency : '-'}">-</td>
+                                    <td class="px-6 py-4">
+                                        <span th:text="${row.status == T(com.cookiesstore.common.entities.ProductSourceStatus).ACTIVE ? #messages.msg('admin.product_sources.status.active') : #messages.msg('admin.product_sources.status.inactive')}"
+                                              th:classappend="${row.status == T(com.cookiesstore.common.entities.ProductSourceStatus).ACTIVE ? ' text-green-700 font-semibold' : ' text-slate-600 font-semibold'}">Active</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="inline-flex items-center gap-4">
+                                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/inventory/' + ${row.product.id}}" class="text-[#956d50] font-semibold hover:underline" th:text="#{admin.products.action.show}">Show</a>
+                                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/inventory/' + ${row.product.id} + '/edit'}" class="text-[#8b4513] font-semibold hover:underline" th:text="#{admin.products.action.edit}">Edit</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <th:block th:replace="~{backoffice/fragments/searching :: script}"></th:block>
+                        <th:block th:if="${stockPage.totalElements > 0}"
+                                  th:replace="~{backoffice/fragments/pagination :: pager(${stockPage}, '/admin/product-sources/' + source.id + '/manage/inventory')}"></th:block>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</th:block>
+</html>

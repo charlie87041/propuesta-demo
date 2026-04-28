@@ -30,4 +30,82 @@ public interface AdminSourceTransferIncidentItemRepository extends JpaRepository
         Long sourceToId,
         Pageable pageable
     );
+
+    @Query("""
+        select i
+        from AdminSourceTransferIncidentItem i
+        where (i.incident.transfer.sourceFrom.id = :sourceFromId or i.incident.transfer.sourceTo.id = :sourceToId)
+          and i.archived = true
+    """)
+    Page<AdminSourceTransferIncidentItem> findClosedBySourceIds(
+        @Param("sourceFromId") Long sourceFromId,
+        @Param("sourceToId") Long sourceToId,
+        Pageable pageable
+    );
+
+    @Query("""
+        select i
+        from AdminSourceTransferIncidentItem i
+        where (i.incident.transfer.sourceFrom.id = :sourceFromId or i.incident.transfer.sourceTo.id = :sourceToId)
+          and i.archived = false
+          and i.revertedAt is null
+    """)
+    Page<AdminSourceTransferIncidentItem> findOpenBySourceIds(
+        @Param("sourceFromId") Long sourceFromId,
+        @Param("sourceToId") Long sourceToId,
+        Pageable pageable
+    );
+
+    @Query("""
+        select i
+        from AdminSourceTransferIncidentItem i
+        where (i.incident.transfer.sourceFrom.id = :sourceFromId or i.incident.transfer.sourceTo.id = :sourceToId)
+          and i.archived = false
+          and i.revertedAt is not null
+    """)
+    Page<AdminSourceTransferIncidentItem> findRevertedBySourceIds(
+        @Param("sourceFromId") Long sourceFromId,
+        @Param("sourceToId") Long sourceToId,
+        Pageable pageable
+    );
+
+    long countByIncidentTransferSourceFromIdOrIncidentTransferSourceToId(
+        Long sourceFromId,
+        Long sourceToId
+    );
+
+    @Query("""
+        select count(i)
+        from AdminSourceTransferIncidentItem i
+        where (i.incident.transfer.sourceFrom.id = :sourceFromId or i.incident.transfer.sourceTo.id = :sourceToId)
+          and i.archived = true
+    """)
+    long countClosedBySourceIds(
+        @Param("sourceFromId") Long sourceFromId,
+        @Param("sourceToId") Long sourceToId
+    );
+
+    @Query("""
+        select count(i)
+        from AdminSourceTransferIncidentItem i
+        where (i.incident.transfer.sourceFrom.id = :sourceFromId or i.incident.transfer.sourceTo.id = :sourceToId)
+          and i.archived = false
+          and i.revertedAt is null
+    """)
+    long countOpenBySourceIds(
+        @Param("sourceFromId") Long sourceFromId,
+        @Param("sourceToId") Long sourceToId
+    );
+
+    @Query("""
+        select count(i)
+        from AdminSourceTransferIncidentItem i
+        where (i.incident.transfer.sourceFrom.id = :sourceFromId or i.incident.transfer.sourceTo.id = :sourceToId)
+          and i.archived = false
+          and i.revertedAt is not null
+    """)
+    long countRevertedBySourceIds(
+        @Param("sourceFromId") Long sourceFromId,
+        @Param("sourceToId") Long sourceToId
+    );
 }

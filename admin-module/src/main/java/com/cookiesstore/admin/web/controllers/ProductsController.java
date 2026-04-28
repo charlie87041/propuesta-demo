@@ -162,6 +162,7 @@ public class ProductsController {
             "selectedSourceId",
             selectedSourceData == null ? null : selectedSourceData.getSource().getId()
         );
+        model.addAttribute("selectedSourceDisplayCurrency", resolveDisplayCurrency(product, selectedSourceData));
         return "backoffice/products/show";
     }
 
@@ -213,5 +214,17 @@ public class ProductsController {
 
     private String message(String key, Object... args) {
         return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
+    }
+
+    private String resolveDisplayCurrency(Product product, ProductSource selectedSourceData) {
+        if (selectedSourceData != null
+            && selectedSourceData.getPrice() != null
+            && StringUtils.hasText(selectedSourceData.getPrice().getCurrency())) {
+            return selectedSourceData.getPrice().getCurrency();
+        }
+        if (product.getCurrentPrice() != null && StringUtils.hasText(product.getCurrentPrice().getCurrency())) {
+            return product.getCurrentPrice().getCurrency();
+        }
+        return null;
     }
 }

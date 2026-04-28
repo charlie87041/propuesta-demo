@@ -1,0 +1,1143 @@
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Aider v0.86.2
+Model: null with whole edit format
+Git repo: .git with 454 files
+Repo-map: using 8192 tokens, auto refresh
+Warning: map-tokens > 2048 is not recommended. Too much irrelevant code can confuse LLMs.
+Here are summaries of some files present in my git repository.
+Do not propose changes to these files, treat them as *read-only*.
+If you need to edit any of these files, ask me to *add them to the chat* first.
+
+admin-module/src/main/java/com/cookiesstore/admin/config/CategorySearchProperties.java:
+⋮
+│@Component
+│@ConfigurationProperties(prefix = "admin.search.categories")
+│public class CategorySearchProperties {
+│
+⋮
+│    public void setSearchableFields(List<String> searchableFields) {
+│        this.searchableFields = searchableFields;
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/config/CustomerSearchProperties.java:
+⋮
+│@Component
+│@ConfigurationProperties(prefix = "admin.search.customers")
+│public class CustomerSearchProperties {
+│
+⋮
+│    public void setSearchableFields(List<String> searchableFields) {
+│        this.searchableFields = searchableFields;
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/config/PricingProperties.java:
+⋮
+│@Component
+│@ConfigurationProperties(prefix = "admin.pricing")
+│public class PricingProperties {
+│
+⋮
+│    public String getDefaultCurrency() {
+│        return defaultCurrency;
+⋮
+│    public void setDefaultCurrency(String defaultCurrency) {
+│        this.defaultCurrency = defaultCurrency;
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/config/ProductSearchProperties.java:
+⋮
+│@Component
+│@ConfigurationProperties(prefix = "admin.search.products")
+│public class ProductSearchProperties {
+│
+⋮
+│    public void setSearchableFields(List<String> searchableFields) {
+│        this.searchableFields = searchableFields;
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/config/ProductSourceSearchProperties.java:
+⋮
+│@Component
+│@ConfigurationProperties(prefix = "admin.search.product-sources")
+│public class ProductSourceSearchProperties {
+│
+⋮
+│    public void setSearchableFields(List<String> searchableFields) {
+│        this.searchableFields = searchableFields;
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/config/ProductTemplateSearchProperties.java:
+⋮
+│@Component
+│@ConfigurationProperties(prefix = "admin.search.product-templates")
+│public class ProductTemplateSearchProperties {
+│
+⋮
+│    public void setSearchableFields(List<String> searchableFields) {
+│        this.searchableFields = searchableFields;
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/config/SettingsCurrencySearchProperties.java:
+⋮
+│@Component
+│@ConfigurationProperties(prefix = "admin.search.settings.currencies")
+│public class SettingsCurrencySearchProperties {
+│
+⋮
+│    public void setSearchableFields(List<String> searchableFields) {
+│        this.searchableFields = searchableFields;
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/config/StockMovementProperties.java:
+⋮
+│@Component
+│@ConfigurationProperties(prefix = "admin.search.stock.movements")
+│public class StockMovementProperties {
+│
+⋮
+│    public void setSearchableFields(List<String> searchableFields) {
+│        this.searchableFields = searchableFields;
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/domain/AdminUser.java:
+⋮
+│@Entity
+│@Table(
+│    name = "admin_users",
+│    indexes = {
+│        @Index(name = "idx_admin_users_email", columnList = "email", unique = true)
+│    }
+│)
+│public class AdminUser {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/search/EntitySearchSpecifications.java:
+⋮
+│public final class EntitySearchSpecifications {
+│
+│    private EntitySearchSpecifications() {
+│    }
+│
+│    public static <T> Specification<T> globalSearch(String searchQuery, List<String> fields) {
+│        return (root, query, cb) -> {
+│            if (!StringUtils.hasText(searchQuery) || fields == null || fields.isEmpty()) {
+│                return cb.conjunction();
+│            }
+│
+⋮
+│    private static Predicate buildPredicate(
+│        Path<?> fieldPath,
+│        String rawQuery,
+│        String loweredQuery,
+│        jakarta.persistence.criteria.CriteriaBuilder cb
+⋮
+│    private static Integer parseInteger(String query) {
+│        try {
+│            return Integer.valueOf(query);
+│        } catch (NumberFormatException ignored) {
+│            return null;
+│        }
+⋮
+│    private static Long parseLong(String query) {
+│        try {
+│            return Long.valueOf(query);
+│        } catch (NumberFormatException ignored) {
+│            return null;
+│        }
+⋮
+│    private static Boolean parseBoolean(String query) {
+│        if ("true".equalsIgnoreCase(query)) {
+│            return true;
+│        }
+│        if ("false".equalsIgnoreCase(query)) {
+│            return false;
+│        }
+│        return null;
+⋮
+│    private static LocalDate parseDate(String query) {
+│        try {
+│            return LocalDate.parse(query);
+│        } catch (DateTimeParseException ignored) {
+│            return null;
+│        }
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/service/categories/CategoryDomainException.java:
+⋮
+│public abstract class CategoryDomainException extends RuntimeException {
+│
+│    private final String messageKey;
+│
+│    protected CategoryDomainException(String messageKey) {
+│        super(messageKey);
+│        this.messageKey = messageKey;
+│    }
+│
+│    public String getMessageKey() {
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/service/products/ProductDomainException.java:
+⋮
+│public abstract class ProductDomainException extends RuntimeException {
+│
+│    private final String messageKey;
+│
+│    protected ProductDomainException(String messageKey) {
+│        super(messageKey);
+│        this.messageKey = messageKey;
+│    }
+│
+│    public String getMessageKey() {
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/service/products/ProductTemplateDomainException.ja
+⋮
+│public abstract class ProductTemplateDomainException extends RuntimeException {
+│
+│    private final String messageKey;
+│
+│    protected ProductTemplateDomainException(String messageKey) {
+│        super(messageKey);
+│        this.messageKey = messageKey;
+│    }
+│
+│    public String getMessageKey() {
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/service/settings/currencies/CurrencyDomainExceptio
+⋮
+│public abstract class CurrencyDomainException extends RuntimeException {
+│
+│    private final String messageKey;
+│
+│    protected CurrencyDomainException(String messageKey) {
+│        super(messageKey);
+│        this.messageKey = messageKey;
+│    }
+│
+│    public String getMessageKey() {
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/service/sources/SourceDomainException.java:
+⋮
+│public abstract class SourceDomainException extends RuntimeException {
+│
+│    private final String messageKey;
+│
+│    protected SourceDomainException(String messageKey) {
+│        super(messageKey);
+│        this.messageKey = messageKey;
+│    }
+│
+│    public String getMessageKey() {
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/service/users/AdminUserDomainException.java:
+⋮
+│public abstract class AdminUserDomainException extends IllegalArgumentException {
+│
+│    private final String messageKey;
+│
+│    protected AdminUserDomainException(String messageKey) {
+│        super(messageKey);
+│        this.messageKey = messageKey;
+│    }
+│
+│    public String getMessageKey() {
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/web/advice/exception/ProductsViewExceptionAdvice.j
+⋮
+│@ControllerAdvice(assignableTypes = ProductsController.class)
+│public class ProductsViewExceptionAdvice {
+│
+⋮
+│    private Long parseLong(String raw) {
+│        if (raw == null || raw.isBlank()) {
+│            return null;
+│        }
+│        try {
+│            return Long.parseLong(raw.trim());
+│        } catch (NumberFormatException ex) {
+│            return null;
+│        }
+⋮
+│    private Integer parseInteger(String raw) {
+│        if (raw == null || raw.isBlank()) {
+│            return null;
+│        }
+│        try {
+│            return Integer.parseInt(raw.trim());
+│        } catch (NumberFormatException ex) {
+│            return null;
+│        }
+⋮
+│    private boolean parseBoolean(String raw) {
+│        return "true".equalsIgnoreCase(raw) || "on".equalsIgnoreCase(raw) || "1".equals(raw);
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/web/controllers/AdminBackofficeController.java:
+⋮
+│@Controller
+│public class AdminBackofficeController {
+│
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/web/controllers/CatalogStockController.java:
+⋮
+│@Controller
+│public class CatalogStockController {
+│
+⋮
+│    private Specification<ProductSource> stockSearch(String query) {
+│        return (root, cq, cb) -> {
+│            String normalized = query == null ? "" : query.trim().toLowerCase();
+│            if (normalized.isBlank()) {
+│                return cb.conjunction();
+│            }
+│
+│            Join<Object, Object> product = root.join("product");
+│            Join<Object, Object> source = root.join("source");
+│            String pattern = "%" + normalized + "%";
+│
+⋮
+
+admin-module/src/main/java/com/cookiesstore/admin/web/dto/products/UpdateProductTemplateForm.java:
+⋮
+│public class UpdateProductTemplateForm {
+│
+│    @NotBlank
+│    @Size(max = 80)
+│    private String code;
+│
+│    @NotBlank
+│    @Size(max = 180)
+│    private String name;
+│
+⋮
+│    public String name() {
+│        return name;
+⋮
+
+common/src/main/java/com/cookiesstore/common/auth/AuthCookieNames.java:
+⋮
+│public final class AuthCookieNames {
+│
+│    public static final String ADMIN_AUTH_TOKEN = "ADMIN_AUTH_TOKEN";
+│
+│    private AuthCookieNames() {
+│    }
+⋮
+
+common/src/main/java/com/cookiesstore/common/authorization/domain/Ability.java:
+⋮
+│@Entity
+│@Table(name = "abilities")
+│public class Ability {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+
+common/src/main/java/com/cookiesstore/common/authorization/domain/Domain.java:
+⋮
+│@Entity
+│@Table(name = "domains")
+│public class Domain {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/authorization/domain/Permission.java:
+⋮
+│@Entity
+│@Table(name = "permissions")
+│public class Permission {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+
+common/src/main/java/com/cookiesstore/common/authorization/domain/UserDomainAbility.java:
+⋮
+│@Entity
+│@Table(
+│    name = "user_domain_abilities",
+│    uniqueConstraints = {
+│        @UniqueConstraint(name = "uk_user_domain_ability", columnNames = {"user_id", "domain_id", "
+│    },
+│    indexes = {
+│        @Index(name = "idx_uda_user_id", columnList = "user_id"),
+│        @Index(name = "idx_uda_domain_id", columnList = "domain_id"),
+│        @Index(name = "idx_uda_lookup", columnList = "user_id,domain_id,granted")
+⋮
+│public class UserDomainAbility {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+
+common/src/main/java/com/cookiesstore/common/authorization/domain/UserDomainPermissionOverride.java:
+⋮
+│@Entity
+│@Table(
+│    name = "user_domain_permission_overrides",
+│    uniqueConstraints = {
+│        @UniqueConstraint(name = "uk_user_domain_permission", columnNames = {"user_id", "domain_id"
+│    },
+│    indexes = {
+│        @Index(name = "idx_udpo_lookup", columnList = "user_id,domain_id")
+│    }
+│)
+│public class UserDomainPermissionOverride {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+
+common/src/main/java/com/cookiesstore/common/config/I18nConfig.java:
+⋮
+│@Configuration
+│public class I18nConfig implements WebMvcConfigurer {
+│
+⋮
+│    @Bean
+│    public LocaleChangeInterceptor localeChangeInterceptor() {
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/AdminSourceAlert.java:
+⋮
+│@Entity
+│@Table(
+│    name = "admin_source_alerts",
+│    indexes = {
+│        @Index(name = "idx_admin_source_alerts_source_status", columnList = "source_id,status"),
+│        @Index(name = "idx_admin_source_alerts_product_status", columnList = "product_id,status"),
+│        @Index(name = "idx_admin_source_alerts_triggered_at", columnList = "triggered_at")
+│    }
+│)
+│public class AdminSourceAlert {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public AdminSourceAlertType getAlertType() {
+│        return alertType;
+⋮
+│    public void setAlertType(AdminSourceAlertType alertType) {
+│        this.alertType = alertType;
+⋮
+│    public AdminSourceAlertSeverity getSeverity() {
+│        return severity;
+⋮
+│    public void setSeverity(AdminSourceAlertSeverity severity) {
+│        this.severity = severity;
+⋮
+│    public Integer getThresholdValue() {
+│        return thresholdValue;
+⋮
+│    public void setThresholdValue(Integer thresholdValue) {
+│        this.thresholdValue = thresholdValue;
+⋮
+│    public Integer getCurrentValue() {
+│        return currentValue;
+⋮
+│    public void setCurrentValue(Integer currentValue) {
+│        this.currentValue = currentValue;
+⋮
+│    public String getMessage() {
+│        return message;
+⋮
+│    public void setMessage(String message) {
+│        this.message = message;
+⋮
+│    public Instant getTriggeredAt() {
+│        return triggeredAt;
+⋮
+│    public void setTriggeredAt(Instant triggeredAt) {
+│        this.triggeredAt = triggeredAt;
+⋮
+│    public Instant getResolvedAt() {
+│        return resolvedAt;
+⋮
+│    public void setResolvedAt(Instant resolvedAt) {
+│        this.resolvedAt = resolvedAt;
+⋮
+│    public Long getResolvedByAdminUserId() {
+│        return resolvedByAdminUserId;
+⋮
+│    public void setResolvedByAdminUserId(Long resolvedByAdminUserId) {
+│        this.resolvedByAdminUserId = resolvedByAdminUserId;
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/AdminSourceStockMovement.java:
+⋮
+│@Entity
+│@Table(
+│    name = "admin_source_stock_movements",
+│    indexes = {
+│        @Index(name = "idx_admin_source_stock_movements_source_created_at", columnList = "source_id
+│        @Index(name = "idx_admin_source_stock_movements_product_created_at", columnList = "product_
+│        @Index(name = "idx_admin_source_stock_movements_type", columnList = "movement_type")
+│    }
+│)
+│public class AdminSourceStockMovement {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    public AdminSourceStockMovementType getMovementType() {
+│        return movementType;
+⋮
+│    public Integer getQuantityDelta() {
+│        return quantityDelta;
+⋮
+│    public Integer getBalanceAfter() {
+│        return balanceAfter;
+⋮
+│    public String getReferenceType() {
+│        return referenceType;
+⋮
+│    public String getMetadata() {
+│        return metadata;
+⋮
+│    public Long getCreatedByAdminUserId() {
+│        return createdByAdminUserId;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/AdminSourceTransfer.java:
+⋮
+│@Entity
+│@Table(
+│    name = "admin_source_transfers",
+│    indexes = {
+│        @Index(name = "idx_admin_source_transfers_source_from_status", columnList = "source_id_from
+│        @Index(name = "idx_admin_source_transfers_source_to_status", columnList = "source_id_to,sta
+│    }
+│)
+│public class AdminSourceTransfer {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/AdminSourceTransferIncident.java:
+⋮
+│@Entity
+│@Table(
+│    name = "admin_source_transfer_incidents",
+│    indexes = {
+│        @Index(name = "idx_admin_source_transfer_incidents_transfer_created", columnList = "transfe
+│    }
+│)
+│public class AdminSourceTransferIncident {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    public Long getCreatedByAdminUserId() {
+│        return createdByAdminUserId;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/Category.java:
+⋮
+│@Entity
+│@Table(
+│    name = "categories",
+│    indexes = {
+│        @Index(name = "idx_categories_active_sort", columnList = "active,sort_order"),
+│        @Index(name = "idx_categories_slug", columnList = "slug", unique = true),
+│        @Index(name = "idx_categories_code", columnList = "code", unique = true)
+│    }
+│)
+│public class Category {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/Currency.java:
+⋮
+│@Entity
+│@Table(name = "currencies")
+│public class Currency {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/Customer.java:
+⋮
+│@Entity(name = "customers")
+│public class Customer {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return this.updatedAt;
+⋮
+│    public Set<CustomerAddress> getAddresses() {
+│        return addresses;
+⋮
+│    public Set<Order> getOrders() {
+│        return orders;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/CustomerAddress.java:
+⋮
+│@Entity
+│@Table(
+│    name = "customer_addresses",
+│    indexes = {
+│        @Index(name = "idx_customer_addresses_customer_id", columnList = "customer_id"),
+│        @Index(name = "idx_customer_addresses_customer_type", columnList = "customer_id,address_typ
+│        @Index(name = "idx_customer_addresses_customer_default", columnList = "customer_id,is_defau
+│    }
+│)
+│public class CustomerAddress {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public CustomerAddress getPreviousVersion() {
+│        return previousVersion;
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/OrderStatusHistory.java:
+⋮
+│@Entity
+│@Table(
+│    name = "order_status_history",
+│    indexes = {
+│        @Index(name = "idx_order_status_history_order_id_created_at", columnList = "order_id,create
+│    }
+│)
+│public class OrderStatusHistory {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/PackageOption.java:
+⋮
+│@Entity
+│@Table(
+│    name = "package_options",
+│    indexes = {
+│        @Index(name = "idx_package_options_product_sort", columnList = "package_product_id,sort_ord
+│        @Index(name = "idx_package_options_option_type", columnList = "option_type_id")
+│    }
+│)
+│public class PackageOption {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/PackageOptionItem.java:
+⋮
+│@Entity
+│@Table(
+│    name = "package_option_items",
+│    indexes = {
+│        @Index(name = "idx_package_option_items_option_sort", columnList = "package_option_id,sort_
+│        @Index(name = "idx_package_option_items_product", columnList = "product_id"),
+│        @Index(name = "idx_package_option_items_source", columnList = "source_id")
+│    }
+│)
+│public class PackageOptionItem {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public PackageOption getPackageOption() {
+│        return packageOption;
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/PackageOptionType.java:
+⋮
+│@Entity
+│@Table(name = "package_option_types")
+│public class PackageOptionType {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public boolean isUsesSelectionBounds() {
+│        return usesSelectionBounds;
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+│    public Set<PackageOption> getOptions() {
+│        return options;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/Price.java:
+⋮
+│@Entity
+│@Table(
+│    name = "prices",
+│    indexes = {
+│        @Index(name = "idx_prices_product_lookup", columnList = "product_id,currency,valid_from"),
+│        @Index(name = "idx_prices_source_lookup", columnList = "product_id,source_id,currency,valid
+│    }
+│)
+│public class Price {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    public Instant getValidFrom() {
+│        return validFrom;
+⋮
+│    public Instant getValidTo() {
+│        return validTo;
+⋮
+│    public Long getCreatedBy() {
+│        return createdBy;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/ProductComponent.java:
+⋮
+│@Entity
+│@Table(
+│    name = "product_components",
+│    indexes = {
+│        @Index(name = "idx_product_components_parent_sort", columnList = "parent_product_id,sort_or
+│        @Index(name = "idx_product_components_child", columnList = "child_product_id"),
+│        @Index(name = "idx_product_components_source", columnList = "source_id")
+│    }
+│)
+│public class ProductComponent {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/ProductSource.java:
+⋮
+│@Entity
+│@Table(
+│    name = "product_sources",
+│    indexes = {
+│        @Index(name = "uk_product_source", columnList = "product_id,source_id", unique = true),
+│        @Index(name = "idx_product_sources_source", columnList = "source_id"),
+│        @Index(name = "idx_product_sources_status", columnList = "status")
+│    }
+│)
+│public class ProductSource {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/ProductTemplate.java:
+⋮
+│@Entity
+│@Table(
+│    name = "product_templates",
+│    indexes = {
+│        @Index(name = "idx_product_templates_code", columnList = "code"),
+│        @Index(name = "idx_product_templates_active", columnList = "active")
+│    }
+│)
+│public class ProductTemplate {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/ProductTemplateField.java:
+⋮
+│@Entity
+│@Table(
+│    name = "product_template_fields",
+│    uniqueConstraints = {
+│        @UniqueConstraint(name = "uk_product_template_fields_template_key", columnNames = {"templat
+│    },
+│    indexes = {
+│        @Index(name = "idx_product_template_fields_template_sort", columnList = "template_id,sort_o
+│        @Index(name = "idx_product_template_fields_field_type", columnList = "field_type")
+│    }
+│)
+│public class ProductTemplateField {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/ProductTemplateFieldValue.java:
+⋮
+│@Entity
+│@Table(
+│    name = "product_template_field_values",
+│    uniqueConstraints = {
+│        @UniqueConstraint(
+│            name = "uk_product_template_field_values_product_field",
+│            columnNames = {"product_id", "template_field_id"}
+│        )
+│    },
+│    indexes = {
+⋮
+│public class ProductTemplateFieldValue {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public String getFieldValue() {
+│        return fieldValue;
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/ProductType.java:
+⋮
+│@Entity
+│@Table(name = "product_types")
+│public class ProductType {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public boolean isSupportsComponents() {
+│        return supportsComponents;
+⋮
+│    public boolean isSupportsVariants() {
+│        return supportsVariants;
+⋮
+│    public boolean isSupportsAddons() {
+│        return supportsAddons;
+⋮
+│    public boolean isDefaultIsListable() {
+│        return defaultIsListable;
+⋮
+│    public boolean isDefaultIsSearchable() {
+│        return defaultIsSearchable;
+⋮
+│    public boolean isDefaultIsPurchasableAlone() {
+│        return defaultIsPurchasableAlone;
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/ProductVariant.java:
+⋮
+│@Entity
+│@Table(
+│    name = "product_variants",
+│    uniqueConstraints = {
+│        @UniqueConstraint(name = "uk_product_variants_parent_variant", columnNames = {"parent_produ
+│        @UniqueConstraint(name = "uk_product_variants_variant", columnNames = {"variant_product_id"
+│    },
+│    indexes = {
+│        @Index(name = "idx_product_variants_parent_sort", columnList = "parent_product_id,sort_orde
+│        @Index(name = "idx_product_variants_variant", columnList = "variant_product_id")
+⋮
+│public class ProductVariant {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/entities/Source.java:
+⋮
+│@Entity
+│@Table(
+│    name = "sources",
+│    indexes = {
+│        @Index(name = "idx_sources_code", columnList = "code", unique = true)
+│    }
+│)
+│public class Source {
+│
+⋮
+│    @PrePersist
+│    void onCreate() {
+⋮
+│    @PreUpdate
+│    void onUpdate() {
+⋮
+│    public Instant getUpdatedAt() {
+│        return updatedAt;
+⋮
+
+common/src/main/java/com/cookiesstore/common/repositories/OrderRepository.java:
+⋮
+│@Repository
+│public interface OrderRepository extends JpaRepository<Order, Long> {
+│
+│    Optional<Order> findByIncrementId(String incrementId);
+⋮
+
+common/src/main/java/com/cookiesstore/common/security/SecurityConfig.java:
+⋮
+│@Configuration
+│@EnableMethodSecurity
+│public class SecurityConfig {
+│
+⋮
+│    private boolean isAdminPage(String path) {
+│        if (path == null) {
+│            return false;
+│        }
+│        if (path.startsWith("/admin/login")) {
+│            return false;
+│        }
+│        return path.startsWith("/admin");
+⋮
+
+common/src/main/java/com/cookiesstore/common/services/customers/CustomerDomainException.java:
+⋮
+│public abstract class CustomerDomainException extends IllegalArgumentException {
+│
+│    private final String messageKey;
+│
+│    protected CustomerDomainException(String messageKey) {
+│        super(messageKey);
+│        this.messageKey = messageKey;
+│    }
+│
+│    public String getMessageKey() {
+⋮
+
+common/src/main/java/com/cookiesstore/common/services/orders/OrderDomainException.java:
+⋮
+│public abstract class OrderDomainException extends IllegalArgumentException {
+│
+│    protected OrderDomainException(String message) {
+│        super(message);
+│    }
+⋮
+
+common/src/main/java/com/cookiesstore/common/services/stock/StockMovementDomainException.java:
+⋮
+│public abstract class StockMovementDomainException extends IllegalArgumentException {
+│
+│    protected StockMovementDomainException(String message) {
+│        super(message);
+│    }
+⋮
+
+common/src/main/java/com/cookiesstore/common/storage/MinioProperties.java:
+⋮
+│@ConfigurationProperties(prefix = "storage.minio")
+│public class MinioProperties {
+│
+⋮
+│    public String getEndpoint() {
+│        return endpoint;
+⋮
+│    public void setEndpoint(String endpoint) {
+│        this.endpoint = endpoint;
+⋮
+│    public String getAccessKey() {
+│        return accessKey;
+⋮
+│    public void setAccessKey(String accessKey) {
+│        this.accessKey = accessKey;
+⋮
+│    public String getSecretKey() {
+│        return secretKey;
+⋮
+│    public void setSecretKey(String secretKey) {
+│        this.secretKey = secretKey;
+⋮
+│    public String getCustomerAvatarsBucket() {
+│        return customerAvatarsBucket;
+⋮
+│    public void setCustomerAvatarsBucket(String customerAvatarsBucket) {
+│        this.customerAvatarsBucket = customerAvatarsBucket;
+⋮
+
+common/src/main/java/com/cookiesstore/common/util/MoneyConversion.java:
+⋮
+│public final class MoneyConversion {
+│
+│    private MoneyConversion() {
+│    }
+│
+│    public static long toMinor(BigDecimal amount, int fractionDigits) {
+│        int resolvedFractionDigits = Math.max(fractionDigits, 0);
+│        try {
+│            return amount.movePointRight(resolvedFractionDigits)
+│                .setScale(0, RoundingMode.HALF_UP)
+⋮
+
+common/src/test/java/com/cookiesstore/common/test/AbstractExternalContainerTest.java:
+⋮
+│@SpringBootTest
+│@ActiveProfiles("external")
+│@TestPropertySource(properties = {
+│    "spring.datasource.url=jdbc:postgresql://pgsql/cookies_store",
+│    "spring.datasource.username=core",
+│    "spring.datasource.password=secret",
+│    "spring.data.redis.host=redis",
+│    "spring.data.redis.port=6379"
+│})
+│public abstract class AbstractExternalContainerTest {
+⋮
+
+common/src/test/java/com/cookiesstore/common/test/AbstractIntegrationTest.java:
+⋮
+│@Testcontainers
+│@RequiresDocker
+│public abstract class AbstractIntegrationTest {
+│
+⋮
+│    @DynamicPropertySource
+│    static void configureProperties(DynamicPropertyRegistry registry) {
+⋮
+│    @Test
+│    void postgresContainerIsRunning() {
+⋮
+│    @Test
+│    void canConnectToDatabase() {
+⋮
+
+common/src/test/java/com/cookiesstore/common/test/RedisContainerConfigurationTest.java:
+⋮
+│class RedisContainerConfigurationTest {
+│
+│    // Configuration constants used in AbstractIntegrationTest
+│    private static final String REDIS_IMAGE = "redis:7-alpine";
+│    private static final int REDIS_PORT = 6379;
+│
+│    @Test
+│    void redisImageVersionIsCorrect() {
+│        assertTrue(REDIS_IMAGE.contains("redis:7"),
+│            "Container should use Redis 7");
+⋮
+│    @Test
+│    void redisDefaultPortIsCorrect() {
+⋮
+

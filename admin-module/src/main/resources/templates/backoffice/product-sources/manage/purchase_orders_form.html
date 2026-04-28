@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(${pageTitle}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <div class="flex items-center gap-2">
+            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='purchase-orders')}"
+               class="px-4 py-2 border border-[#e6dad1] rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10">
+                Discard draft
+            </a>
+            <button type="submit"
+                    form="purchase-order-form"
+                    class="px-4 py-2 rounded-lg bg-[#8b4513] hover:bg-[#6f370f] text-white text-sm font-semibold">
+                <span th:text="${isEdit} ? 'Save Draft' : 'Save & Submit'">Save</span>
+            </button>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" th:text="${successMessage}"></div>
+
+            <nav class="text-sm text-[#956d50]">
+                <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='purchase-orders')}"
+                   class="hover:text-[#8b4513]">Purchase orders</a>
+                <span class="mx-2">/</span>
+                <span th:text="${isEdit} ? 'Edit Draft' : 'New Order'">New order</span>
+            </nav>
+
+            <div class="flex flex-col gap-2">
+                <h2 class="text-3xl font-extrabold text-[#1b130e]" th:text="${isEdit} ? 'Edit Purchase Order Draft' : 'Create New Purchase Order'">
+                    Create New Purchase Order
+                </h2>
+                <p class="text-[#956d50]">Issuing for: <strong class="text-[#1b130e]" th:text="${source.name}">Warehouse North</strong></p>
+            </div>
+
+            <form id="purchase-order-form"
+                  method="post"
+                  th:action="${formAction}"
+                  th:object="${form}"
+                  class="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
+                <div class="space-y-6">
+                    <article class="bg-white rounded-xl border border-[#e6dad1] p-6 space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="space-y-2 md:col-span-2">
+                                <label for="supplierName" class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]">Supplier</label>
+                                <input id="supplierName"
+                                       type="text"
+                                       th:field="*{supplierName}"
+                                       placeholder="Global Logistics Ltd."
+                                       class="w-full rounded-lg border border-[#dbe4ef] bg-white px-4 py-3 text-[#1b130e]" />
+                                <p th:if="${#fields.hasErrors('supplierName')}" th:errors="*{supplierName}" class="text-xs text-red-600">Supplier error</p>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="supplierReference" class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]">Reference</label>
+                                <input id="supplierReference"
+                                       type="text"
+                                       th:field="*{supplierReference}"
+                                       placeholder="PO-REF-001"
+                                       class="w-full rounded-lg border border-[#dbe4ef] bg-white px-4 py-3 text-[#1b130e]" />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label for="expectedDeliveryDate" class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]">Expected delivery date</label>
+                                <input id="expectedDeliveryDate"
+                                       type="date"
+                                       th:field="*{expectedDeliveryDate}"
+                                       class="w-full rounded-lg border border-[#dbe4ef] bg-white px-4 py-3 text-[#1b130e]" />
+                                <p th:if="${#fields.hasErrors('expectedDeliveryDate')}" th:errors="*{expectedDeliveryDate}" class="text-xs text-red-600">Date error</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
+                        <header class="px-6 py-4 border-b border-[#e6dad1] flex items-center justify-between">
+                            <h3 class="text-2xl font-bold text-[#1b130e]">Order Line Items</h3>
+                            <button id="add-po-item-row"
+                                    type="button"
+                                    class="inline-flex items-center gap-1 text-[#8b4513] font-semibold text-sm">
+                                <span class="material-symbols-outlined text-base">add_circle</span>
+                                <span>Add Row</span>
+                            </button>
+                        </header>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm min-w-[980px]">
+                                <thead class="bg-[#fcfaf9] text-xs uppercase tracking-wider text-[#956d50]">
+                                    <tr>
+                                        <th class="px-6 py-3">Type</th>
+                                        <th class="px-6 py-3">Catalog Product Id</th>
+                                        <th class="px-6 py-3">Product name</th>
+                                        <th class="px-6 py-3">SKU</th>
+                                        <th class="px-6 py-3">Quantity</th>
+                                        <th class="px-6 py-3">Unit Cost</th>
+                                        <th class="px-6 py-3">Line Total</th>
+                                        <th class="px-6 py-3 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="po-items-body" class="divide-y divide-[#f3ece8]">
+                                    <tr class="po-item-row"
+                                        th:each="item,iter : *{items}">
+                                        <td class="px-6 py-4">
+                                            <select th:field="*{items[__${iter.index}__].itemType}"
+                                                    class="w-44 rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e]">
+                                                <option value="CATALOG_PRODUCT">CATALOG_PRODUCT</option>
+                                                <option value="AD_HOC_PRODUCT">AD_HOC_PRODUCT</option>
+                                            </select>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <select th:field="*{items[__${iter.index}__].productId}"
+                                                    class="w-56 rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e] po-item-product">
+                                                <option value="">Select active/listable product...</option>
+                                                <option th:each="p : ${catalogProducts}"
+                                                        th:value="${p.id}"
+                                                        th:attr="data-sku=${p.sku},data-product-name=${p.name},data-unit-cost-minor=${p.currentPrice != null ? p.currentPrice.amountMinor : 0}"
+                                                        th:text="${p.name + ' (' + p.sku + ')'}">
+                                                    Product
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <input type="text"
+                                                   th:field="*{items[__${iter.index}__].productName}"
+                                                   placeholder="Required if ad-hoc"
+                                                   class="w-full rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e] po-item-product-name" />
+                                            <p th:if="${#fields.hasErrors('items[' + iter.index + '].productName')}"
+                                               th:errors="*{items[__${iter.index}__].productName}"
+                                               class="mt-1 text-xs text-red-600">Product error</p>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <input type="text"
+                                                   th:field="*{items[__${iter.index}__].sku}"
+                                                   placeholder="ST-CBL-4409"
+                                                   class="w-full rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e] po-item-sku" />
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <input type="number"
+                                                   min="1"
+                                                   th:field="*{items[__${iter.index}__].orderedQty}"
+                                                   class="w-24 rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e] po-item-qty" />
+                                            <p th:if="${#fields.hasErrors('items[' + iter.index + '].orderedQty')}"
+                                               th:errors="*{items[__${iter.index}__].orderedQty}"
+                                               class="mt-1 text-xs text-red-600">Qty error</p>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <input type="number"
+                                                   min="0"
+                                                   step="0.01"
+                                                   th:field="*{items[__${iter.index}__].unitCost}"
+                                                   class="w-28 rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e] po-item-cost" />
+                                            <p th:if="${#fields.hasErrors('items[' + iter.index + '].unitCost')}"
+                                               th:errors="*{items[__${iter.index}__].unitCost}"
+                                               class="mt-1 text-xs text-red-600">Cost error</p>
+                                        </td>
+                                        <td class="px-6 py-4 font-bold text-[#1b130e] po-item-line-total">$0.00</td>
+                                        <td class="px-6 py-4 text-right">
+                                            <button type="button" class="remove-po-item-row text-[#8a9cb7] hover:text-red-600">
+                                                <span class="material-symbols-outlined">delete</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p th:if="${#fields.hasErrors('items')}" th:errors="*{items}" class="px-6 py-3 text-xs text-red-600">Items error</p>
+                    </article>
+                    <select id="catalog-product-options-template" class="hidden">
+                        <option value="">Select active/listable product...</option>
+                        <option th:each="p : ${catalogProducts}"
+                                th:value="${p.id}"
+                                th:attr="data-sku=${p.sku},data-product-name=${p.name},data-unit-cost-minor=${p.currentPrice != null ? p.currentPrice.amountMinor : 0}"
+                                th:text="${p.name + ' (' + p.sku + ')'}">
+                            Product
+                        </option>
+                    </select>
+
+                    <article class="bg-white rounded-xl border border-[#e6dad1] p-6 space-y-3">
+                        <label class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]">Delivery notes &amp; instructions</label>
+                        <textarea rows="4"
+                                  th:field="*{notes}"
+                                  class="w-full rounded-lg border border-[#dbe4ef] px-4 py-3 text-sm text-[#1b130e]"
+                                  placeholder="Enter special handling instructions, contact persons, or specific dock numbers..."></textarea>
+                    </article>
+                </div>
+
+                <aside class="space-y-6">
+                    <article class="rounded-xl bg-[#0f2348] text-white p-6 space-y-4 shadow-xl shadow-[#0f2348]/20">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-2xl font-bold">PO Summary</h3>
+                            <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold border border-blue-200/30 bg-blue-400/20 text-blue-100">DRAFT</span>
+                        </div>
+                        <p class="text-sm text-blue-100/80">Order review</p>
+
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center justify-between border-b border-white/15 pb-2">
+                                <span class="text-blue-100/80">Subtotal</span>
+                                <strong id="po-subtotal" class="text-xl">$0.00</strong>
+                            </div>
+                            <div class="flex items-center justify-between border-b border-white/15 pb-2">
+                                <span class="text-blue-100/80">Shipping &amp; Freight</span>
+                                <strong class="text-xl">$0.00</strong>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <span class="text-3xl font-bold leading-tight">Grand Total</span>
+                                <strong id="po-grand-total" class="text-5xl font-extrabold text-blue-300">$0.00</strong>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                                form="purchase-order-form"
+                                class="w-full px-4 py-3 rounded-xl bg-[#2d6cdf] hover:bg-[#2358b6] text-white font-bold tracking-wide">
+                            <span th:text="${isEdit} ? 'Save Draft' : 'Authorize & Send PO'">Save</span>
+                        </button>
+                    </article>
+
+                    <article class="rounded-xl border border-[#e6dad1] bg-white overflow-hidden">
+                        <div class="h-28 bg-gradient-to-r from-[#2a3f64] via-[#1b130e] to-[#2a3f64]"></div>
+                        <div class="p-4">
+                            <p class="text-lg font-bold text-[#1b130e]" th:text="${source.name}">Warehouse North</p>
+                            <p class="text-sm text-[#956d50]">Current capacity: 84% full</p>
+                        </div>
+                    </article>
+                </aside>
+            </form>
+        </section>
+
+        <script>
+            (function () {
+                const itemsBody = document.getElementById("po-items-body");
+                const addRowButton = document.getElementById("add-po-item-row");
+                const subtotalLabel = document.getElementById("po-subtotal");
+                const grandTotalLabel = document.getElementById("po-grand-total");
+                const catalogOptionsTemplate = document.getElementById("catalog-product-options-template");
+                const catalogOptions = catalogOptionsTemplate
+                    ? catalogOptionsTemplate.innerHTML
+                    : '<option value="">Select active/listable product...</option>';
+                if (!itemsBody) {
+                    return;
+                }
+
+                function escapeHtml(input) {
+                    return String(input || "")
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/'/g, "&#039;");
+                }
+
+                function currency(value) {
+                    const normalized = Number.isFinite(value) ? value : 0;
+                    return "$" + normalized.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+
+                function rowLineTotal(row) {
+                    const qtyInput = row.querySelector(".po-item-qty");
+                    const costInput = row.querySelector(".po-item-cost");
+                    const qty = qtyInput ? Number.parseFloat(qtyInput.value || "0") : 0;
+                    const cost = costInput ? Number.parseFloat(costInput.value || "0") : 0;
+                    return (Number.isFinite(qty) ? qty : 0) * (Number.isFinite(cost) ? cost : 0);
+                }
+
+                function recalculateTotals() {
+                    let subtotal = 0;
+                    itemsBody.querySelectorAll(".po-item-row").forEach((row) => {
+                        const total = rowLineTotal(row);
+                        subtotal += total;
+                        const totalLabel = row.querySelector(".po-item-line-total");
+                        if (totalLabel) {
+                            totalLabel.textContent = currency(total);
+                        }
+                    });
+                    if (subtotalLabel) subtotalLabel.textContent = currency(subtotal);
+                    if (grandTotalLabel) grandTotalLabel.textContent = currency(subtotal);
+                }
+
+                function reindexRows() {
+                    itemsBody.querySelectorAll(".po-item-row").forEach((row, idx) => {
+                        row.querySelectorAll("input,textarea,select").forEach((field) => {
+                            if (!field.name) return;
+                            field.name = field.name.replace(/items\[\d+\]/g, "items[" + idx + "]");
+                            if (field.id) {
+                                field.id = field.id.replace(/items\d+/g, "items" + idx);
+                            }
+                        });
+                    });
+                }
+
+                function fillCatalogDefaults(row, productSelect) {
+                    if (!row || !productSelect) {
+                        return;
+                    }
+                    const selectedOption = productSelect.options[productSelect.selectedIndex];
+                    if (!selectedOption || !selectedOption.value) {
+                        return;
+                    }
+                    const skuInput = row.querySelector(".po-item-sku");
+                    const productNameInput = row.querySelector(".po-item-product-name");
+                    const unitCostInput = row.querySelector(".po-item-cost");
+                    const optionSku = selectedOption.dataset.sku || selectedOption.getAttribute("data-sku") || "";
+                    const optionProductName = selectedOption.dataset.productName
+                        || selectedOption.getAttribute("data-product-name")
+                        || "";
+                    const optionUnitCostMinor = Number.parseInt(selectedOption.dataset.unitCostMinor || "0", 10);
+                    const optionUnitCost = (Number.isFinite(optionUnitCostMinor) ? optionUnitCostMinor : 0) / 100;
+
+                    if (skuInput) {
+                        skuInput.value = optionSku;
+                    }
+                    if (productNameInput) {
+                        productNameInput.value = optionProductName;
+                    }
+                    if (unitCostInput) {
+                        unitCostInput.value = optionUnitCost.toFixed(2);
+                    }
+                    recalculateTotals();
+                }
+
+                function addRow() {
+                    const index = itemsBody.querySelectorAll(".po-item-row").length;
+                    const row = document.createElement("tr");
+                    row.className = "po-item-row";
+                    row.innerHTML = [
+                        '<td class="px-6 py-4">',
+                        '  <select name="items[' + index + '].itemType" class="w-44 rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e]">',
+                        '      <option value="CATALOG_PRODUCT">CATALOG_PRODUCT</option>',
+                        '      <option value="AD_HOC_PRODUCT">AD_HOC_PRODUCT</option>',
+                        "  </select>",
+                        "</td>",
+                        '<td class="px-6 py-4">',
+                        '  <select name="items[' + index + '].productId" class="w-56 rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e] po-item-product">' + catalogOptions + "</select>",
+                        "</td>",
+                        '<td class="px-6 py-4">',
+                        '  <input type="text" name="items[' + index + '].productName" placeholder="Required if ad-hoc" class="w-full rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e] po-item-product-name" />',
+                        "</td>",
+                        '<td class="px-6 py-4">',
+                        '  <input type="text" name="items[' + index + '].sku" placeholder="SKU" class="w-full rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e] po-item-sku" />',
+                        "</td>",
+                        '<td class="px-6 py-4">',
+                        '  <input type="number" min="1" name="items[' + index + '].orderedQty" value="1" class="w-24 rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e] po-item-qty" />',
+                        "</td>",
+                        '<td class="px-6 py-4">',
+                        '  <input type="number" min="0" step="0.01" name="items[' + index + '].unitCost" value="0.00" class="w-28 rounded-lg border border-[#dbe4ef] px-3 py-2 text-[#1b130e] po-item-cost" />',
+                        "</td>",
+                        '<td class="px-6 py-4 font-bold text-[#1b130e] po-item-line-total">$0.00</td>',
+                        '<td class="px-6 py-4 text-right">',
+                        '  <button type="button" class="remove-po-item-row text-[#8a9cb7] hover:text-red-600">',
+                        '      <span class="material-symbols-outlined">delete</span>',
+                        "  </button>",
+                        "</td>"
+                    ].join("");
+                    itemsBody.appendChild(row);
+                    recalculateTotals();
+                }
+
+                itemsBody.addEventListener("input", function (event) {
+                    if (event.target && (event.target.classList.contains("po-item-qty") || event.target.classList.contains("po-item-cost"))) {
+                        recalculateTotals();
+                    }
+                });
+
+                itemsBody.addEventListener("change", function (event) {
+                    const productSelect = event.target.closest(".po-item-product");
+                    if (!productSelect) {
+                        return;
+                    }
+                    const row = productSelect.closest(".po-item-row");
+                    fillCatalogDefaults(row, productSelect);
+                });
+
+                itemsBody.addEventListener("input", function (event) {
+                    const productSelect = event.target.closest(".po-item-product");
+                    if (!productSelect) {
+                        return;
+                    }
+                    const row = productSelect.closest(".po-item-row");
+                    fillCatalogDefaults(row, productSelect);
+                });
+
+                itemsBody.addEventListener("click", function (event) {
+                    const removeButton = event.target.closest(".remove-po-item-row");
+                    if (!removeButton) {
+                        return;
+                    }
+                    const row = removeButton.closest(".po-item-row");
+                    if (row) {
+                        row.remove();
+                        if (!itemsBody.querySelector(".po-item-row")) {
+                            addRow();
+                        } else {
+                            reindexRows();
+                            recalculateTotals();
+                        }
+                    }
+                });
+
+                if (addRowButton) {
+                    addRowButton.addEventListener("click", addRow);
+                }
+
+                reindexRows();
+                itemsBody.querySelectorAll(".po-item-row").forEach((row) => {
+                    const productSelect = row.querySelector(".po-item-product");
+                    fillCatalogDefaults(row, productSelect);
+                });
+                recalculateTotals();
+            })();
+        </script>
+    </th:block>
+</th:block>
+</html>

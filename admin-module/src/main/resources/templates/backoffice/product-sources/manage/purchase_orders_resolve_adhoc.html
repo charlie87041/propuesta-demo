@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(${pageTitle}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='purchase-orders')}"
+           class="px-4 py-2 border border-[#e6dad1] rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10">
+            <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.back}">Back to orders</span>
+        </a>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+            <div th:if="${warningMessage}" class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" th:text="${warningMessage}"></div>
+            <div th:if="${successMessage}" class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" th:text="${successMessage}"></div>
+
+            <nav class="text-sm text-[#956d50]">
+                <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='purchase-orders')}"
+                   class="hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.purchaseOrders.title}">Purchase orders</a>
+                <span class="mx-2">/</span>
+                <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.breadcrumb}">Resolve ADHOC products</span>
+            </nav>
+
+            <article class="bg-white rounded-xl border border-[#e6dad1] p-6 space-y-4">
+                <h2 class="text-2xl font-bold text-[#1b130e]" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.title}">Resolve ADHOC Products</h2>
+                <p class="text-sm text-[#956d50]" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.subtitle}">
+                    Complete product data for each pending ADHOC item in this purchase order.
+                </p>
+                <p class="text-sm text-[#956d50]">
+                    <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.purchaseOrderLabel}">Purchase order:</span>
+                    <strong class="text-[#1b130e]"
+                            th:text="${purchaseOrder.supplierReference != null and purchaseOrder.supplierReference != '' ? purchaseOrder.supplierReference : 'PO-' + purchaseOrder.id}">
+                        PO-1
+                    </strong>
+                </p>
+            </article>
+
+            <form method="post" th:action="${resolveAdhocAction}" th:object="${form}" class="space-y-5">
+                <p th:if="${#fields.hasErrors('items')}" th:errors="*{items}" class="text-xs text-red-600" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.validation.items}">Items error</p>
+
+                <article th:if="${#lists.isEmpty(form.items)}" class="bg-white rounded-xl border border-[#e6dad1] p-6">
+                    <p class="text-sm text-[#956d50]" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.empty}">No pending ADHOC items found.</p>
+                </article>
+
+                <article th:each="item,iter : *{items}" class="bg-white rounded-xl border border-[#e6dad1] p-6 space-y-5">
+                    <input type="hidden" th:field="*{items[__${iter.index}__].purchaseOrderItemId}" />
+
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-[#1b130e]">
+                                <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.itemNumber}">Item #</span>
+                                <span th:text="*{items[__${iter.index}__].purchaseOrderItemId}">1</span>
+                            </h3>
+                            <p class="text-sm text-[#956d50]">
+                                <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.poItemName}">PO item name:</span>
+                                <strong class="text-[#1b130e]" th:text="*{items[__${iter.index}__].originalProductName} ?: '--'">Industrial Cable</strong>
+                            </p>
+                        </div>
+                        <div class="text-sm text-[#956d50] text-right">
+                            <p>
+                                <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.orderedQty}">Ordered qty:</span>
+                                <strong class="text-[#1b130e]" th:text="*{items[__${iter.index}__].orderedQty}">0</strong>
+                            </p>
+                            <p>
+                                <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.poUnitCost}">PO unit cost:</span>
+                                <strong class="text-[#1b130e]" th:text="${'$' + #numbers.formatDecimal((item.purchaseUnitCost != null ? item.purchaseUnitCost : 0), 1, 2)}">$0.00</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]" th:text="#{admin.products.form.sku}">SKU</label>
+                            <input type="text" th:field="*{items[__${iter.index}__].sku}" class="w-full rounded-lg border border-[#dbe4ef] bg-white px-3 py-2 text-[#1b130e]" />
+                            <p th:if="${#fields.hasErrors('items[' + iter.index + '].sku')}" th:errors="*{items[__${iter.index}__].sku}" class="text-xs text-red-600" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.validation.sku}">SKU error</p>
+                        </div>
+                        <div class="space-y-1 md:col-span-2">
+                            <label class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]" th:text="#{admin.products.form.name}">Name</label>
+                            <input type="text" th:field="*{items[__${iter.index}__].name}" class="w-full rounded-lg border border-[#dbe4ef] bg-white px-3 py-2 text-[#1b130e]" />
+                            <p th:if="${#fields.hasErrors('items[' + iter.index + '].name')}" th:errors="*{items[__${iter.index}__].name}" class="text-xs text-red-600" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.validation.name}">Name error</p>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.unitPrice}">Unit Price</label>
+                            <input type="number" min="0.01" step="0.01" th:field="*{items[__${iter.index}__].unitPrice}" class="w-full rounded-lg border border-[#dbe4ef] bg-white px-3 py-2 text-[#1b130e]" />
+                            <p th:if="${#fields.hasErrors('items[' + iter.index + '].unitPrice')}" th:errors="*{items[__${iter.index}__].unitPrice}" class="text-xs text-red-600" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.validation.unitPrice}">Price error</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]" th:text="#{admin.products.form.slug}">Slug</label>
+                            <input type="text" th:field="*{items[__${iter.index}__].slug}" class="w-full rounded-lg border border-[#dbe4ef] bg-white px-3 py-2 text-[#1b130e]" />
+                            <p th:if="${#fields.hasErrors('items[' + iter.index + '].slug')}" th:errors="*{items[__${iter.index}__].slug}" class="text-xs text-red-600" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.validation.slug}">Slug error</p>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]" th:text="#{admin.products.form.category}">Category</label>
+                            <select th:field="*{items[__${iter.index}__].categoryId}" class="w-full rounded-lg border border-[#dbe4ef] bg-white px-3 py-2 text-[#1b130e]">
+                                <option value="" th:text="#{admin.products.form.category.placeholder}">Select category</option>
+                                <option th:each="category : ${activeCategories}" th:value="${category.id}" th:text="${category.name}">Category</option>
+                            </select>
+                            <p th:if="${#fields.hasErrors('items[' + iter.index + '].categoryId')}" th:errors="*{items[__${iter.index}__].categoryId}" class="text-xs text-red-600" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.validation.category}">Category error</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1 md:col-span-2">
+                            <label class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]" th:text="#{admin.products.form.description}">Description</label>
+                            <textarea rows="3" th:field="*{items[__${iter.index}__].description}" class="w-full rounded-lg border border-[#dbe4ef] bg-white px-3 py-2 text-[#1b130e]"></textarea>
+                            <p th:if="${#fields.hasErrors('items[' + iter.index + '].description')}" th:errors="*{items[__${iter.index}__].description}" class="text-xs text-red-600" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.validation.description}">Description error</p>
+                        </div>
+                        <div class="space-y-1 md:col-span-2">
+                            <label class="text-xs font-bold uppercase tracking-[0.2em] text-[#8a9cb7]" th:text="#{admin.products.form.mainImageUrl}">Main image URL</label>
+                            <input type="text" th:field="*{items[__${iter.index}__].mainImageUrl}" class="w-full rounded-lg border border-[#dbe4ef] bg-white px-3 py-2 text-[#1b130e]" />
+                            <p th:if="${#fields.hasErrors('items[' + iter.index + '].mainImageUrl')}" th:errors="*{items[__${iter.index}__].mainImageUrl}" class="text-xs text-red-600" th:text="#{admin.product_sources.manage.purchaseOrders.resolve.validation.mainImageUrl}">Image error</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 pt-1">
+                        <label class="flex items-center gap-2 text-sm text-[#1b130e]">
+                            <input type="checkbox" th:field="*{items[__${iter.index}__].active}" class="rounded border-[#dbe4ef]" />
+                            <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.flags.active}">Active</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-[#1b130e]">
+                            <input type="checkbox" th:field="*{items[__${iter.index}__].visible}" class="rounded border-[#dbe4ef]" />
+                            <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.flags.visible}">Visible</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-[#1b130e]">
+                            <input type="checkbox" th:field="*{items[__${iter.index}__].listable}" class="rounded border-[#dbe4ef]" />
+                            <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.flags.listable}">Listable</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-[#1b130e]">
+                            <input type="checkbox" th:field="*{items[__${iter.index}__].purchasable}" class="rounded border-[#dbe4ef]" />
+                            <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.flags.purchasable}">Purchasable</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-[#1b130e]">
+                            <input type="checkbox" th:field="*{items[__${iter.index}__].purchasableAlone}" class="rounded border-[#dbe4ef]" />
+                            <span th:text="#{admin.product_sources.manage.purchaseOrders.resolve.flags.purchasableAlone}">Purchasable alone</span>
+                        </label>
+                    </div>
+                </article>
+
+                <div class="flex items-center justify-end gap-3">
+                    <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='purchase-orders')}"
+                       class="px-4 py-2 border border-[#e6dad1] rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10">
+                        <span th:text="#{admin.product_sources.manage.purchaseOrders.actions.cancel}">Cancel</span>
+                    </a>
+                    <button type="submit"
+                            class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#8b4513] hover:bg-[#6f370f]"
+                            th:text="#{admin.product_sources.manage.purchaseOrders.actions.createProducts}">
+                        Create Products
+                    </button>
+                </div>
+            </form>
+        </section>
+    </th:block>
+</th:block>
+</html>

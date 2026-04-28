@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -52,6 +53,15 @@ public class ProductSource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "price_id")
     private Price price;
+
+    @Column(name = "last_purchase_cost_minor")
+    private Long lastPurchaseCostMinor;
+
+    @Column(name = "average_purchase_cost_minor")
+    private Long averagePurchaseCostMinor;
+
+    @Column(name = "last_purchase_at")
+    private Instant lastPurchaseAt;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -123,11 +133,50 @@ public class ProductSource {
         this.price = price;
     }
 
+    public Long getLastPurchaseCostMinor() {
+        return lastPurchaseCostMinor;
+    }
+
+    public void setLastPurchaseCostMinor(Long lastPurchaseCostMinor) {
+        this.lastPurchaseCostMinor = lastPurchaseCostMinor;
+    }
+
+    public BigDecimal getLastPurchaseCostAmount() {
+        return toAmount(lastPurchaseCostMinor);
+    }
+
+    public Long getAveragePurchaseCostMinor() {
+        return averagePurchaseCostMinor;
+    }
+
+    public void setAveragePurchaseCostMinor(Long averagePurchaseCostMinor) {
+        this.averagePurchaseCostMinor = averagePurchaseCostMinor;
+    }
+
+    public BigDecimal getAveragePurchaseCostAmount() {
+        return toAmount(averagePurchaseCostMinor);
+    }
+
+    public Instant getLastPurchaseAt() {
+        return lastPurchaseAt;
+    }
+
+    public void setLastPurchaseAt(Instant lastPurchaseAt) {
+        this.lastPurchaseAt = lastPurchaseAt;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    private BigDecimal toAmount(Long minor) {
+        if (minor == null) {
+            return null;
+        }
+        return BigDecimal.valueOf(minor, 2);
     }
 }

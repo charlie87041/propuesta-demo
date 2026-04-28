@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{backoffice/layout :: layout(${pageTitle}, ~{::headerActions}, ~{::content})}">
+    <th:block th:fragment="headerActions">
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/inventory/' + ${row.product.id} + '/edit'}"
+               class="px-3 py-2 bg-[#8b4513] hover:bg-[#6f370f] text-white rounded-lg text-sm font-semibold"
+               th:text="#{admin.products.action.edit}">Edit</a>
+            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/inventory'}" class="px-3 py-2 border border-[#e6dad1] rounded-lg text-sm font-semibold text-[#8b4513] hover:bg-[#8b4513]/10" th:text="#{admin.product_sources.manage.back}">
+                Back
+            </a>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="content">
+        <section class="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+            <div th:if="${errorMessage}" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" th:text="${successMessage}"></div>
+
+            <nav class="text-sm text-[#956d50]">
+                <a th:href="@{/admin/product-sources}" class="hover:text-[#8b4513]" th:text="#{admin.product_sources.title}">Source management</a>
+                <span class="mx-2">/</span>
+                <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/inventory'}" class="hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.inventory}">Inventory</a>
+                <span class="mx-2">/</span>
+                <span th:text="#{admin.product_sources.manage.inventory.show.title}">Source product details</span>
+            </nav>
+
+            <article class="bg-white rounded-xl border border-[#e6dad1] overflow-hidden">
+                <header class="px-6 py-4 border-b border-[#e6dad1]">
+                    <h3 class="font-bold text-lg text-[#1b130e]" th:text="${row.product.name}">Product Name</h3>
+                    <p class="text-sm text-[#956d50]">
+                        <span th:text="${row.product.sku}">SKU</span>
+                        <span class="mx-1">·</span>
+                        <span th:text="${source.name}">Source</span>
+                    </p>
+                </header>
+
+                <div class="p-6 space-y-6">
+                    <section class="space-y-4">
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-[#8b4513]" th:text="#{admin.products.show.title}">Product details</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.product_sources.col.id}">ID</p>
+                                <p class="text-sm font-semibold text-[#1b130e]" th:text="${row.product.id}">1</p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.products.form.slug}">Slug</p>
+                                <p class="text-sm font-semibold text-[#1b130e]" th:text="${row.product.slug}">slug</p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.products.form.category}">Category</p>
+                                <p class="text-sm font-semibold text-[#1b130e]" th:text="${row.product.category != null ? row.product.category.name : '-'}">Category</p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.products.col.status}">Status</p>
+                                <p class="text-sm font-semibold"
+                                   th:text="${row.product.active} ? #{admin.products.status.active} : #{admin.products.status.inactive}"
+                                   th:classappend="${row.product.active} ? ' text-green-700' : ' text-slate-700'">Active</p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.products.col.visible}">Visible</p>
+                                <p class="text-sm font-semibold"
+                                   th:text="${row.product.visible} ? #{admin.products.visible.yes} : #{admin.products.visible.no}"
+                                   th:classappend="${row.product.visible} ? ' text-green-700' : ' text-slate-700'">Yes</p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]">Listable</p>
+                                <p class="text-sm font-semibold"
+                                   th:text="${row.product.listable == null ? '-' : (row.product.listable ? #messages.msg('admin.products.visible.yes') : #messages.msg('admin.products.visible.no'))}"
+                                   th:classappend="${row.product.listable == true} ? ' text-green-700' : ' text-slate-700'">-</p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]">Searchable</p>
+                                <p class="text-sm font-semibold"
+                                   th:text="${row.product.searchable == null ? '-' : (row.product.searchable ? #messages.msg('admin.products.visible.yes') : #messages.msg('admin.products.visible.no'))}"
+                                   th:classappend="${row.product.searchable == true} ? ' text-green-700' : ' text-slate-700'">-</p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]">Purchasable alone</p>
+                                <p class="text-sm font-semibold"
+                                   th:text="${row.product.purchasableAlone == null ? '-' : (row.product.purchasableAlone ? #messages.msg('admin.products.visible.yes') : #messages.msg('admin.products.visible.no'))}"
+                                   th:classappend="${row.product.purchasableAlone == true} ? ' text-green-700' : ' text-slate-700'">-</p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]">Type</p>
+                                <p class="text-sm font-semibold text-[#1b130e]" th:switch="${row.product.productTypeCode}">
+                                    <span th:case="'SIMPLE'" th:text="#{admin.products.type.simple}">Simple</span>
+                                    <span th:case="'BUNDLE'" th:text="#{admin.products.type.bundle}">Bundle</span>
+                                    <span th:case="'PACKAGE'" th:text="#{admin.products.type.package}">Package</span>
+                                    <span th:case="'ADD_ON'" th:text="#{admin.products.type.addon}">Add-on</span>
+                                    <span th:case="'VARIANT'" th:text="#{admin.products.type.variant}">Variant</span>
+                                    <span th:case="'VARIANT_PARENT'" th:text="#{admin.products.type.variantParent}">Variant Parent</span>
+                                    <span th:case="*" th:text="${row.product.productTypeCode}">Type</span>
+                                </p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.products.show.basePrice}">Base price</p>
+                                <p class="text-sm font-semibold text-[#1b130e]"
+                                   th:text="${row.product.currentPrice != null && row.product.currentPrice.amount != null ? row.product.currentPrice.amount + ' ' + row.product.currentPrice.currency : '-'}">-</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.products.form.mainImageUrl}">Main image URL</p>
+                                <p class="text-sm font-semibold text-[#1b130e] break-all" th:text="${row.product.mainImageUrl} ?: '-'">-</p>
+                            </div>
+                            <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                                <p class="text-xs text-[#956d50]" th:text="#{admin.products.form.description}">Description</p>
+                                <p class="text-sm font-semibold text-[#1b130e]" th:text="${row.product.description} ?: '-'">-</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="space-y-4">
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-[#8b4513]">Source data</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                        <p class="text-xs text-[#956d50]" th:text="#{admin.catalog.stock.col.stock}">Stock</p>
+                        <p class="text-sm font-semibold text-[#1b130e]" th:text="${row.stockQuantity}">0</p>
+                    </div>
+                    <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                        <p class="text-xs text-[#956d50]" th:text="#{admin.catalog.stock.col.threshold}">Low stock threshold</p>
+                        <p class="text-sm font-semibold text-[#1b130e]" th:text="${row.lowStockThreshold}">0</p>
+                    </div>
+                    <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                        <p class="text-xs text-[#956d50]" th:text="#{admin.products.show.sourcePrice}">Source price</p>
+                        <p class="text-sm font-semibold text-[#1b130e]"
+                           th:text="${row.price != null && row.price.amount != null ? row.price.amount + ' ' + row.price.currency : '-'}">-</p>
+                    </div>
+                    <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
+                        <p class="text-xs text-[#956d50]" th:text="#{admin.products.show.sourceStatus}">Source status</p>
+                        <p class="text-sm font-semibold"
+                           th:text="${row.status == T(com.cookiesstore.common.entities.ProductSourceStatus).ACTIVE ? #messages.msg('admin.product_sources.status.active') : #messages.msg('admin.product_sources.status.inactive')}"
+                           th:classappend="${row.status == T(com.cookiesstore.common.entities.ProductSourceStatus).ACTIVE ? ' text-green-700' : ' text-slate-700'}">Active</p>
+                    </div>
+                        </div>
+                    </section>
+                </div>
+            </article>
+        </section>
+    </th:block>
+</th:block>
+</html>

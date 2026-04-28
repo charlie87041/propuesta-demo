@@ -122,6 +122,10 @@ public class AdminSourcePurchaseOrder {
         this.status = status;
     }
 
+    public String getCurrentStatusName() {
+        return this.status == null ? null : this.status.name();
+    }
+
     public Instant getExpectedAt() {
         return expectedAt;
     }

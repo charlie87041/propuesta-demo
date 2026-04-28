@@ -1,6 +1,7 @@
 package com.cookiesstore.common.repositories;
 
 import com.cookiesstore.common.entities.AdminSourceTransfer;
+import com.cookiesstore.common.entities.AdminSourceTransferStatus;
 
 import jakarta.persistence.LockModeType;
 import java.util.Optional;
@@ -19,9 +20,17 @@ public interface AdminSourceTransferRepository extends JpaRepository<AdminSource
 
     Page<AdminSourceTransfer> findBySourceFromId(Long sourceId, Pageable pageable);
 
+    Page<AdminSourceTransfer> findBySourceToIdAndStatus(Long sourceId, AdminSourceTransferStatus status, Pageable pageable);
+
+    Page<AdminSourceTransfer> findBySourceFromIdAndStatus(Long sourceId, AdminSourceTransferStatus status, Pageable pageable);
+
     long countBySourceToId(Long sourceId);
 
     long countBySourceFromId(Long sourceId);
+
+    long countBySourceToIdAndStatus(Long sourceId, AdminSourceTransferStatus status);
+
+    long countBySourceFromIdAndStatus(Long sourceId, AdminSourceTransferStatus status);
 
     Optional<AdminSourceTransfer> findFirstBySourceToIdOrderByUpdatedAtDesc(Long sourceId);
 
