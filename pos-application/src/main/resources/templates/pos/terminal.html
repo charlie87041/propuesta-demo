@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{pos/layout :: layout(#{pos.terminal.title}, 'terminal', '/terminal', ~{::content})}">
+    <th:block th:fragment="content">
+
+<section class="p-4 lg:p-8 relative">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <div class="xl:col-span-2 bg-white border border-slate-200 rounded-xl p-6">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="text-lg font-semibold" th:text="#{pos.terminal.heading}">Terminal de venta</h3>
+        <span class="text-xs uppercase tracking-wider text-slate-500" th:text="#{pos.terminal.catalog.badge}">Catalogo</span>
+      </div>
+      <p class="mt-1 text-sm text-slate-500" th:text="#{pos.terminal.catalog.hint}">Selecciona productos para agregarlos a la orden actual.</p>
+
+      <div id="posCatalogGrid" class="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+      </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl p-6">
+      <div class="flex items-center justify-between gap-3">
+        <h4 class="font-semibold" th:text="#{pos.terminal.cart}">Carrito</h4>
+        <div class="flex items-center gap-3">
+          <span id="orderCount" class="text-xs text-slate-500">0</span>
+          <button id="clearOrderBtn" type="button" class="text-slate-400 hover:text-rose-600" title="Clear order">
+            <span class="material-symbols-outlined text-base">delete</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-[10px] uppercase tracking-wide text-slate-500" th:text="#{pos.terminal.customer.label}">Customer</p>
+            <p id="selectedCustomerText" class="text-sm font-semibold text-slate-700">Guest Customer</p>
+          </div>
+          <button id="editCustomerBtn" type="button" class="text-slate-500 hover:text-slate-900">
+            <span class="material-symbols-outlined text-base">edit</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="orderLines" class="mt-4 text-sm text-slate-600 space-y-2">
+        <p class="text-slate-400" th:text="#{pos.terminal.order.empty}">No hay productos en la orden.</p>
+      </div>
+
+      <div class="mt-5 pt-4 border-t border-slate-200 space-y-1 text-sm">
+        <div class="flex justify-between text-slate-500">
+          <span th:text="#{pos.terminal.subtotal}">Subtotal</span>
+          <span id="orderSubtotal">$0.00</span>
+        </div>
+        <div class="flex justify-between text-slate-500">
+          <span th:text="#{pos.terminal.taxes}">Impuestos</span>
+          <span id="orderTaxes">$0.00</span>
+        </div>
+      </div>
+
+      <div class="mt-3 pt-3 border-t border-slate-200 text-sm font-semibold">
+        <span th:text="#{pos.terminal.total}">Total</span>
+        <span id="orderTotal" class="float-right">$0.00</span>
+      </div>
+
+      <div class="mt-4 grid grid-cols-2 gap-2">
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+          <span class="material-symbols-outlined text-base">pause_circle</span>
+          <span th:text="#{pos.terminal.holdOrder}">Retener orden</span>
+        </button>
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+          <span class="material-symbols-outlined text-base">print</span>
+          <span th:text="#{pos.terminal.printReceipt}">Imprimir recibo</span>
+        </button>
+      </div>
+
+      <button class="mt-3 w-full rounded-lg bg-emerald-600 text-white py-2 text-sm font-semibold" th:text="#{pos.terminal.checkout}">Cobrar</button>
+    </div>
+  </div>
+
+  <div id="productConfigModal" class="hidden absolute inset-0 z-20">
+    <div class="absolute inset-0 bg-slate-950/60"></div>
+    <div class="relative z-10 min-h-full w-full flex items-center justify-center px-4 py-8">
+      <div class="w-full max-w-lg rounded-xl border border-slate-200 bg-white shadow-lg">
+        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h4 id="modalTitle" class="font-semibold text-slate-900">Configurar producto</h4>
+          <button id="modalCloseBtn" type="button" class="text-slate-500 hover:text-slate-900">✕</button>
+        </div>
+        <div class="p-5 space-y-4">
+          <p id="modalDescription" class="text-sm text-slate-500"></p>
+
+          <div id="modalBundleSection" class="hidden space-y-2">
+            <label for="bundleFlavor" class="text-sm font-medium text-slate-700" th:text="#{pos.terminal.modal.bundleFlavor}">Sabor principal</label>
+            <select id="bundleFlavor" class="w-full rounded-lg border-slate-200">
+              <option value="Chocolate">Chocolate</option>
+              <option value="Vainilla">Vainilla</option>
+              <option value="Frutos rojos">Frutos rojos</option>
+            </select>
+          </div>
+
+          <div id="modalPackageSection" class="hidden space-y-2">
+            <label for="packageUnit" class="text-sm font-medium text-slate-700" th:text="#{pos.terminal.modal.packageUnit}">Presentacion</label>
+            <select id="packageUnit" class="w-full rounded-lg border-slate-200">
+              <option value="Caja x6">Caja x6</option>
+              <option value="Caja x12">Caja x12</option>
+              <option value="Caja x24">Caja x24</option>
+            </select>
+          </div>
+        </div>
+        <div class="px-5 py-4 border-t border-slate-200 flex items-center justify-end gap-3">
+          <button id="modalCancelBtn" type="button" class="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-700" th:text="#{pos.terminal.modal.cancel}">Cancelar</button>
+          <button id="modalConfirmBtn" type="button" class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold" th:text="#{pos.terminal.modal.confirm}">Agregar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="customerModal" class="hidden absolute inset-0 z-20">
+    <div class="absolute inset-0 bg-slate-950/60"></div>
+    <div class="relative z-10 min-h-full w-full flex items-center justify-center px-4 py-8">
+      <div class="w-full max-w-xl rounded-xl border border-slate-200 bg-white shadow-lg">
+        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h4 class="font-semibold text-slate-900" th:text="#{pos.terminal.customer.modalTitle}">Seleccionar cliente</h4>
+          <button id="customerModalCloseBtn" type="button" class="text-slate-500 hover:text-slate-900">✕</button>
+        </div>
+        <div class="p-5">
+          <input id="customerSearchInput" type="search" class="w-full rounded-lg border-slate-200 text-sm" th:placeholder="#{pos.terminal.customer.searchPlaceholder}">
+          <div id="customerList" class="mt-4 max-h-72 overflow-auto divide-y divide-slate-100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+(() => {
+  const currency = "USD";
+  const products = [
+    { id: 1, name: "Chocolate Chip Cookies", type: "SIMPLE", price: 4.00, sourceStock: 18, lowStockThreshold: 6 },
+    { id: 2, name: "Oatmeal Cookies", type: "SIMPLE", price: 3.50, sourceStock: 4, lowStockThreshold: 8 },
+    { id: 3, name: "Brownie Bundle", type: "BUNDLE", price: 8.00, sourceStock: 7, lowStockThreshold: 5 },
+    { id: 4, name: "Family Cookies Box", type: "PACKAGE", price: 14.00, sourceStock: 2, lowStockThreshold: 4 },
+    { id: 5, name: "Mini Cookie Pack", type: "PACKAGE", price: 6.00, sourceStock: 10, lowStockThreshold: 6 }
+  ];
+
+  const catalogGrid = document.getElementById("posCatalogGrid");
+  const orderLines = document.getElementById("orderLines");
+  const orderSubtotal = document.getElementById("orderSubtotal");
+  const orderTaxes = document.getElementById("orderTaxes");
+  const orderTotal = document.getElementById("orderTotal");
+  const orderCount = document.getElementById("orderCount");
+  const clearOrderBtn = document.getElementById("clearOrderBtn");
+  const selectedCustomerText = document.getElementById("selectedCustomerText");
+  const editCustomerBtn = document.getElementById("editCustomerBtn");
+
+  const customerModal = document.getElementById("customerModal");
+  const customerModalCloseBtn = document.getElementById("customerModalCloseBtn");
+  const customerSearchInput = document.getElementById("customerSearchInput");
+  const customerList = document.getElementById("customerList");
+
+  const modal = document.getElementById("productConfigModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalDescription = document.getElementById("modalDescription");
+  const modalBundleSection = document.getElementById("modalBundleSection");
+  const modalPackageSection = document.getElementById("modalPackageSection");
+  const modalCloseBtn = document.getElementById("modalCloseBtn");
+  const modalCancelBtn = document.getElementById("modalCancelBtn");
+  const modalConfirmBtn = document.getElementById("modalConfirmBtn");
+  const bundleFlavor = document.getElementById("bundleFlavor");
+  const packageUnit = document.getElementById("packageUnit");
+  const taxRate = 0.085;
+  const customers = [
+    { id: 0, name: "Guest Customer", email: "guest@walkin.local", phone: "N/A" },
+    { id: 1, name: "Ana Perez", email: "ana@demo.com", phone: "+53 5551 2233" },
+    { id: 2, name: "Carlos Diaz", email: "carlos@demo.com", phone: "+53 5556 8899" },
+    { id: 3, name: "Maria Gomez", email: "maria@demo.com", phone: "+53 5421 1330" }
+  ];
+
+  let order = [];
+  let pendingProduct = null;
+  let selectedCustomer = customers[0];
+
+  const money = (value) => new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency
+  }).format(value);
+
+  const addSimpleLine = (product, extraDetail = null) => {
+    order.push({
+      id: Date.now() + Math.random(),
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      detail: extraDetail
+    });
+    renderOrder();
+  };
+
+  const openConfigModal = (product) => {
+    pendingProduct = product;
+    modalTitle.textContent = product.name;
+    modalDescription.textContent = [[#{pos.terminal.modal.description}]];
+    modalBundleSection.classList.toggle("hidden", product.type !== "BUNDLE");
+    modalPackageSection.classList.toggle("hidden", product.type !== "PACKAGE");
+    modal.classList.remove("hidden");
+  };
+
+  const closeModal = () => {
+    modal.classList.add("hidden");
+    pendingProduct = null;
+  };
+
+  const renderCatalog = () => {
+    catalogGrid.innerHTML = "";
+    products.forEach((product) => {
+      const lowStock = product.sourceStock < product.lowStockThreshold;
+      const stockClass = lowStock ? "text-rose-600" : "text-emerald-700";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "rounded-lg border border-slate-200 p-4 text-left hover:bg-slate-50 transition";
+      button.innerHTML = `
+        <p class="font-semibold text-slate-900">${product.name}</p>
+        <p class="mt-1 text-xs uppercase tracking-wide text-slate-500">${product.type}</p>
+        <p class="mt-2 text-xs font-semibold ${stockClass}">Stock: ${product.sourceStock}</p>
+        <p class="mt-2 text-sm font-medium text-slate-700">${money(product.price)}</p>
+      `;
+      button.addEventListener("click", () => {
+        if (product.type === "SIMPLE") {
+          addSimpleLine(product);
+          return;
+        }
+        openConfigModal(product);
+      });
+      catalogGrid.appendChild(button);
+    });
+  };
+
+  const renderOrder = () => {
+    if (order.length === 0) {
+      orderLines.innerHTML = `<p class="text-slate-400">${[[#{pos.terminal.order.empty}]]}</p>`;
+      orderSubtotal.textContent = money(0);
+      orderTaxes.textContent = money(0);
+      orderTotal.textContent = money(0);
+      orderCount.textContent = "0";
+      return;
+    }
+
+    orderLines.innerHTML = order.map((line) => {
+      const detail = line.detail ? `<p class="text-xs text-slate-400">${line.detail}</p>` : "";
+      return `
+        <div class="rounded-lg border border-slate-100 p-2.5">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-slate-700 font-medium">${line.name}</p>
+              ${detail}
+              <p class="text-xs text-slate-400">${money(line.price)} ea</p>
+            </div>
+            <div class="flex flex-col items-end gap-2">
+              <div class="inline-flex items-center gap-1.5">
+                <button type="button" data-line-id="${line.id}" data-action="decrease" class="w-7 h-7 rounded border border-slate-200 text-slate-600 hover:bg-slate-50">−</button>
+                <span class="w-6 text-center text-xs font-semibold text-slate-700">${line.quantity}</span>
+                <button type="button" data-line-id="${line.id}" data-action="increase" class="w-7 h-7 rounded border border-slate-200 text-slate-600 hover:bg-slate-50">+</button>
+                <button type="button" data-line-id="${line.id}" data-action="remove" class="w-7 h-7 rounded border border-slate-200 text-slate-500 hover:text-rose-600 hover:bg-slate-50">✕</button>
+              </div>
+              <p class="text-slate-700 font-semibold">${money(line.price * line.quantity)}</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    const subtotal = order.reduce((acc, line) => acc + (line.price * line.quantity), 0);
+    const taxes = subtotal * taxRate;
+    const total = subtotal + taxes;
+    orderSubtotal.textContent = money(subtotal);
+    orderTaxes.textContent = money(taxes);
+    orderTotal.textContent = money(total);
+    orderCount.textContent = String(order.reduce((acc, line) => acc + line.quantity, 0));
+
+    orderLines.querySelectorAll("button[data-line-id]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const lineId = Number(button.dataset.lineId);
+        const action = button.dataset.action;
+        if (action === "remove") {
+          order = order.filter((line) => line.id !== lineId);
+          renderOrder();
+          return;
+        }
+        order = order.map((line) => {
+          if (line.id !== lineId) {
+            return line;
+          }
+          if (action === "increase") {
+            return { ...line, quantity: line.quantity + 1 };
+          }
+          if (action === "decrease") {
+            return { ...line, quantity: Math.max(1, line.quantity - 1) };
+          }
+          return line;
+        });
+        renderOrder();
+      });
+    });
+  };
+
+  const renderCustomerList = (query = "") => {
+    const normalized = query.trim().toLowerCase();
+    const filtered = customers.filter((customer) => {
+      if (!normalized) {
+        return true;
+      }
+      return customer.name.toLowerCase().includes(normalized)
+        || customer.email.toLowerCase().includes(normalized)
+        || customer.phone.toLowerCase().includes(normalized);
+    });
+    customerList.innerHTML = filtered.map((customer) => `
+      <button type="button" data-customer-id="${customer.id}" class="w-full text-left px-1 py-3 hover:bg-slate-50 rounded">
+        <p class="text-sm font-semibold text-slate-700">${customer.name}</p>
+        <p class="text-xs text-slate-500">${customer.email} · ${customer.phone}</p>
+      </button>
+    `).join("");
+
+    customerList.querySelectorAll("button[data-customer-id]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const customerId = Number(button.dataset.customerId);
+        const found = customers.find((customer) => customer.id === customerId);
+        if (!found) {
+          return;
+        }
+        selectedCustomer = found;
+        selectedCustomerText.textContent = selectedCustomer.name;
+        customerModal.classList.add("hidden");
+      });
+    });
+  };
+
+  modalCloseBtn.addEventListener("click", closeModal);
+  modalCancelBtn.addEventListener("click", closeModal);
+  clearOrderBtn.addEventListener("click", () => {
+    order = [];
+    renderOrder();
+  });
+  editCustomerBtn.addEventListener("click", () => {
+    customerModal.classList.remove("hidden");
+    customerSearchInput.value = "";
+    renderCustomerList("");
+    customerSearchInput.focus();
+  });
+  customerModalCloseBtn.addEventListener("click", () => {
+    customerModal.classList.add("hidden");
+  });
+  customerSearchInput.addEventListener("input", () => {
+    renderCustomerList(customerSearchInput.value);
+  });
+
+  modalConfirmBtn.addEventListener("click", () => {
+    if (!pendingProduct) {
+      return;
+    }
+    let detail = null;
+    if (pendingProduct.type === "BUNDLE") {
+      detail = `${[[#{pos.terminal.modal.bundleFlavor}]]}: ${bundleFlavor.value}`;
+    } else if (pendingProduct.type === "PACKAGE") {
+      detail = `${[[#{pos.terminal.modal.packageUnit}]]}: ${packageUnit.value}`;
+    }
+    addSimpleLine(pendingProduct, detail);
+    closeModal();
+  });
+
+  renderCatalog();
+  renderOrder();
+  renderCustomerList();
+  selectedCustomerText.textContent = selectedCustomer.name;
+})();
+/*]]>*/
+</script>
+
+    </th:block>
+</th:block>
+</html>

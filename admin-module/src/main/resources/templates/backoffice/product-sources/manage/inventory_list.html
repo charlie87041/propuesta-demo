@@ -35,6 +35,20 @@
                             <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.transfers}">Transfers</a>
                             <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/incidents'}" class="block mt-1 ml-3 px-3 py-1.5 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.incidents}">Incidents</a>
                         </div>
+                        <div>
+                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/pos-config'}"
+                               class="block px-3 py-2 rounded-lg text-sm font-semibold"
+                               th:classappend="${manageSection == 'pos-config' or manageSection == 'pos-users'} ? ' bg-[#8b4513]/10 text-[#8b4513]' : ' text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+                               th:text="#{admin.product_sources.manage.nav.pos}">POS</a>
+                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/pos-config'}"
+                               class="block mt-1 ml-3 px-3 py-1.5 rounded-lg text-sm font-semibold"
+                               th:classappend="${manageSection == 'pos-config'} ? ' bg-[#8b4513]/10 text-[#8b4513]' : ' text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+                               th:text="#{admin.product_sources.manage.nav.posConfig}">Configuracion</a>
+                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/pos-users'}"
+                               class="block mt-1 ml-3 px-3 py-1.5 rounded-lg text-sm font-semibold"
+                               th:classappend="${manageSection == 'pos-users'} ? ' bg-[#8b4513]/10 text-[#8b4513]' : ' text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+                               th:text="#{admin.product_sources.manage.nav.posUsers}">Usuarios</a>
+                        </div>
                         <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='alerts')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.alerts}">Alerts</a>
                     </nav>
                 </aside>
@@ -79,7 +93,7 @@
                                     <td class="px-6 py-4 text-right font-semibold text-[#1b130e]" th:text="${row.stockQuantity}">0</td>
                                     <td class="px-6 py-4 text-right text-[#956d50]" th:text="${row.lowStockThreshold}">0</td>
                                     <td class="px-6 py-4 text-[#956d50]"
-                                        th:text="${row.price != null && row.price.amount != null ? row.price.amount + ' ' + row.price.currency : '-'}">-</td>
+                                        th:text="${sourcePriceLabelsByProductId[row.product.id]}">-</td>
                                     <td class="px-6 py-4">
                                         <span th:text="${row.status == T(com.cookiesstore.common.entities.ProductSourceStatus).ACTIVE ? #messages.msg('admin.product_sources.status.active') : #messages.msg('admin.product_sources.status.inactive')}"
                                               th:classappend="${row.status == T(com.cookiesstore.common.entities.ProductSourceStatus).ACTIVE ? ' text-green-700 font-semibold' : ' text-slate-600 font-semibold'}">Active</span>

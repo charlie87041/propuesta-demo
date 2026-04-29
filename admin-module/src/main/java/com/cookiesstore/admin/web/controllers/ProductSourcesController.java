@@ -119,6 +119,12 @@ public class ProductSourcesController {
             String poStatusParam = (poStatus == null || poStatus.isBlank()) ? "ALL" : poStatus.trim().toUpperCase();
             return "redirect:/admin/product-sources/" + id + "/manage/purchase-orders?poStatus=" + poStatusParam;
         }
+        if ("pos-users".equals(normalizedSection)) {
+            return "redirect:/admin/product-sources/" + id + "/manage/pos-users";
+        }
+        if ("pos-config".equals(normalizedSection)) {
+            return "redirect:/admin/product-sources/" + id + "/manage/pos-config";
+        }
         model.addAttribute("source", source);
         model.addAttribute("manageSection", normalizedSection);
         return "backoffice/product-sources/manage";
@@ -156,7 +162,7 @@ public class ProductSourcesController {
             return "inventory";
         }
         return switch (section.trim().toLowerCase()) {
-            case "inventory", "movements", "purchase-orders", "transfers", "incidents", "alerts" -> section.trim().toLowerCase();
+            case "inventory", "movements", "purchase-orders", "transfers", "incidents", "alerts", "pos-users", "pos-config" -> section.trim().toLowerCase();
             default -> "inventory";
         };
     }

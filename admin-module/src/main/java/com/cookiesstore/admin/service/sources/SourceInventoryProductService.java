@@ -1,6 +1,9 @@
 package com.cookiesstore.admin.service.sources;
 
 import java.util.Optional;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +19,7 @@ import com.cookiesstore.common.entities.ProductSource;
 import com.cookiesstore.common.repositories.CurrencyRepository;
 import com.cookiesstore.common.repositories.ProductSourceRepository;
 import com.cookiesstore.common.repositories.SourceRepository;
+import com.cookiesstore.common.util.MoneyConversion;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.transaction.Transactional;
@@ -66,6 +70,30 @@ public class SourceInventoryProductService {
             form.setSourcePrice(productSource.getPrice().getAmount());
         }
         return form;
+    }
+
+    public String formatSourcePrice(Price sourcePrice) {
+        if (sourcePrice == null || sourcePrice.getAmount() == null || !StringUtils.hasText(sourcePrice.getCurrency())) {
+            return "-";
+        }
+        String currencyCode = sourcePrice.getCurrency().trim().toUpperCase();
+        int fractionDigits = currencyRepository.findById(currencyCode)
+            .map(Currency::getFractionDigits)
+            .orElse(2);
+        String amountLabel = MoneyConversion
+            .toMajor(sourcePrice.getAmountMinor(), fractionDigits)
+            .setScale(Math.max(fractionDigits, 0))
+            .toPlainString();
+        return amountLabel + " " + currencyCode;
+    }
+
+    public Map<Long, String> formatSourcePricesByProductId(List<ProductSource> rows) {
+        return rows.stream()
+            .collect(Collectors.toMap(
+                row -> row.getProduct().getId(),
+                row -> formatSourcePrice(row.getPrice()),
+                (left, right) -> left
+            ));
     }
 
     @Transactional

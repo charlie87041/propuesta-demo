@@ -17,7 +17,7 @@ allprojects {
 subprojects {
     apply(plugin = "java")
     apply(plugin = "io.spring.dependency-management")
-    if (name != "application") {
+    if (name != "application" && name != "pos-application") {
         apply(plugin = "java-library")
     }
 
@@ -51,6 +51,11 @@ subprojects {
 
 // Apply Spring Boot only to the application module
 project(":application") {
+    apply(plugin = "java")
+    apply(plugin = "org.springframework.boot")
+}
+
+project(":pos-application") {
     apply(plugin = "java")
     apply(plugin = "org.springframework.boot")
 }

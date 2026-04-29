@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{pos/layout :: layout(#{pos.opening.title}, 'opening', '/opening-session', ~{::content})}">
+    <th:block th:fragment="content">
+
+<section class="p-4 lg:p-8">
+  <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-6">
+      <h3 class="text-lg font-semibold" th:text="#{pos.opening.heading}">Iniciar turno</h3>
+      <p class="mt-1 text-sm text-slate-500" th:text="#{pos.opening.subtitle}">Registra el efectivo inicial antes de abrir el POS.</p>
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label class="text-sm text-slate-600">Caja base
+          <input type="text" value="$ 0.00" class="mt-1 w-full rounded-lg border-slate-200 bg-slate-50" readonly>
+        </label>
+        <label class="text-sm text-slate-600">Empleado
+          <input type="text" th:value="${email}" class="mt-1 w-full rounded-lg border-slate-200 bg-slate-50" readonly>
+        </label>
+      </div>
+      <button class="mt-6 rounded-lg bg-slate-900 text-white px-4 py-2 text-sm font-semibold" th:text="#{pos.opening.action}">Abrir sesion</button>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-xl p-6">
+      <h4 class="font-semibold" th:text="#{pos.opening.summary}">Resumen</h4>
+      <ul class="mt-4 space-y-3 text-sm text-slate-600">
+        <li th:text="#{pos.opening.summary.terminal}">Terminal: Warehouse North</li>
+        <li th:text="#{pos.opening.summary.status}">Estado: Pendiente de apertura</li>
+        <li th:text="#{pos.opening.summary.currency}">Moneda: USD</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+    </th:block>
+</th:block>
+</html>

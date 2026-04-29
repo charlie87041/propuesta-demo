@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{pos/layout :: layout(#{pos.cashDrawer.title}, 'cash-drawer', '/cash-drawer', ~{::content})}">
+    <th:block th:fragment="content">
+
+<section class="p-4 lg:p-8">
+  <div class="max-w-6xl mx-auto space-y-6">
+    <div th:if="${posClosedToday}" class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+      El POS esta cerrado para hoy. Debes abrir turno para habilitar operaciones de venta.
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-6">
+        <h3 class="text-lg font-semibold" th:text="#{pos.opening.heading}">Iniciar turno</h3>
+        <p class="mt-1 text-sm text-slate-500" th:text="#{pos.opening.subtitle}">Registra el efectivo inicial antes de abrir el POS.</p>
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="text-sm text-slate-600">Caja base
+            <input type="text" value="$ 0.00" class="mt-1 w-full rounded-lg border-slate-200 bg-slate-50" readonly>
+          </label>
+          <label class="text-sm text-slate-600">Empleado
+            <input type="text" th:value="${email}" class="mt-1 w-full rounded-lg border-slate-200 bg-slate-50" readonly>
+          </label>
+        </div>
+        <button class="mt-6 rounded-lg bg-slate-900 text-white px-4 py-2 text-sm font-semibold" th:text="#{pos.opening.action}">Abrir sesion</button>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-6">
+        <h4 class="font-semibold" th:text="#{pos.opening.summary}">Resumen</h4>
+        <ul class="mt-4 space-y-3 text-sm text-slate-600">
+          <li>
+            <span th:text="#{pos.opening.summary.terminal.label} + ': '">Terminal: </span>
+            <span th:text="${sourceDisplayName}">Warehouse North</span>
+          </li>
+          <li>
+            <span th:text="#{pos.opening.summary.status.label} + ': '">Estado: </span>
+            <span th:text="${#messages.msg(posStatusLabelKey)}">Pendiente de apertura</span>
+          </li>
+          <li>
+            <span th:text="#{pos.opening.summary.currency.label} + ': '">Moneda: </span>
+            <span th:text="${posDefaultCurrency}">USD</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl p-6">
+      <h3 class="text-lg font-semibold" th:text="#{pos.cashDrawer.heading}">Gestion de caja</h3>
+      <p class="mt-1 text-sm text-slate-500" th:text="#{pos.cashDrawer.subtitle}">Control de ingresos, egresos y arqueo rapido.</p>
+      <div class="mt-6 overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-50 text-slate-600">
+            <tr><th class="text-left px-3 py-2">Hora</th><th class="text-left px-3 py-2">Tipo</th><th class="text-left px-3 py-2">Descripcion</th><th class="text-right px-3 py-2">Monto</th></tr>
+          </thead>
+          <tbody>
+            <tr class="border-t border-slate-100"><td class="px-3 py-2">09:05</td><td class="px-3 py-2">Ingreso</td><td class="px-3 py-2">Venta #00012</td><td class="px-3 py-2 text-right text-emerald-700">+$12.00</td></tr>
+            <tr class="border-t border-slate-100"><td class="px-3 py-2">10:20</td><td class="px-3 py-2">Egreso</td><td class="px-3 py-2">Compra de insumos</td><td class="px-3 py-2 text-right text-rose-700">-$3.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+    </th:block>
+</th:block>
+</html>

@@ -124,8 +124,7 @@
                     </div>
                     <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
                         <p class="text-xs text-[#956d50]" th:text="#{admin.products.show.sourcePrice}">Source price</p>
-                        <p class="text-sm font-semibold text-[#1b130e]"
-                           th:text="${row.price != null && row.price.amount != null ? row.price.amount + ' ' + row.price.currency : '-'}">-</p>
+                        <p class="text-sm font-semibold text-[#1b130e]" th:text="${sourcePriceLabel}">-</p>
                     </div>
                     <div class="rounded-lg border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
                         <p class="text-xs text-[#956d50]" th:text="#{admin.products.show.sourceStatus}">Source status</p>

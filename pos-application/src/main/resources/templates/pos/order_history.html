@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{pos/layout :: layout(#{pos.orderHistory.title}, 'order-history', '/order-history', ~{::content})}">
+    <th:block th:fragment="content">
+
+<section class="p-4 lg:p-8">
+  <div class="max-w-6xl mx-auto bg-white border border-slate-200 rounded-xl p-6">
+    <div class="flex items-center justify-between gap-3">
+      <h3 class="text-lg font-semibold" th:text="#{pos.orderHistory.heading}">Historial de ordenes</h3>
+      <input type="search" placeholder="Buscar orden" class="rounded-lg border-slate-200 text-sm">
+    </div>
+    <div class="mt-6 space-y-3 text-sm">
+      <div class="border border-slate-200 rounded-lg p-3 flex items-center justify-between">
+        <div><p class="font-medium">#00012</p><p class="text-slate-500">Cliente walk-in</p></div><p class="font-semibold">$12.00</p>
+      </div>
+      <div class="border border-slate-200 rounded-lg p-3 flex items-center justify-between">
+        <div><p class="font-medium">#00011</p><p class="text-slate-500">Cliente walk-in</p></div><p class="font-semibold">$9.50</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+    </th:block>
+</th:block>
+</html>

@@ -110,6 +110,8 @@
                     <div class="rounded-xl border border-[#f3ece8] bg-[#fcfaf9] px-4 py-3">
                         <p class="text-xs text-[#956d50]" th:text="#{admin.product_sources.manage.currentSource}">Current source</p>
                         <p class="text-sm font-semibold text-[#1b130e]" th:text="${source.name}">Source</p>
+                        <p class="text-xs text-[#956d50] mt-1" th:text="#{admin.products.show.sourcePrice}">Source price</p>
+                        <p class="text-sm font-semibold text-[#1b130e]" th:text="${sourcePriceLabel}">-</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

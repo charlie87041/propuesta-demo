@@ -31,6 +31,20 @@
                             <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/transfers'}" class="block px-3 py-2 rounded-lg text-sm font-semibold bg-[#8b4513]/10 text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.transfers}">Transfers</a>
                             <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/incidents'}" class="block mt-1 ml-3 px-3 py-1.5 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.incidents}">Incidents</a>
                         </div>
+                        <div>
+                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/pos-config'}"
+                               class="block px-3 py-2 rounded-lg text-sm font-semibold"
+                               th:classappend="${manageSection == 'pos-config' or manageSection == 'pos-users'} ? ' bg-[#8b4513]/10 text-[#8b4513]' : ' text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+                               th:text="#{admin.product_sources.manage.nav.pos}">POS</a>
+                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/pos-config'}"
+                               class="block mt-1 ml-3 px-3 py-1.5 rounded-lg text-sm font-semibold"
+                               th:classappend="${manageSection == 'pos-config'} ? ' bg-[#8b4513]/10 text-[#8b4513]' : ' text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+                               th:text="#{admin.product_sources.manage.nav.posConfig}">Configuracion</a>
+                            <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage/pos-users'}"
+                               class="block mt-1 ml-3 px-3 py-1.5 rounded-lg text-sm font-semibold"
+                               th:classappend="${manageSection == 'pos-users'} ? ' bg-[#8b4513]/10 text-[#8b4513]' : ' text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]'"
+                               th:text="#{admin.product_sources.manage.nav.posUsers}">Usuarios</a>
+                        </div>
                         <a th:href="@{'/admin/product-sources/' + ${source.id} + '/manage'(section='alerts')}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-[#956d50] hover:bg-[#8b4513]/10 hover:text-[#8b4513]" th:text="#{admin.product_sources.manage.nav.alerts}">Alerts</a>
                     </nav>
                 </aside>

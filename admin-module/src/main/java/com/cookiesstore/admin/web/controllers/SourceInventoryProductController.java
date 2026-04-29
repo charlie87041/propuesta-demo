@@ -49,9 +49,14 @@ public class SourceInventoryProductController {
         @PageableDefault(size = 20, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
         Model model
     ) {
+        var stockPage = sourceInventoryProductService.listBySource(sourceId, searchQuery, pageable);
         model.addAttribute("source", sourceService.getSource(sourceId));
         model.addAttribute("manageSection", "inventory");
-        model.addAttribute("stockPage", sourceInventoryProductService.listBySource(sourceId, searchQuery, pageable));
+        model.addAttribute("stockPage", stockPage);
+        model.addAttribute(
+            "sourcePriceLabelsByProductId",
+            sourceInventoryProductService.formatSourcePricesByProductId(stockPage.getContent())
+        );
         return "backoffice/product-sources/manage/inventory_list";
     }
 
@@ -69,6 +74,7 @@ public class SourceInventoryProductController {
         model.addAttribute("source", sourceService.getSource(sourceId));
         model.addAttribute("manageSection", "inventory");
         model.addAttribute("row", row);
+        model.addAttribute("sourcePriceLabel", sourceInventoryProductService.formatSourcePrice(row.getPrice()));
         return "backoffice/product-sources/manage/inventory_show";
     }
 
@@ -86,6 +92,7 @@ public class SourceInventoryProductController {
         model.addAttribute("source", sourceService.getSource(sourceId));
         model.addAttribute("manageSection", "inventory");
         model.addAttribute("row", row);
+        model.addAttribute("sourcePriceLabel", sourceInventoryProductService.formatSourcePrice(row.getPrice()));
         if (!model.containsAttribute("form")) {
             model.addAttribute("form", sourceInventoryProductService.buildForm(sourceId, productId));
         }
@@ -112,6 +119,7 @@ public class SourceInventoryProductController {
             model.addAttribute("source", sourceService.getSource(sourceId));
             model.addAttribute("manageSection", "inventory");
             model.addAttribute("row", row);
+            model.addAttribute("sourcePriceLabel", sourceInventoryProductService.formatSourcePrice(row.getPrice()));
             model.addAttribute("formAction", "/admin/product-sources/" + sourceId + "/manage/inventory/" + productId);
             return "backoffice/product-sources/manage/inventory_form";
         }
