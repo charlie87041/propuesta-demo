@@ -1,8 +1,8 @@
 package com.cookiesstore.admin.service.sources.pos;
 
-import com.cookiesstore.admin.domain.pos.AdminSourcePosConfig;
-import com.cookiesstore.admin.repository.pos.AdminSourcePosConfigRepository;
 import com.cookiesstore.admin.web.dto.sources.pos.UpdatePosConfigForm;
+import com.cookiesstore.common.entities.AdminSourcePosConfig;
+import com.cookiesstore.common.repositories.AdminSourcePosConfigRepository;
 import com.cookiesstore.common.repositories.CurrencyRepository;
 import com.cookiesstore.common.repositories.SourceRepository;
 import java.util.List;
@@ -38,6 +38,7 @@ public class SourcePosConfigService {
                 config.setSource(source);
                 config.setPosEnabled(false);
                 config.setClosedToday(true);
+                config.setForceCashBreakdownOnClose(false);
                 return sourcePosConfigRepository.save(config);
             });
     }
@@ -59,6 +60,7 @@ public class SourcePosConfigService {
             .orElseThrow(() -> new SourcePosConfigCurrencyNotFoundException(currencyCode));
 
         config.setPosEnabled(form.isPosEnabled());
+        config.setForceCashBreakdownOnClose(form.isForceCashBreakdownOnClose());
         config.setDefaultCurrency(currency);
         return sourcePosConfigRepository.save(config);
     }
@@ -67,6 +69,7 @@ public class SourcePosConfigService {
         AdminSourcePosConfig config = getOrCreateConfig(sourceId);
         UpdatePosConfigForm form = new UpdatePosConfigForm();
         form.setPosEnabled(config.isPosEnabled());
+        form.setForceCashBreakdownOnClose(config.isForceCashBreakdownOnClose());
         form.setDefaultCurrencyCode(config.getDefaultCurrency() == null ? "" : config.getDefaultCurrency().getCode());
         return form;
     }

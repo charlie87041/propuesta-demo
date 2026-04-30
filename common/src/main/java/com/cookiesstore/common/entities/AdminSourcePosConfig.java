@@ -1,7 +1,5 @@
-package com.cookiesstore.admin.domain.pos;
+package com.cookiesstore.common.entities;
 
-import com.cookiesstore.common.entities.Currency;
-import com.cookiesstore.common.entities.Source;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,6 +31,9 @@ public class AdminSourcePosConfig {
 
     @Column(name = "is_closed_today", nullable = false)
     private boolean closedToday = true;
+
+    @Column(name = "force_cash_breakdown_on_close", nullable = false)
+    private boolean forceCashBreakdownOnClose = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "default_currency_code")
@@ -76,20 +77,28 @@ public class AdminSourcePosConfig {
         this.posEnabled = posEnabled;
     }
 
-    public Currency getDefaultCurrency() {
-        return defaultCurrency;
-    }
-
-    public void setDefaultCurrency(Currency defaultCurrency) {
-        this.defaultCurrency = defaultCurrency;
-    }
-
     public boolean isClosedToday() {
         return closedToday;
     }
 
     public void setClosedToday(boolean closedToday) {
         this.closedToday = closedToday;
+    }
+
+    public boolean isForceCashBreakdownOnClose() {
+        return forceCashBreakdownOnClose;
+    }
+
+    public void setForceCashBreakdownOnClose(boolean forceCashBreakdownOnClose) {
+        this.forceCashBreakdownOnClose = forceCashBreakdownOnClose;
+    }
+
+    public Currency getDefaultCurrency() {
+        return defaultCurrency;
+    }
+
+    public void setDefaultCurrency(Currency defaultCurrency) {
+        this.defaultCurrency = defaultCurrency;
     }
 
     public Instant getCreatedAt() {

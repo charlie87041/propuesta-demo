@@ -4,6 +4,8 @@
     <th:block th:fragment="content">
 
 <section class="p-4 lg:p-8 relative">
+  <div th:if="${errorMessage}" class="max-w-7xl mx-auto mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" th:text="${errorMessage}"></div>
+  <div th:if="${successMessage}" class="max-w-7xl mx-auto mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" th:text="${successMessage}"></div>
   <div class="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-3 gap-6">
     <div class="xl:col-span-2 bg-white border border-slate-200 rounded-xl p-6">
       <div class="flex items-center justify-between gap-3">
@@ -12,8 +14,8 @@
       </div>
       <p class="mt-1 text-sm text-slate-500" th:text="#{pos.terminal.catalog.hint}">Selecciona productos para agregarlos a la orden actual.</p>
 
-      <div id="posCatalogGrid" class="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
-      </div>
+      <div id="posCatalogGrid" class="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm"></div>
+      <div id="catalogScrollSentinel" class="h-6"></div>
     </div>
 
     <div class="bg-white border border-slate-200 rounded-xl p-6">
@@ -48,10 +50,6 @@
           <span th:text="#{pos.terminal.subtotal}">Subtotal</span>
           <span id="orderSubtotal">$0.00</span>
         </div>
-        <div class="flex justify-between text-slate-500">
-          <span th:text="#{pos.terminal.taxes}">Impuestos</span>
-          <span id="orderTaxes">$0.00</span>
-        </div>
       </div>
 
       <div class="mt-3 pt-3 border-t border-slate-200 text-sm font-semibold">
@@ -60,7 +58,7 @@
       </div>
 
       <div class="mt-4 grid grid-cols-2 gap-2">
-        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button id="holdOrderBtn" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
           <span class="material-symbols-outlined text-base">pause_circle</span>
           <span th:text="#{pos.terminal.holdOrder}">Retener orden</span>
         </button>
@@ -70,7 +68,18 @@
         </button>
       </div>
 
-      <button class="mt-3 w-full rounded-lg bg-emerald-600 text-white py-2 text-sm font-semibold" th:text="#{pos.terminal.checkout}">Cobrar</button>
+      <form id="checkoutForm" method="post" th:action="@{'/' + ${sourceId} + '/pos/orders'}" class="mt-3">
+        <input type="hidden" name="resumeOrderId" id="checkoutResumeOrderId">
+        <input type="hidden" name="customerId" id="checkoutCustomerId">
+        <input type="hidden" name="currencyCode" id="checkoutCurrencyCode">
+        <div id="checkoutLinesFields"></div>
+        <button id="checkoutBtn" type="submit" class="w-full rounded-lg bg-emerald-600 text-white py-2 text-sm font-semibold" th:text="#{pos.terminal.checkout}">Cobrar</button>
+      </form>
+      <form id="holdOrderForm" method="post" th:action="@{'/' + ${sourceId} + '/pos/orders/hold'}" class="hidden">
+        <input type="hidden" name="customerId" id="holdCustomerId">
+        <input type="hidden" name="currencyCode" id="holdCurrencyCode">
+        <div id="holdLinesFields"></div>
+      </form>
     </div>
   </div>
 
@@ -132,23 +141,32 @@
 /*<![CDATA[*/
 (() => {
   const currency = "USD";
-  const products = [
-    { id: 1, name: "Chocolate Chip Cookies", type: "SIMPLE", price: 4.00, sourceStock: 18, lowStockThreshold: 6 },
-    { id: 2, name: "Oatmeal Cookies", type: "SIMPLE", price: 3.50, sourceStock: 4, lowStockThreshold: 8 },
-    { id: 3, name: "Brownie Bundle", type: "BUNDLE", price: 8.00, sourceStock: 7, lowStockThreshold: 5 },
-    { id: 4, name: "Family Cookies Box", type: "PACKAGE", price: 14.00, sourceStock: 2, lowStockThreshold: 4 },
-    { id: 5, name: "Mini Cookie Pack", type: "PACKAGE", price: 6.00, sourceStock: 10, lowStockThreshold: 6 }
-  ];
+  const initialCatalog = /*[[${terminalCatalog.items()}]]*/ [];
+  const catalogEndpoint = /*[[${catalogEndpoint}]]*/ "";
+  const initialHasMore = /*[[${terminalCatalog.hasMore()}]]*/ false;
+  const initialNextOffset = /*[[${terminalCatalog.nextOffset()}]]*/ 0;
+  const resumedOrderDraft = /*[[${resumedOrderDraft}]]*/ null;
 
   const catalogGrid = document.getElementById("posCatalogGrid");
+  const catalogScrollSentinel = document.getElementById("catalogScrollSentinel");
   const orderLines = document.getElementById("orderLines");
   const orderSubtotal = document.getElementById("orderSubtotal");
-  const orderTaxes = document.getElementById("orderTaxes");
   const orderTotal = document.getElementById("orderTotal");
   const orderCount = document.getElementById("orderCount");
   const clearOrderBtn = document.getElementById("clearOrderBtn");
   const selectedCustomerText = document.getElementById("selectedCustomerText");
   const editCustomerBtn = document.getElementById("editCustomerBtn");
+  const checkoutBtn = document.getElementById("checkoutBtn");
+  const holdOrderBtn = document.getElementById("holdOrderBtn");
+  const checkoutForm = document.getElementById("checkoutForm");
+  const checkoutCustomerId = document.getElementById("checkoutCustomerId");
+  const checkoutResumeOrderId = document.getElementById("checkoutResumeOrderId");
+  const checkoutCurrencyCode = document.getElementById("checkoutCurrencyCode");
+  const checkoutLinesFields = document.getElementById("checkoutLinesFields");
+  const holdOrderForm = document.getElementById("holdOrderForm");
+  const holdCustomerId = document.getElementById("holdCustomerId");
+  const holdCurrencyCode = document.getElementById("holdCurrencyCode");
+  const holdLinesFields = document.getElementById("holdLinesFields");
 
   const customerModal = document.getElementById("customerModal");
   const customerModalCloseBtn = document.getElementById("customerModalCloseBtn");
@@ -165,26 +183,64 @@
   const modalConfirmBtn = document.getElementById("modalConfirmBtn");
   const bundleFlavor = document.getElementById("bundleFlavor");
   const packageUnit = document.getElementById("packageUnit");
-  const taxRate = 0.085;
+  const dbCustomers = /*[[${terminalCustomers}]]*/ [];
   const customers = [
     { id: 0, name: "Guest Customer", email: "guest@walkin.local", phone: "N/A" },
-    { id: 1, name: "Ana Perez", email: "ana@demo.com", phone: "+53 5551 2233" },
-    { id: 2, name: "Carlos Diaz", email: "carlos@demo.com", phone: "+53 5556 8899" },
-    { id: 3, name: "Maria Gomez", email: "maria@demo.com", phone: "+53 5421 1330" }
+    ...dbCustomers
   ];
+
+  const isGuestCustomer = (customer) => {
+    if (!customer) {
+      return false;
+    }
+    const name = String(customer.name || "").toLowerCase();
+    const email = String(customer.email || "").toLowerCase();
+    return name.includes("guest") || email.includes("guest");
+  };
+
+  let products = [...initialCatalog];
+  let hasMoreCatalog = initialHasMore;
+  let nextCatalogOffset = initialNextOffset;
+  let loadingCatalog = false;
 
   let order = [];
   let pendingProduct = null;
-  let selectedCustomer = customers[0];
+  let resumedOrderId = null;
+  let selectedCustomer =
+    dbCustomers.find(isGuestCustomer) ||
+    (dbCustomers.length > 0 ? dbCustomers[0] : customers[0]);
 
   const money = (value) => new Intl.NumberFormat("en-US", {
     style: "currency",
     currency
   }).format(value);
 
+  const mountResumedOrder = () => {
+    if (!resumedOrderDraft || !Array.isArray(resumedOrderDraft.lines) || resumedOrderDraft.lines.length === 0) {
+      return;
+    }
+
+    const resumedCustomerId = Number(resumedOrderDraft.customerId || 0);
+    resumedOrderId = resumedOrderDraft.orderId ? Number(resumedOrderDraft.orderId) : null;
+    const foundCustomer = customers.find((customer) => customer.id === resumedCustomerId);
+    if (foundCustomer) {
+      selectedCustomer = foundCustomer;
+    }
+
+    order = resumedOrderDraft.lines.map((line) => ({
+      id: Date.now() + Math.random(),
+      productId: Number(line.productId),
+      name: line.productName,
+      price: Number(line.unitPriceMinor) / 100,
+      quantity: Number(line.quantity),
+      detail: null
+    }));
+  };
+
   const addSimpleLine = (product, extraDetail = null) => {
     order.push({
       id: Date.now() + Math.random(),
+      productId: product.id,
       name: product.name,
       price: product.price,
       quantity: 1,
@@ -207,13 +263,19 @@
     pendingProduct = null;
   };
 
-  const renderCatalog = () => {
-    catalogGrid.innerHTML = "";
+  const renderCatalog = (append = false) => {
+    if (!append) {
+      catalogGrid.innerHTML = "";
+    }
     products.forEach((product) => {
-      const lowStock = product.sourceStock < product.lowStockThreshold;
+      if (catalogGrid.querySelector(`[data-product-id="${product.id}"]`)) {
+        return;
+      }
+      const lowStock = product.sourceStock <= 0 || product.sourceStock < product.lowStockThreshold;
       const stockClass = lowStock ? "text-rose-600" : "text-emerald-700";
       const button = document.createElement("button");
       button.type = "button";
+      button.dataset.productId = String(product.id);
       button.className = "rounded-lg border border-slate-200 p-4 text-left hover:bg-slate-50 transition";
       button.innerHTML = `
         <p class="font-semibold text-slate-900">${product.name}</p>
@@ -232,11 +294,36 @@
     });
   };
 
+
+  const loadMoreCatalog = async () => {
+    if (loadingCatalog || !hasMoreCatalog) {
+      return;
+    }
+    loadingCatalog = true;
+    try {
+      const response = await fetch(`${catalogEndpoint}?offset=${nextCatalogOffset}&limit=24`, {
+        method: "GET",
+        headers: { "Accept": "application/json" }
+      });
+      if (!response.ok) {
+        return;
+      }
+      const payload = await response.json();
+      const newItems = Array.isArray(payload.items) ? payload.items : [];
+      products = products.concat(newItems);
+      hasMoreCatalog = Boolean(payload.hasMore);
+      nextCatalogOffset = Number(payload.nextOffset || nextCatalogOffset);
+      renderCatalog(true);
+    } finally {
+      loadingCatalog = false;
+    }
+  };
+
   const renderOrder = () => {
     if (order.length === 0) {
+      resumedOrderId = null;
       orderLines.innerHTML = `<p class="text-slate-400">${[[#{pos.terminal.order.empty}]]}</p>`;
       orderSubtotal.textContent = money(0);
-      orderTaxes.textContent = money(0);
       orderTotal.textContent = money(0);
       orderCount.textContent = "0";
       return;
@@ -267,10 +354,8 @@
     }).join("");
 
     const subtotal = order.reduce((acc, line) => acc + (line.price * line.quantity), 0);
-    const taxes = subtotal * taxRate;
-    const total = subtotal + taxes;
+    const total = subtotal;
     orderSubtotal.textContent = money(subtotal);
-    orderTaxes.textContent = money(taxes);
     orderTotal.textContent = money(total);
     orderCount.textContent = String(order.reduce((acc, line) => acc + line.quantity, 0));
 
@@ -350,6 +435,49 @@
     renderCustomerList(customerSearchInput.value);
   });
 
+  checkoutForm.addEventListener("submit", (event) => {
+    if (order.length === 0) {
+      event.preventDefault();
+      return;
+    }
+
+    populateOrderFormPayload(checkoutCustomerId, checkoutCurrencyCode, checkoutLinesFields);
+  });
+
+  holdOrderBtn?.addEventListener("click", () => {
+    if (order.length === 0) {
+      return;
+    }
+    populateOrderFormPayload(holdCustomerId, holdCurrencyCode, holdLinesFields);
+    holdOrderForm.submit();
+  });
+
+  const populateOrderFormPayload = (customerField, currencyField, linesContainer) => {
+    customerField.value = selectedCustomer.id === 0 ? "" : String(selectedCustomer.id);
+    checkoutResumeOrderId.value = resumedOrderId != null ? String(resumedOrderId) : "";
+    currencyField.value = currency;
+    linesContainer.innerHTML = "";
+
+    order.forEach((line, index) => {
+      const fields = [
+        ["productId", line.productId],
+        ["productName", line.name],
+        ["quantity", line.quantity],
+        ["unitPriceMinor", Math.round(line.price * 100)]
+      ];
+
+      fields.forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = `lines[${index}].${key}`;
+        input.value = String(value);
+        linesContainer.appendChild(input);
+      });
+    });
+  };
+
+
+
   modalConfirmBtn.addEventListener("click", () => {
     if (!pendingProduct) {
       return;
@@ -364,7 +492,19 @@
     closeModal();
   });
 
+  if (catalogScrollSentinel && "IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadMoreCatalog();
+        }
+      });
+    }, { rootMargin: "250px 0px" });
+    observer.observe(catalogScrollSentinel);
+  }
+
   renderCatalog();
+  mountResumedOrder();
   renderOrder();
   renderCustomerList();
   selectedCustomerText.textContent = selectedCustomer.name;

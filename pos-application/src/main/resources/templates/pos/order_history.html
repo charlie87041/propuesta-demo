@@ -4,17 +4,227 @@
     <th:block th:fragment="content">
 
 <section class="p-4 lg:p-8">
-  <div class="max-w-6xl mx-auto bg-white border border-slate-200 rounded-xl p-6">
-    <div class="flex items-center justify-between gap-3">
-      <h3 class="text-lg font-semibold" th:text="#{pos.orderHistory.heading}">Historial de ordenes</h3>
-      <input type="search" placeholder="Buscar orden" class="rounded-lg border-slate-200 text-sm">
-    </div>
-    <div class="mt-6 space-y-3 text-sm">
-      <div class="border border-slate-200 rounded-lg p-3 flex items-center justify-between">
-        <div><p class="font-medium">#00012</p><p class="text-slate-500">Cliente walk-in</p></div><p class="font-semibold">$12.00</p>
+  <div class="max-w-[1180px] mx-auto space-y-6">
+    <div th:if="${errorMessage}" class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" th:text="${errorMessage}"></div>
+    <div th:if="${successMessage}" class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" th:text="${successMessage}"></div>
+    <div th:if="${resumeConflict != null}" class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900">
+      <p class="font-semibold" th:text="#{pos.order.resume.conflict.title}">Stock insuficiente para reanudar la orden.</p>
+      <p class="mt-1" th:text="#{pos.order.resume.conflict.subtitle}">Algunos productos no tienen suficiente inventario.</p>
+      <ul class="mt-2 list-disc pl-5 text-amber-800">
+        <li th:each="line : ${resumeConflict.outOfStockLines}"
+            th:text="${line.productName + ' (' + line.availableQuantity + '/' + line.quantity + ')'}">Producto (0/1)</li>
+      </ul>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <form method="post" th:action="@{'/' + ${sourceId} + '/pos/orders/' + ${resumeConflictOrderId} + '/resume/cancel'}">
+          <button type="submit" class="inline-flex h-9 items-center rounded-md border border-rose-200 bg-rose-50 px-3 text-xs font-semibold uppercase tracking-[0.06em] text-rose-700 hover:bg-rose-100"
+                  th:text="#{pos.order.resume.conflict.closeOrder}">Cerrar orden</button>
+        </form>
+        <form method="post" th:action="@{'/' + ${sourceId} + '/pos/orders/' + ${resumeConflictOrderId} + '/resume/available'}">
+          <button type="submit" class="inline-flex h-9 items-center rounded-md bg-[#2563eb] px-3 text-xs font-semibold uppercase tracking-[0.06em] text-white hover:bg-[#1d4ed8]"
+                  th:text="#{pos.order.resume.conflict.resumeAvailable}">Reanudar con disponibles</button>
+        </form>
       </div>
-      <div class="border border-slate-200 rounded-lg p-3 flex items-center justify-between">
-        <div><p class="font-medium">#00011</p><p class="text-slate-500">Cliente walk-in</p></div><p class="font-semibold">$9.50</p>
+    </div>
+
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
+      <h3 class="text-[34px] leading-none font-semibold tracking-[-0.02em] text-slate-900">
+        <span th:text="#{pos.orderHistory.heading}">Historial de ordenes</span>
+      </h3>
+      <div class="relative flex-1 lg:max-w-[580px]">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+        <form method="get" class="contents">
+          <input type="hidden" name="status" th:value="${historyStatus}">
+          <input
+            type="search"
+            name="search"
+            th:value="${historySearch}"
+            th:placeholder="#{pos.orderHistory.search.placeholder}"
+            class="h-12 w-full rounded-lg border border-slate-200 bg-white pl-12 pr-4 text-[17px] text-slate-700 placeholder:text-slate-400 focus:border-[#2563eb] focus:ring-[#2563eb]"
+          >
+        </form>
+      </div>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="rounded-xl border border-slate-200 bg-white p-5">
+        <p class="text-xs uppercase tracking-[0.16em] text-slate-500" th:text="#{pos.orderHistory.kpi.totalSales}">Total ventas (turno)</p>
+        <div class="mt-4 flex items-center justify-between">
+          <p class="flex items-baseline gap-2 whitespace-nowrap text-[38px] leading-none font-semibold text-slate-900">
+            <span th:text="${#strings.replace(history.totalSales, '¤', '')}">$0.00</span>
+            <span class="text-[20px] font-semibold text-slate-700"
+                  th:if="${history.currencyCode != null and !#strings.isEmpty(history.currencyCode)}"
+                  th:text="${history.currencyCode}">USD</span>
+          </p>
+          <span class="grid h-12 w-12 place-items-center rounded-xl bg-[#eff6ff] text-[#2563eb]">
+            <span class="material-symbols-outlined text-[24px]">paid</span>
+          </span>
+        </div>
+      </div>
+      <div class="rounded-xl border border-slate-200 bg-white p-5">
+        <p class="text-xs uppercase tracking-[0.16em] text-slate-500" th:text="#{pos.orderHistory.kpi.totalOrders}">Total órdenes</p>
+        <div class="mt-4 flex items-center justify-between">
+          <p class="text-[38px] leading-none font-semibold text-slate-900" th:text="${history.totalOrders}">0</p>
+          <span class="grid h-12 w-12 place-items-center rounded-xl bg-[#ecfdf3] text-[#16a34a]">
+            <span class="material-symbols-outlined text-[24px]">shopping_cart</span>
+          </span>
+        </div>
+      </div>
+      <div class="rounded-xl border border-slate-200 bg-white p-5">
+        <p class="text-xs uppercase tracking-[0.16em] text-slate-500" th:text="#{pos.orderHistory.kpi.averageOrder}">Orden promedio</p>
+        <div class="mt-4 flex items-center justify-between">
+          <p class="flex items-baseline gap-2 whitespace-nowrap text-[38px] leading-none font-semibold text-slate-900">
+            <span th:text="${#strings.replace(history.averageOrder, '¤', '')}">$0.00</span>
+            <span class="text-[20px] font-semibold text-slate-700"
+                  th:if="${history.currencyCode != null and !#strings.isEmpty(history.currencyCode)}"
+                  th:text="${history.currencyCode}">USD</span>
+          </p>
+          <span class="grid h-12 w-12 place-items-center rounded-xl bg-[#f5f3ff] text-[#7c3aed]">
+            <span class="material-symbols-outlined text-[24px]">trending_up</span>
+          </span>
+        </div>
+      </div>
+      <div class="rounded-xl border border-slate-200 bg-white p-5">
+        <p class="text-xs uppercase tracking-[0.16em] text-slate-500" th:text="#{pos.orderHistory.kpi.itemsSold}">Ítems vendidos</p>
+        <div class="mt-4 flex items-center justify-between">
+          <p class="text-[38px] leading-none font-semibold text-slate-900" th:text="${history.itemsSold}">0</p>
+          <span class="grid h-12 w-12 place-items-center rounded-xl bg-[#fff7ed] text-[#ea580c]">
+            <span class="material-symbols-outlined text-[24px]">inventory_2</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white overflow-hidden">
+      <div class="border-b border-slate-200 p-4 lg:p-6">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div class="flex flex-wrap items-center gap-2">
+            <a th:href="@{'/' + ${sourceId} + '/pos/order-history'(status='ALL',search=${historySearch})}"
+               class="inline-flex h-11 items-center rounded-lg px-5 text-[15px] font-medium"
+               th:classappend="${historyStatus == 'ALL'} ? ' bg-[#2563eb] text-white' : ' text-slate-700 hover:bg-slate-100'"
+               th:text="#{pos.orderHistory.filter.all}">Todas</a>
+            <a th:href="@{'/' + ${sourceId} + '/pos/order-history'(status='COMPLETED',search=${historySearch})}"
+               class="inline-flex h-11 items-center rounded-lg px-4 text-[15px]"
+               th:classappend="${historyStatus == 'COMPLETED'} ? ' bg-[#2563eb] text-white' : ' text-slate-700 hover:bg-slate-100'"
+               th:text="#{pos.orderHistory.filter.completed}">Completadas</a>
+            <a th:href="@{'/' + ${sourceId} + '/pos/order-history'(status='PROCESSING',search=${historySearch})}"
+               class="inline-flex h-11 items-center rounded-lg px-4 text-[15px]"
+               th:classappend="${historyStatus == 'PROCESSING'} ? ' bg-[#2563eb] text-white' : ' text-slate-700 hover:bg-slate-100'"
+               th:text="#{pos.orderHistory.filter.processing}">En proceso</a>
+            <a th:href="@{'/' + ${sourceId} + '/pos/order-history'(status='PENDING',search=${historySearch})}"
+               class="inline-flex h-11 items-center rounded-lg px-4 text-[15px]"
+               th:classappend="${historyStatus == 'PENDING'} ? ' bg-[#2563eb] text-white' : ' text-slate-700 hover:bg-slate-100'"
+               th:text="#{pos.orderHistory.filter.pending}">Pendientes</a>
+            <a th:href="@{'/' + ${sourceId} + '/pos/order-history'(status='CANCELED',search=${historySearch})}"
+               class="inline-flex h-11 items-center rounded-lg px-4 text-[15px]"
+               th:classappend="${historyStatus == 'CANCELED'} ? ' bg-[#2563eb] text-white' : ' text-slate-700 hover:bg-slate-100'"
+               th:text="#{pos.orderHistory.filter.canceled}">Canceladas</a>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <button class="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 px-4 text-[15px] text-slate-700">
+              <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+              <span th:text="#{pos.orderHistory.date.today}">Hoy, Oct 24</span>
+              <span class="material-symbols-outlined text-[18px]">expand_more</span>
+            </button>
+            <button class="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 px-4 text-[15px] text-slate-700">
+              <span class="material-symbols-outlined text-[20px]">filter_list</span>
+              <span th:text="#{pos.orderHistory.moreFilters}">Más filtros</span>
+            </button>
+            <button class="inline-flex h-11 items-center gap-2 rounded-lg bg-[#0f172a] px-5 text-[15px] font-medium text-white">
+              <span class="material-symbols-outlined text-[19px]">download</span>
+              <span th:text="#{pos.orderHistory.export}">Exportar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left">
+          <thead>
+          <tr class="bg-slate-50 border-b border-slate-200">
+            <th class="px-6 py-4 text-xs font-medium uppercase tracking-[0.1em] text-slate-500" th:text="#{pos.orderHistory.col.orderId}">Order ID</th>
+            <th class="px-6 py-4 text-xs font-medium uppercase tracking-[0.1em] text-slate-500" th:text="#{pos.orderHistory.col.timestamp}">Timestamp</th>
+            <th class="px-6 py-4 text-xs font-medium uppercase tracking-[0.1em] text-slate-500" th:text="#{pos.orderHistory.col.customer}">Customer</th>
+            <th class="px-6 py-4 text-xs font-medium uppercase tracking-[0.1em] text-slate-500" th:text="#{pos.orderHistory.col.items}">Items</th>
+            <th class="px-6 py-4 text-xs font-medium uppercase tracking-[0.1em] text-slate-500" th:text="#{pos.orderHistory.col.totalAmount}">Total Amount</th>
+            <th class="px-6 py-4 text-xs font-medium uppercase tracking-[0.1em] text-slate-500" th:text="#{pos.orderHistory.col.status}">Status</th>
+            <th class="px-6 py-4 text-xs font-medium uppercase tracking-[0.1em] text-slate-500 text-right" th:text="#{pos.orderHistory.col.actions}">Actions</th>
+          </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 bg-white text-[16px]">
+          <tr th:if="${#lists.isEmpty(history.rows)}">
+            <td colspan="7" class="px-6 py-8 text-center text-slate-500" th:text="#{pos.orderHistory.empty}">No hay órdenes para mostrar</td>
+          </tr>
+          <tr class="hover:bg-slate-50/70" th:each="order : ${history.rows}">
+            <td class="px-6 py-5 font-semibold text-[#2563eb]" th:text="${order.incrementId}">#00000</td>
+            <td class="px-6 py-5 text-slate-700" th:text="${order.timestamp}">00:00 AM</td>
+            <td class="px-6 py-5 text-slate-900" th:text="${order.customerName}">Guest</td>
+            <td class="px-6 py-5 text-slate-700" th:text="${order.itemsLabel}">0 items</td>
+            <td class="px-6 py-5 font-semibold text-slate-900"
+                th:text="${#strings.replace(order.totalAmount, '¤', '')}">$0.00</td>
+            <td class="px-6 py-5">
+              <span class="inline-flex rounded px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em]"
+                    th:text="${order.statusLabel}"
+                    th:classappend="${order.statusTone == 'success'} ? ' bg-[#dcfce7] text-[#15803d]' : (${order.statusTone == 'warning'} ? ' bg-[#fef3c7] text-[#b45309]' : (${order.statusTone == 'danger'} ? ' bg-[#fee2e2] text-[#b91c1c]' : ' bg-slate-100 text-slate-700'))">PENDING</span>
+            </td>
+            <td class="px-6 py-5">
+              <div class="flex justify-end items-center gap-3 text-slate-400">
+                <form th:if="${order.statusLabel == 'HOLD'}"
+                      th:action="@{'/' + ${sourceId} + '/pos/orders/' + ${order.id} + '/pay'}"
+                      method="post"
+                      class="inline">
+                  <button type="submit"
+                          class="inline-flex h-8 items-center rounded-md bg-[#2563eb] px-3 text-xs font-semibold uppercase tracking-[0.06em] text-white hover:bg-[#1d4ed8]"
+                          th:text="#{pos.orderHistory.action.pay}">Pagar</button>
+                </form>
+                <form th:if="${order.statusLabel == 'HOLD'}"
+                      th:action="@{'/' + ${sourceId} + '/pos/orders/' + ${order.id} + '/cancel'}"
+                      method="post"
+                      class="inline">
+                  <button type="submit"
+                          class="inline-flex h-8 items-center rounded-md border border-rose-200 bg-rose-50 px-3 text-xs font-semibold uppercase tracking-[0.06em] text-rose-700 hover:bg-rose-100"
+                          th:text="#{pos.orderHistory.action.cancel}">Cancelar</button>
+                </form>
+                <form th:if="${order.statusLabel == 'HOLD'}"
+                      th:action="@{'/' + ${sourceId} + '/pos/orders/' + ${order.id} + '/resume'}"
+                      method="post"
+                      class="inline">
+                  <button type="submit"
+                          class="inline-flex h-8 items-center rounded-md border border-sky-200 bg-sky-50 px-3 text-xs font-semibold uppercase tracking-[0.06em] text-sky-700 hover:bg-sky-100"
+                          th:text="#{pos.orderHistory.action.resume}">Reanudar</button>
+                </form>
+                <a class="hover:text-slate-700"
+                   th:href="@{'/' + ${sourceId} + '/pos/orders/' + ${order.id}}">
+                  <span class="material-symbols-outlined text-[22px]">visibility</span>
+                </a>
+                <button class="hover:text-slate-700"><span class="material-symbols-outlined text-[22px]">print</span></button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex flex-col gap-3 border-t border-slate-200 px-6 py-4 text-[15px] text-slate-600 lg:flex-row lg:items-center lg:justify-between">
+        <p>
+          <span th:text="#{pos.orderHistory.paging.showing}">Mostrando</span>
+          <span class="font-semibold text-slate-900" th:text="${history.totalElements == 0 ? 0 : (history.page * history.size) + 1}">0</span>
+          -
+          <span class="font-semibold text-slate-900" th:text="${((history.page + 1) * history.size) > history.totalElements ? history.totalElements : ((history.page + 1) * history.size)}">0</span>
+          <span th:text="#{pos.orderHistory.paging.of}">de</span>
+          <span class="font-semibold text-slate-900" th:text="${history.totalElements}">0</span>
+          <span th:text="#{pos.orderHistory.paging.orders}">órdenes</span>
+        </p>
+        <div class="flex items-center gap-2">
+          <a class="grid h-9 w-9 place-items-center rounded border border-slate-200 text-slate-500 hover:bg-slate-100"
+             th:href="@{'/' + ${sourceId} + '/pos/order-history'(page=${history.page > 0 ? history.page - 1 : 0},size=${history.size},search=${historySearch},status=${historyStatus})}">
+            <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+          </a>
+          <span class="grid h-9 min-w-9 place-items-center rounded bg-[#2563eb] px-3 text-white" th:text="${history.page + 1}">1</span>
+          <a class="grid h-9 w-9 place-items-center rounded border border-slate-200 text-slate-500 hover:bg-slate-100"
+             th:href="@{'/' + ${sourceId} + '/pos/order-history'(page=${history.page + 1 < history.totalPages ? history.page + 1 : history.page},size=${history.size},search=${historySearch},status=${historyStatus})}">
+            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+          </a>
+        </div>
       </div>
     </div>
   </div>

@@ -46,6 +46,9 @@ public class ProductSource {
     @Column(name = "low_stock_threshold", nullable = false)
     private int lowStockThreshold = 0;
 
+    @Column(name = "total_sold", nullable = false)
+    private long totalSold = 0L;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ProductSourceStatus status = ProductSourceStatus.ACTIVE;
@@ -115,6 +118,14 @@ public class ProductSource {
 
     public void setLowStockThreshold(int lowStockThreshold) {
         this.lowStockThreshold = lowStockThreshold;
+    }
+
+    public long getTotalSold() {
+        return totalSold;
+    }
+
+    public void setTotalSold(long totalSold) {
+        this.totalSold = totalSold;
     }
 
     public ProductSourceStatus getStatus() {

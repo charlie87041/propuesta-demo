@@ -1,5 +1,6 @@
 package com.cookiesstore.pos.domain;
 
+import com.cookiesstore.common.entities.Source;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -16,7 +17,7 @@ public class PosUserAssignment {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "source_id", nullable = false)
-    private PosSource source;
+    private Source source;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "admin_user_id", nullable = false)
@@ -29,7 +30,7 @@ public class PosUserAssignment {
         return id;
     }
 
-    public PosSource getSource() {
+    public Source getSource() {
         return source;
     }
 

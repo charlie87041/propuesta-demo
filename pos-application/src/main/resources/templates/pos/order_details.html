@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{pos/layout :: layout(#{pos.orderDetails.title}, 'order-history', '/orders/' + ${orderDetails.orderId}, ~{::content})}">
+  <th:block th:fragment="content">
+    <section class="p-4 lg:p-8">
+      <div class="max-w-[1180px] mx-auto space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-[30px] leading-none font-semibold tracking-[-0.02em] text-slate-900" th:text="#{pos.orderDetails.heading}">Order details</h3>
+            <p class="mt-2 text-sm text-slate-500">
+              <span th:text="#{pos.orderDetails.orderId}">Order</span>
+              <strong class="text-slate-700" th:text="${orderDetails.incrementId}">T-0000</strong>
+              <span class="mx-2">•</span>
+              <span th:text="${orderDetails.createdAt}">02:00 PM</span>
+              <span class="mx-2">•</span>
+              <span th:text="${orderDetails.customerName}">Guest</span>
+            </p>
+          </div>
+          <a th:href="@{'/' + ${sourceId} + '/pos/order-history'}" class="inline-flex h-10 items-center rounded-lg border border-slate-200 px-4 text-sm font-medium text-slate-700 hover:bg-slate-100">
+            <span th:text="#{pos.orderDetails.back}">Back to orders</span>
+          </a>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+            <h4 class="text-xl font-semibold text-slate-900" th:text="#{pos.orderDetails.items.title}">Order items</h4>
+            <span class="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-600">
+              <span th:text="${orderDetails.totalItems}">0</span>
+              <span th:text="#{pos.orderDetails.items.count}">items</span>
+            </span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left">
+              <thead>
+              <tr class="bg-slate-50 border-b border-slate-200">
+                <th class="px-6 py-4 text-xs font-medium uppercase tracking-[0.1em] text-slate-500" th:text="#{pos.orderDetails.col.product}">Product</th>
+                <th class="px-6 py-4 text-xs font-medium uppercase tracking-[0.1em] text-slate-500" th:text="#{pos.orderDetails.col.quantity}">Quantity</th>
+                <th class="px-6 py-4 text-xs font-medium uppercase tracking-[0.1em] text-slate-500" th:text="#{pos.orderDetails.col.unitPrice}">Unit price</th>
+                <th class="px-6 py-4 text-xs font-medium uppercase tracking-[0.1em] text-slate-500 text-right" th:text="#{pos.orderDetails.col.total}">Total</th>
+              </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white text-[16px]">
+              <tr th:if="${#lists.isEmpty(orderDetails.items)}">
+                <td colspan="4" class="px-6 py-8 text-center text-slate-500" th:text="#{pos.orderDetails.empty}">No items in this order</td>
+              </tr>
+              <tr th:each="item : ${orderDetails.items}">
+                <td class="px-6 py-4">
+                  <p class="font-semibold text-slate-900" th:text="${item.productName}">Product</p>
+                  <p class="text-sm text-slate-500" th:text="${item.productDescription}">Simple</p>
+                </td>
+                <td class="px-6 py-4 text-slate-800" th:text="${item.quantity}">1</td>
+                <td class="px-6 py-4 text-slate-800">
+                  <span th:text="${#strings.replace(item.unitPrice, '¤', '')}">$0.00</span>
+                  <span class="ml-1 text-xs font-semibold uppercase text-slate-600"
+                        th:if="${orderDetails.currencyCode != null and !#strings.isEmpty(orderDetails.currencyCode)}"
+                        th:text="${orderDetails.currencyCode}">USD</span>
+                </td>
+                <td class="px-6 py-4 text-right font-semibold text-slate-900">
+                  <span th:text="${#strings.replace(item.lineTotal, '¤', '')}">$0.00</span>
+                  <span class="ml-1 text-xs font-semibold uppercase text-slate-600"
+                        th:if="${orderDetails.currencyCode != null and !#strings.isEmpty(orderDetails.currencyCode)}"
+                        th:text="${orderDetails.currencyCode}">USD</span>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </th:block>
+</th:block>
+</html>

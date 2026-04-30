@@ -8,13 +8,16 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import java.time.Instant;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "currencies")
 public class Currency {
 
     @Id
-    @Column(length = 3, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(length = 3, nullable = false, columnDefinition = "CHAR(3)")
     private String code;
 
     @Column(nullable = false, length = 80)
@@ -24,6 +27,7 @@ public class Currency {
     private String symbol;
 
     @Min(0)
+    @JdbcTypeCode(SqlTypes.SMALLINT)
     @Column(name = "fraction_digits", nullable = false)
     private int fractionDigits;
 

@@ -69,6 +69,19 @@
                                     </label>
                                 </div>
 
+
+
+                                <div class="md:col-span-2 flex items-center justify-between border border-[#f3ece8] rounded-lg px-4 py-3 bg-[#fcfaf9]">
+                                    <div>
+                                        <p class="text-sm font-bold" th:text="#{admin.product_sources.manage.pos.config.forceCashBreakdownOnClose}">Forzar desglose de billetes al cierre</p>
+                                        <p class="text-xs text-[#956d50]" th:text="*{forceCashBreakdownOnClose} ? #{admin.product_sources.manage.pos.config.enabled.on} : #{admin.product_sources.manage.pos.config.enabled.off}">Inactivo</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input class="sr-only peer" type="checkbox" th:field="*{forceCashBreakdownOnClose}"/>
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8b4513]"></div>
+                                    </label>
+                                </div>
+
                                 <label class="flex flex-col gap-1.5 md:col-span-2">
                                     <span class="text-sm font-bold text-[#8b4513]/70" th:text="#{admin.product_sources.manage.pos.config.currency}">Moneda por defecto</span>
                                     <select th:field="*{defaultCurrencyCode}" class="w-full rounded-lg border-[#f3ece8] focus:border-[#8b4513] focus:ring-[#8b4513]/20 text-sm" required>

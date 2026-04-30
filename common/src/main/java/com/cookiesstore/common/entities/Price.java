@@ -13,6 +13,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.Instant;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -42,7 +44,8 @@ public class Price {
     @Column(name = "amount_minor", nullable = false)
     private long amountMinor;
 
-    @Column(nullable = false, length = 3)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(nullable = false, length = 3, columnDefinition = "CHAR(3)")
     private String currency;
 
     @Column(name = "valid_from", nullable = false)

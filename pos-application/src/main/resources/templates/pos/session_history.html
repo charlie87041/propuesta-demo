@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{pos/layout :: layout('Historial', 'session-history', '/session-history', ~{::content})}">
+    <th:block th:fragment="content">
+
+<section class="p-4 lg:p-8">
+  <div class="max-w-[1180px] mx-auto">
+    <div class="rounded-xl border border-slate-200 bg-white p-4 lg:p-6">
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr class="border-b border-slate-200">
+              <th class="px-3 py-3 text-left text-base font-semibold text-slate-700">Date</th>
+              <th class="px-3 py-3 text-left text-base font-semibold text-slate-700">Cash Payments</th>
+              <th class="px-3 py-3 text-left text-base font-semibold text-slate-700">Other Payments</th>
+              <th class="px-3 py-3 text-left text-base font-semibold text-slate-700">Total Sale</th>
+              <th class="px-3 py-3 text-left text-base font-semibold text-slate-700">Drawer Note</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-base text-slate-800">
+            <tr class="bg-slate-50/70">
+              <td class="px-3 py-4">03 March, 2026</td>
+              <td class="px-3 py-4 font-medium">$447.00</td>
+              <td class="px-3 py-4 font-medium">$0.00</td>
+              <td class="px-3 py-4 font-semibold">$447.00</td>
+              <td class="px-3 py-4 text-slate-500">N/A</td>
+            </tr>
+            <tr class="bg-slate-50/70">
+              <td class="px-3 py-4">17 February, 2026</td>
+              <td class="px-3 py-4 font-medium">$223.00</td>
+              <td class="px-3 py-4 font-medium">$960.70</td>
+              <td class="px-3 py-4 font-semibold">$1,183.70</td>
+              <td class="px-3 py-4 text-slate-500">N/A</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-6 flex items-center justify-between border-t border-slate-200 pt-6">
+        <p class="text-sm text-slate-600">Showing 2 of 2 results</p>
+        <div class="flex items-center gap-2">
+          <button class="grid h-10 w-10 place-items-center rounded border border-slate-300 text-slate-400">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <span class="rounded border border-slate-300 px-4 py-2 text-sm text-slate-700">Page 1 of 1</span>
+          <button class="grid h-10 w-10 place-items-center rounded border border-slate-300 text-slate-400">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    </th:block>
+</th:block>
+</html>
+

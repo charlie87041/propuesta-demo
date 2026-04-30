@@ -6,22 +6,58 @@
 <section class="p-4 lg:p-8">
   <div class="max-w-6xl mx-auto space-y-6">
     <div th:if="${posClosedToday}" class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-      El POS esta cerrado para hoy. Debes abrir turno para habilitar operaciones de venta.
+      <span th:text="#{pos.cashDrawer.closedNotice}">El POS esta cerrado para hoy. Debes abrir turno para habilitar operaciones de venta.</span>
+    </div>
+
+    <div th:if="${errorMessage}" class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" th:text="${errorMessage}">
+      No se pudo iniciar la sesion POS.
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-6">
         <h3 class="text-lg font-semibold" th:text="#{pos.opening.heading}">Iniciar turno</h3>
         <p class="mt-1 text-sm text-slate-500" th:text="#{pos.opening.subtitle}">Registra el efectivo inicial antes de abrir el POS.</p>
-        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label class="text-sm text-slate-600">Caja base
-            <input type="text" value="$ 0.00" class="mt-1 w-full rounded-lg border-slate-200 bg-slate-50" readonly>
-          </label>
-          <label class="text-sm text-slate-600">Empleado
-            <input type="text" th:value="${email}" class="mt-1 w-full rounded-lg border-slate-200 bg-slate-50" readonly>
-          </label>
+
+        <div th:if="${currentSession != null}" class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          <span th:text="#{pos.opening.session.openedOn}">Sesion abierta el</span>
+          <strong th:text="${#temporals.format(currentSession.sessionDate, 'dd/MM/yyyy')}">29/04/2026</strong>
         </div>
-        <button class="mt-6 rounded-lg bg-slate-900 text-white px-4 py-2 text-sm font-semibold" th:text="#{pos.opening.action}">Abrir sesion</button>
+
+        <form th:if="${!posOpeningDisabled}" class="mt-6" method="post" th:action="@{'/' + ${sourceId} + '/pos/opening-session'}" th:object="${openForm}">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label class="text-sm text-slate-600"><span th:text="#{pos.opening.baseCash}">Caja base</span>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                th:field="*{inCashAmount}"
+                class="mt-1 w-full rounded-lg border-slate-200 bg-slate-50"
+              >
+            </label>
+            <label class="text-sm text-slate-600"><span th:text="#{pos.opening.employee}">Empleado</span>
+              <input type="text" th:value="${email}" class="mt-1 w-full rounded-lg border-slate-200 bg-slate-50" readonly>
+            </label>
+          </div>
+
+          <p th:if="${#fields.hasErrors('inCashAmount')}" class="mt-2 text-sm text-rose-600" th:errors="*{inCashAmount}">Monto invalido</p>
+
+          <button
+            type="submit"
+            class="mt-6 rounded-lg bg-slate-900 text-white px-4 py-2 text-sm font-semibold"
+            th:text="#{pos.opening.action}"
+          >Abrir sesion</button>
+        </form>
+
+        <div th:if="${posOpeningDisabled}" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+            <p class="text-xs uppercase tracking-wide text-slate-500" th:text="#{pos.opening.baseCash}">Caja base</p>
+            <p class="mt-1 text-base font-semibold text-slate-800" th:text="${currentSession.openingCashBalance}">$0.00</p>
+          </div>
+          <div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+            <p class="text-xs uppercase tracking-wide text-slate-500" th:text="#{pos.opening.employee}">Empleado</p>
+            <p class="mt-1 text-base font-semibold text-slate-800" th:text="${email}">staging.admin@cookiesstore.local</p>
+          </div>
+        </div>
       </div>
       <div class="bg-white border border-slate-200 rounded-xl p-6">
         <h4 class="font-semibold" th:text="#{pos.opening.summary}">Resumen</h4>
@@ -39,26 +75,312 @@
             <span th:text="${posDefaultCurrency}">USD</span>
           </li>
         </ul>
+        <div th:if="${showCloseSessionAction}" class="mt-6 border-t border-slate-200 pt-4">
+          <button id="closeSessionBtn" type="button"
+             class="inline-flex w-full items-center justify-center rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700">
+            <span th:text="#{pos.closing.action}">Cerrar sesion</span>
+            
+          </button>
+          <form id="closeSessionForm"
+                method="post"
+                th:if="${currentSession != null}"
+                th:action="@{'/' + ${sourceId} + '/pos/close-session/' + ${currentSession.id}}"
+                th:object="${closeForm}"></form>
+        </div>
+        <div th:if="${showClosedSessionNotice}" class="mt-6 border-t border-slate-200 pt-4">
+          <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            <span th:text="#{pos.cashDrawer.close.alreadyDone}">Esta sesion ya fue cerrada.</span>
+            <div th:if="${closedSessionAt != null}" class="mt-1 text-xs text-emerald-800">
+              <span th:text="#{pos.cashDrawer.close.closedAt}">Cerrada el:</span>
+              <strong th:text="${#temporals.format(closedSessionAt, 'dd/MM/yyyy HH:mm')}">30/04/2026 14:30</strong>
+            </div>
+            <div th:if="${closedByDisplay != null}" class="mt-1 text-xs text-emerald-800">
+              <span th:text="#{pos.cashDrawer.close.closedBy}">Cerrada por:</span>
+              <strong th:text="${closedByDisplay}">staging.admin@cookiesstore.local</strong>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="bg-white border border-slate-200 rounded-xl p-6">
-      <h3 class="text-lg font-semibold" th:text="#{pos.cashDrawer.heading}">Gestion de caja</h3>
-      <p class="mt-1 text-sm text-slate-500" th:text="#{pos.cashDrawer.subtitle}">Control de ingresos, egresos y arqueo rapido.</p>
+      <h3 class="text-lg font-semibold" th:text="#{pos.cashDrawer.salesHistory.title}">Historial de ventas</h3>
+      <p class="mt-1 text-sm text-slate-500" th:text="#{pos.cashDrawer.salesHistory.subtitle}">Resumen diario de sesiones y pagos registrados en el POS.</p>
       <div class="mt-6 overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-slate-50 text-slate-600">
-            <tr><th class="text-left px-3 py-2">Hora</th><th class="text-left px-3 py-2">Tipo</th><th class="text-left px-3 py-2">Descripcion</th><th class="text-right px-3 py-2">Monto</th></tr>
+        <table class="min-w-full">
+          <thead>
+            <tr class="border-b border-slate-200">
+              <th class="px-3 py-3 text-left text-base font-semibold text-slate-700" th:text="#{pos.cashDrawer.salesHistory.col.date}">Date</th>
+              <th class="px-3 py-3 text-left text-base font-semibold text-slate-700" th:text="#{pos.cashDrawer.salesHistory.col.openingCash}">Caja base</th>
+              <th class="px-3 py-3 text-left text-base font-semibold text-slate-700" th:text="#{pos.cashDrawer.salesHistory.col.cashPayments}">Cash Payments</th>
+              <th class="px-3 py-3 text-left text-base font-semibold text-slate-700" th:text="#{pos.cashDrawer.salesHistory.col.otherPayments}">Other Payments</th>
+              <th class="px-3 py-3 text-left text-base font-semibold text-slate-700" th:text="#{pos.cashDrawer.salesHistory.col.totalSale}">Total Sale</th>
+              <th class="px-3 py-3 text-left text-base font-semibold text-slate-700" th:text="#{pos.cashDrawer.salesHistory.col.drawerNote}">Drawer Note</th>
+            </tr>
           </thead>
-          <tbody>
-            <tr class="border-t border-slate-100"><td class="px-3 py-2">09:05</td><td class="px-3 py-2">Ingreso</td><td class="px-3 py-2">Venta #00012</td><td class="px-3 py-2 text-right text-emerald-700">+$12.00</td></tr>
-            <tr class="border-t border-slate-100"><td class="px-3 py-2">10:20</td><td class="px-3 py-2">Egreso</td><td class="px-3 py-2">Compra de insumos</td><td class="px-3 py-2 text-right text-rose-700">-$3.00</td></tr>
+          <tbody class="divide-y divide-slate-200 text-base text-slate-800">
+            <tr th:if="${#lists.isEmpty(salesHistory.rows)}">
+              <td colspan="6" class="px-3 py-6 text-center text-sm text-slate-500" th:text="#{pos.cashDrawer.salesHistory.empty}">No hay sesiones registradas</td>
+            </tr>
+            <tr class="bg-slate-50/70" th:each="row : ${salesHistory.rows}">
+              <td class="px-3 py-4" th:text="${row.date}">2026-03-03</td>
+              <td class="px-3 py-4 font-medium" th:text="${row.openingCash}">$0.00</td>
+              <td class="px-3 py-4 font-medium" th:text="${row.cashPayments}">$0.00</td>
+              <td class="px-3 py-4 font-medium" th:text="${row.otherPayments}">$0.00</td>
+              <td class="px-3 py-4 font-semibold" th:text="${row.totalSale}">$0.00</td>
+              <td class="px-3 py-4 text-slate-500" th:text="${row.drawerNote}">N/A</td>
+            </tr>
           </tbody>
         </table>
+      </div>
+      <div class="mt-6 flex items-center justify-between border-t border-slate-200 pt-6">
+        <p class="text-sm text-slate-600">
+          <span th:text="#{pos.cashDrawer.salesHistory.paging.showing}">Showing</span>
+          <span th:text="${salesHistory.totalElements == 0 ? 0 : (salesHistory.page * salesHistory.size) + 1}">0</span>
+          -
+          <span th:text="${((salesHistory.page + 1) * salesHistory.size) > salesHistory.totalElements ? salesHistory.totalElements : ((salesHistory.page + 1) * salesHistory.size)}">0</span>
+          <span th:text="#{pos.cashDrawer.salesHistory.paging.of}">of</span>
+          <span th:text="${salesHistory.totalElements}">0</span>
+          <span th:text="#{pos.cashDrawer.salesHistory.paging.results}">results</span>
+        </p>
+        <div class="flex items-center gap-2">
+          <a class="grid h-10 w-10 place-items-center rounded border border-slate-300 text-slate-400"
+             th:href="@{'/' + ${sourceId} + '/pos/cash-drawer'(historyPage=${salesHistory.page > 0 ? salesHistory.page - 1 : 0},historySize=${salesHistory.size})}">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </a>
+          <span class="rounded border border-slate-300 px-4 py-2 text-sm text-slate-700">
+            <span th:text="#{pos.cashDrawer.salesHistory.paging.page}">Page</span> <span th:text="${salesHistory.page + 1}">1</span> <span th:text="#{pos.cashDrawer.salesHistory.paging.of}">of</span> <span th:text="${salesHistory.totalPages == 0 ? 1 : salesHistory.totalPages}">1</span>
+          </span>
+          <a class="grid h-10 w-10 place-items-center rounded border border-slate-300 text-slate-400"
+             th:href="@{'/' + ${sourceId} + '/pos/cash-drawer'(historyPage=${salesHistory.page + 1 < salesHistory.totalPages ? salesHistory.page + 1 : salesHistory.page},historySize=${salesHistory.size})}">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </section>
+
+<div id="cashBreakdownModal" class="hidden fixed inset-0 z-30">
+  <div class="absolute inset-0 bg-slate-950/60"></div>
+  <div class="relative z-10 min-h-full w-full flex items-center justify-center px-4 py-8">
+    <div class="w-full max-w-2xl rounded-xl border border-slate-200 bg-white shadow-lg">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+        <h4 class="font-semibold text-slate-900" th:text="#{pos.cashDrawer.breakdown.title}">Desglose de efectivo</h4>
+        <button id="cashBreakdownCloseBtn" type="button" class="text-slate-500 hover:text-slate-900">✕</button>
+      </div>
+      <div class="p-5">
+        <div id="cashBreakdownExpectedSection">
+        <p class="text-sm text-slate-600">
+          <span th:text="#{pos.cashDrawer.breakdown.expectedPrefix}">El total del desglose debe coincidir con el cash payments de la sesion:</span>
+          <strong id="cashPaymentsExpectedLabel">$0.00</strong>
+        </p>
+        <div id="cashBreakdownRows" class="mt-4 space-y-3"></div>
+        <div id="cashBreakdownTotalSection" class="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-600" th:text="#{pos.cashDrawer.breakdown.total}">Total desglose</span>
+            <strong id="cashBreakdownTotalLabel" class="text-slate-900">$0.00</strong>
+          </div>
+          <p id="cashBreakdownError" class="mt-2 hidden text-rose-600" th:text="#{pos.cashDrawer.breakdown.errorMismatch}">
+            El desglose no coincide con el cash payments de la sesion.
+          </p>
+        </div>
+        </div>
+        <div class="mt-4">
+          <label for="closeDrawerNoteInput" class="mb-2 block text-sm font-medium text-slate-700" th:text="#{pos.cashDrawer.close.note.label}">Notas de caja</label>
+          <textarea
+            id="closeDrawerNoteInput"
+            form="closeSessionForm"
+            name="drawerNote"
+            rows="3"
+            th:text="${closeForm != null ? closeForm.drawerNote : ''}"
+            class="w-full rounded-lg border-slate-200 bg-white text-sm"
+            th:placeholder="#{pos.cashDrawer.close.note.placeholder}"
+          ></textarea>
+        </div>
+      </div>
+      <div class="px-5 py-4 border-t border-slate-200 flex items-center justify-end gap-3">
+        <button id="cashBreakdownCancelBtn" type="button" class="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-700" th:text="#{pos.cashDrawer.breakdown.cancel}">Cancelar</button>
+        <button id="cashBreakdownConfirmBtn" type="button" class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold" th:text="#{pos.cashDrawer.breakdown.confirm}">Confirmar cierre</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+(() => {
+  const closeSessionBtn = document.getElementById("closeSessionBtn");
+  if (!closeSessionBtn) return;
+
+  const forceCashBreakdownOnClose = /*[[${forceCashBreakdownOnClose}]]*/ false;
+  const sessionCashPaymentsMinor = /*[[${currentSessionCashPaymentsMinor}]]*/ 0;
+  const sessionOpeningCashMinor = /*[[${currentSessionOpeningCashMinor}]]*/ 0;
+  const denominations = /*[[${currencyDenominations}]]*/ [];
+  const currencyCode = /*[[${posDefaultCurrency}]]*/ "USD";
+  const currentSessionId = /*[[${currentSession != null ? currentSession.id : null}]]*/ null;
+  const posClosedToday = /*[[${posClosedToday}]]*/ true;
+  const msgCloseNoOpenSession = /*[[#{pos.cashDrawer.close.noOpenSession}]]*/ "No open session available to close.";
+  const msgCloseAlreadyClosed = /*[[#{pos.cashDrawer.close.alreadyClosed}]]*/ "POS is already closed for today.";
+  const initialDrawerNote = /*[[${closeForm != null && closeForm.drawerNote != null ? closeForm.drawerNote : ''}]]*/ "";
+
+  const modal = document.getElementById("cashBreakdownModal");
+  const modalCloseBtn = document.getElementById("cashBreakdownCloseBtn");
+  const modalCancelBtn = document.getElementById("cashBreakdownCancelBtn");
+  const modalConfirmBtn = document.getElementById("cashBreakdownConfirmBtn");
+  const rowsContainer = document.getElementById("cashBreakdownRows");
+  const expectedLabel = document.getElementById("cashPaymentsExpectedLabel");
+  const totalLabel = document.getElementById("cashBreakdownTotalLabel");
+  const errorLabel = document.getElementById("cashBreakdownError");
+  const closeSessionForm = document.getElementById("closeSessionForm");
+  const drawerNoteInput = document.getElementById("closeDrawerNoteInput");
+  const expectedSection = document.getElementById("cashBreakdownExpectedSection");
+  const totalSection = document.getElementById("cashBreakdownTotalSection");
+  let modalRequiresBreakdown = false;
+
+  const money = (minor) => new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currencyCode && currencyCode !== "N/A" ? currencyCode : "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(Math.trunc((minor || 0) / 100));
+
+  const expectedCloseMinor = Number(sessionCashPaymentsMinor || 0) + Number(sessionOpeningCashMinor || 0);
+  const expectedCloseMajor = Math.trunc(expectedCloseMinor / 100);
+
+  const submitCloseSession = (withBreakdownInputs) => {
+    if (!currentSessionId || !closeSessionForm) {
+      window.alert(msgCloseNoOpenSession);
+      return;
+    }
+    if (posClosedToday) {
+      window.alert(msgCloseAlreadyClosed);
+      return;
+    }
+
+    closeSessionForm.querySelectorAll("input[data-close-breakdown-hidden='true']").forEach((node) => node.remove());
+    if (withBreakdownInputs) {
+      const inputs = rowsContainer.querySelectorAll("input[data-denomination-id][data-denomination-minor]");
+      let index = 0;
+      inputs.forEach((input) => {
+        const denominationId = Number(input.dataset.denominationId || 0);
+        const qty = Math.max(0, Number(input.value || 0));
+        if (!denominationId) {
+          return;
+        }
+        const idField = document.createElement("input");
+        idField.type = "hidden";
+        idField.name = `breakdowns[${index}].currencyBreadownId`;
+        idField.value = String(denominationId);
+        idField.setAttribute("data-close-breakdown-hidden", "true");
+
+        const qtyField = document.createElement("input");
+        qtyField.type = "hidden";
+        qtyField.name = `breakdowns[${index}].currencyBreakdonwCount`;
+        qtyField.value = String(qty);
+        qtyField.setAttribute("data-close-breakdown-hidden", "true");
+
+        closeSessionForm.appendChild(idField);
+        closeSessionForm.appendChild(qtyField);
+        index += 1;
+      });
+    }
+
+    closeSessionForm.submit();
+  };
+
+  const openBreakdownModal = (requiresBreakdown) => {
+    modalRequiresBreakdown = requiresBreakdown;
+    if (expectedSection) {
+      expectedSection.classList.toggle("hidden", !requiresBreakdown);
+    }
+    if (totalSection) {
+      totalSection.classList.toggle("hidden", !requiresBreakdown);
+    }
+
+    expectedLabel.textContent = money(expectedCloseMinor);
+    rowsContainer.innerHTML = "";
+    if (requiresBreakdown) {
+      denominations.forEach((d) => {
+        const row = document.createElement("div");
+        row.className = "grid grid-cols-[1fr_140px] items-center gap-3";
+        row.innerHTML = `
+          <div class="text-sm text-slate-700">
+            <strong>${d.label}</strong>
+            <span class="text-slate-500"> (${money(d.valueMinor)})</span>
+          </div>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            value="0"
+            data-denomination-id="${d.id}"
+            data-denomination-minor="${d.valueMinor}"
+            class="w-full rounded-lg border-slate-200 bg-white text-sm"
+          />
+        `;
+        rowsContainer.appendChild(row);
+      });
+      recalcBreakdownTotal();
+    }
+
+    if (drawerNoteInput) {
+      drawerNoteInput.value = initialDrawerNote || "";
+    }
+    errorLabel.classList.add("hidden");
+    modal.classList.remove("hidden");
+  };
+
+  const closeBreakdownModal = () => {
+    modal.classList.add("hidden");
+  };
+
+  const recalcBreakdownTotal = () => {
+    const inputs = rowsContainer.querySelectorAll("input[data-denomination-minor]");
+    let totalMinor = 0;
+    inputs.forEach((input) => {
+      const qty = Math.max(0, Number(input.value || 0));
+      const valueMinor = Number(input.dataset.denominationMinor || 0);
+      totalMinor += (qty * valueMinor);
+    });
+    totalLabel.textContent = money(totalMinor);
+    return totalMinor;
+  };
+
+  rowsContainer.addEventListener("input", recalcBreakdownTotal);
+  modalCloseBtn?.addEventListener("click", closeBreakdownModal);
+  modalCancelBtn?.addEventListener("click", closeBreakdownModal);
+
+  modalConfirmBtn?.addEventListener("click", () => {
+    if (modalRequiresBreakdown) {
+      const totalMinor = recalcBreakdownTotal();
+      const totalMajor = Math.trunc(Number(totalMinor || 0) / 100);
+      if (totalMajor !== expectedCloseMajor) {
+        errorLabel.classList.remove("hidden");
+        return;
+      }
+      errorLabel.classList.add("hidden");
+    }
+    closeBreakdownModal();
+    submitCloseSession(modalRequiresBreakdown);
+  });
+
+  closeSessionBtn.addEventListener("click", () => {
+    if (!forceCashBreakdownOnClose) {
+      openBreakdownModal(false);
+      return;
+    }
+
+    if (!denominations || denominations.length === 0) {
+      openBreakdownModal(false);
+      return;
+    }
+
+    openBreakdownModal(true);
+  });
+})();
+/*]]>*/
+</script>
 
     </th:block>
 </th:block>

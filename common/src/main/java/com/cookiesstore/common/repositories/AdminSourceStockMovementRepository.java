@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 public interface AdminSourceStockMovementRepository extends JpaRepository<AdminSourceStockMovement, Long>, JpaSpecificationExecutor<AdminSourceStockMovement>
 {
     public AdminSourceStockMovement findByOrderIdAndProductIdAndSourceId(Long orderId, Long productId, Long sourceId);
+    boolean existsByOrderIdAndMovementType(Long orderId, AdminSourceStockMovementType movementType);
     boolean existsByTransferIdAndProductIdAndSourceIdAndMovementType(
         Long transferId,
         Long productId,

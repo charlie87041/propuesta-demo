@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{pos/layout :: layout(#{pos.paymentMethods.title}, 'terminal', '/payment-methods', ~{::content})}">
+    <th:block th:fragment="content">
+<section class="p-4 lg:p-8">
+  <div class="max-w-5xl mx-auto bg-white border border-slate-200 rounded-xl p-6">
+    <div th:if="${errorMessage}" class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" th:text="${errorMessage}"></div>
+    <div th:if="${successMessage}" class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" th:text="${successMessage}"></div>
+    <h3 class="text-lg font-semibold" th:text="#{pos.paymentMethods.heading}">Metodos de pago</h3>
+    <p class="mt-2 text-sm text-slate-500" th:text="#{pos.paymentMethods.subtitle}">Selecciona el metodo de pago para completar la orden.</p>
+    <p th:if="${createdOrderIncrementId}" class="mt-3 text-sm text-slate-700">Orden creada: <strong th:text="${createdOrderIncrementId}">T-0001</strong></p>
+  </div>
+</section>
+    </th:block>
+</th:block>
+</html>

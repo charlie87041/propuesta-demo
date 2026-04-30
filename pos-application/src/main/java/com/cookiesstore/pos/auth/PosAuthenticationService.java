@@ -1,8 +1,8 @@
 package com.cookiesstore.pos.auth;
 
 import com.cookiesstore.pos.domain.PosAdminUser;
+import com.cookiesstore.common.repositories.AdminSourcePosConfigRepository;
 import com.cookiesstore.pos.repository.PosAdminUserRepository;
-import com.cookiesstore.pos.repository.PosSourceConfigRepository;
 import com.cookiesstore.pos.repository.PosSourceRepository;
 import com.cookiesstore.pos.repository.PosUserAssignmentRepository;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -14,13 +14,13 @@ public class PosAuthenticationService {
 
     private final PosAdminUserRepository adminUserRepository;
     private final PosSourceRepository sourceRepository;
-    private final PosSourceConfigRepository sourceConfigRepository;
+    private final AdminSourcePosConfigRepository sourceConfigRepository;
     private final PosUserAssignmentRepository userAssignmentRepository;
 
     public PosAuthenticationService(
         PosAdminUserRepository adminUserRepository,
         PosSourceRepository sourceRepository,
-        PosSourceConfigRepository sourceConfigRepository,
+        AdminSourcePosConfigRepository sourceConfigRepository,
         PosUserAssignmentRepository userAssignmentRepository
     ) {
         this.adminUserRepository = adminUserRepository;

@@ -73,6 +73,7 @@ public class OrderService {
         this.applicationEventPublisher = applicationEventPublisher;
         this.sourceRepository = sourceRepository;
     }
+    
 
     public Order putOrder(CreateOrderForm form) {
         if (form.id() == null) {
@@ -91,6 +92,17 @@ public class OrderService {
         OrderContext context = OrderContext.buildUpdateContext(form, this);
         return updateOrderProducts(context, form);
     }
+
+
+   public void updateOrderStatus(Order order, OrderStatus newStatus) {
+      OrderStatusHistory createdStatus = new OrderStatusHistory();
+      createdStatus.setOrder(order);
+      createdStatus.setFromStatus(order.getStatus());
+      createdStatus.setToStatus(newStatus);
+      this.orderStatusHistoryRepository.save(createdStatus);
+      order.setStatus(newStatus);
+      this.orderRepository.save(order);
+   }
 
     private Order updateOrderProducts(OrderContext context, CreateOrderForm form) {
         Order order = context.order;
@@ -152,6 +164,7 @@ public class OrderService {
         return orderRepository.findById(order.getId())
             .orElseThrow(() -> new OrderNotFoundException(order.getId()));
     }
+
 
     private void updateNewOrderStatus(Order order)
     {
