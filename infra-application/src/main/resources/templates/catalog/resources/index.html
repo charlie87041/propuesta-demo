@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/app-shell :: head(#{topology.resources.page-title})}"></th:block>
+</head>
+<body class="min-h-screen bg-field text-ink">
+<aside th:replace="~{fragments/app-shell :: sidebar('resources')}"></aside>
+<main class="px-4 py-8 lg:pl-[19rem]">
+    <div class="mx-auto max-w-7xl">
+        <div class="mb-6 flex items-end justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-semibold tracking-tight" th:text="#{topology.resources.title}">Resources</h1>
+                <p class="mt-1 text-sm text-slate-600" th:text="#{topology.resources.global.subtitle}">Infrastructure resources across all project environments.</p>
+            </div>
+            <a href="/resources/new"
+               class="rounded bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
+               th:text="#{topology.resources.global.action.new}">
+                New resource
+            </a>
+        </div>
+
+        <div th:if="${success}" class="mb-4 rounded border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+             th:text="${success}"></div>
+        <div th:if="${error}" class="mb-4 rounded border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+             th:text="${error}"></div>
+
+        <section class="overflow-hidden rounded border border-line bg-white shadow-sm">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="bg-field text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <tr>
+                    <th class="px-4 py-3" th:text="#{field.name}">Name</th>
+                    <th class="px-4 py-3" th:text="#{topology.resources.col.type}">Type</th>
+                    <th class="px-4 py-3" th:text="#{topology.resources.col.cidr}">CIDR</th>
+                    <th class="px-4 py-3" th:text="#{topology.resources.global.col.project}">Project</th>
+                    <th class="px-4 py-3" th:text="#{topology.resources.global.col.environment}">Environment</th>
+                    <th class="px-4 py-3" th:text="#{field.status}">Status</th>
+                    <th class="px-4 py-3 text-right" th:text="#{field.actions}">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-line">
+                <tr th:if="${#lists.isEmpty(resources)}">
+                    <td colspan="7" class="px-4 py-10 text-center text-slate-500" th:text="#{topology.resources.empty}">No resources defined yet.</td>
+                </tr>
+                <tr th:each="item : ${resources}" class="hover:bg-field">
+                    <td class="px-4 py-3 font-medium" th:text="${item.definition.name}">main-vpc</td>
+                    <td class="px-4 py-3 font-mono text-xs uppercase" th:text="${item.definition.resourceType}">VPC</td>
+                    <td class="px-4 py-3 font-mono text-xs" th:text="${item.configSummary ?: '-'}">10.0.0.0/16</td>
+                    <td class="px-4 py-3">
+                        <p class="font-medium" th:text="${item.definition.project.name}">Project</p>
+                        <p class="font-mono text-xs text-slate-500" th:text="${item.definition.project.key}">key</p>
+                    </td>
+                    <td class="px-4 py-3" th:text="${item.definition.environment.name}">dev</td>
+                    <td class="px-4 py-3">
+                        <span th:if="${item.active()}" class="rounded bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700" th:text="#{status.active}">ACTIVE</span>
+                        <span th:unless="${item.active()}" class="rounded bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600" th:text="#{status.archived}">ARCHIVED</span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex justify-end gap-2">
+                            <a th:href="@{/resources/{id}/edit(id=${item.definition.id})}"
+                               class="rounded border border-line px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-field"
+                               th:text="#{action.edit}">Edit</a>
+                            <form th:if="${item.active()}" method="post"
+                                  th:action="@{/resources/{id}/archive(id=${item.definition.id})}">
+                                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit"
+                                        class="rounded border border-amber-200 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-50"
+                                        th:text="#{action.disable}">Disable</button>
+                            </form>
+                            <form th:unless="${item.active()}" method="post"
+                                  th:action="@{/resources/{id}/activate(id=${item.definition.id})}">
+                                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit"
+                                        class="rounded border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50"
+                                        th:text="#{action.enable}">Enable</button>
+                            </form>
+                            <form th:if="${item.deletable()}" method="post"
+                                  th:action="@{/resources/{id}/delete(id=${item.definition.id})}">
+                                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit"
+                                        class="rounded border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50"
+                                        th:text="#{action.delete}">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+</main>
+</body>
+</html>

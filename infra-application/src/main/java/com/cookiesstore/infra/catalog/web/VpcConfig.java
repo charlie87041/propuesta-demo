@@ -1,4 +1,4 @@
-package com.cookiesstore.infra.topology.web;
+package com.cookiesstore.infra.catalog.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

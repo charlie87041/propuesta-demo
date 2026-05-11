@@ -1,29 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:replace="~{fragments/app-shell :: head(#{topology.resources.edit.page-title})}"></th:block>
+    <th:block th:replace="~{fragments/app-shell :: head(#{topology.resources.global.new.page-title})}"></th:block>
 </head>
 <body class="min-h-screen bg-field text-ink">
 <aside th:replace="~{fragments/app-shell :: sidebar('resources')}"></aside>
 <main class="px-4 py-8 lg:pl-[19rem]">
     <div class="mx-auto max-w-2xl">
         <div class="mb-6">
-            <a th:href="@{/projects/{pId}/environments/{eId}/resources(pId=${project.id},eId=${environment.id})}"
-               class="text-sm font-medium text-accent hover:text-emerald-800"
-               th:text="#{action.back.resources}">Back to resources</a>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight" th:text="#{topology.resources.edit.title}">Edit resource</h1>
-            <p class="mt-1 text-sm text-slate-600">
-                <span th:text="${project.name}">Project</span>
-                <span class="mx-2 text-slate-300">/</span>
-                <span th:text="${environment.name}">env</span>
-                <span class="mx-2 text-slate-300">/</span>
-                <span th:text="${resource.name}">resource</span>
-            </p>
+            <a href="/resources" class="text-sm font-medium text-accent hover:text-emerald-800" th:text="#{action.back.resources}">Back to resources</a>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight" th:text="#{topology.resources.global.new.title}">New resource</h1>
         </div>
 
-        <form method="post"
-              th:action="@{/projects/{pId}/environments/{eId}/resources/{rId}(pId=${project.id},eId=${environment.id},rId=${resource.id})}"
-              th:object="${form}"
+        <form method="post" action="/resources" th:object="${form}"
               class="rounded border border-line bg-white p-5 shadow-sm">
             <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
@@ -31,6 +20,18 @@
                  th:text="${formError}"></div>
 
             <div class="space-y-4">
+                <div>
+                    <label for="environmentId" class="mb-1.5 block text-sm font-medium" th:text="#{topology.resources.global.form.field.environment}">Environment</label>
+                    <select id="environmentId" th:field="*{environmentId}"
+                            class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100">
+                        <option value="" th:text="#{topology.resources.global.form.select-environment}">Select environment</option>
+                        <option th:each="env : ${environments}"
+                                th:value="${env.id}"
+                                th:text="|${env.project.name} / ${env.name}|">Project / env</option>
+                    </select>
+                    <p th:if="${#fields.hasErrors('environmentId')}" th:errors="*{environmentId}" class="mt-1 text-xs text-rose-600"></p>
+                </div>
+
                 <div>
                     <label for="name" class="mb-1.5 block text-sm font-medium" th:text="#{field.name}">Name</label>
                     <input id="name" th:field="*{name}"
@@ -61,18 +62,16 @@
 
                 <div>
                     <label for="description" class="mb-1.5 block text-sm font-medium" th:text="#{field.description}">Description</label>
-                    <textarea id="description" th:field="*{description}" rows="3"
+                    <textarea id="description" th:field="*{description}" rows="2"
                               class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100"></textarea>
                 </div>
             </div>
 
             <div class="mt-6 flex justify-end gap-3 border-t border-line pt-5">
-                <a th:href="@{/projects/{pId}/environments/{eId}/resources(pId=${project.id},eId=${environment.id})}"
-                   class="rounded border border-line px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-field"
-                   th:text="#{action.cancel}">Cancel</a>
+                <a href="/resources" class="rounded border border-line px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-field" th:text="#{action.cancel}">Cancel</a>
                 <button type="submit"
                         class="rounded bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
-                        th:text="#{action.save}">Save changes</button>
+                        th:text="#{topology.resources.form.submit}">Create resource</button>
             </div>
         </form>
     </div>

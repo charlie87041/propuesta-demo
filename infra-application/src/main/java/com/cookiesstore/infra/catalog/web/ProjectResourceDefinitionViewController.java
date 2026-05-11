@@ -1,4 +1,4 @@
-package com.cookiesstore.infra.topology.web;
+package com.cookiesstore.infra.catalog.web;
 
 import com.cookiesstore.infra.catalog.domain.Project;
 import com.cookiesstore.infra.catalog.domain.ProjectEnvironment;
@@ -10,6 +10,8 @@ import com.cookiesstore.infra.topology.service.ProjectResourceDefinitionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
+import software.amazon.awssdk.services.ec2.model.Vpc;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 @Controller
 @RequestMapping("/projects/{projectId}/environments/{environmentId}/resources")
@@ -47,6 +50,7 @@ public class ProjectResourceDefinitionViewController {
         @PathVariable String environmentId,
         Model model
     ) {
+        var vpc = new Vpc;
         Project project = projectService.requireById(projectId);
         ProjectEnvironment environment = environmentService.requireByProjectId(projectId, environmentId);
         prepareIndexModel(model, project, environment, new VpcResourceForm());

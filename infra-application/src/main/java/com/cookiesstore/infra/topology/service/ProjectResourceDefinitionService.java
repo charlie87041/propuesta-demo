@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -85,6 +86,15 @@ public class ProjectResourceDefinitionService {
             throw new IllegalArgumentException("This resource has active application bindings and cannot be deleted");
         }
         repository.delete(definition);
+    }
+
+    public List<ResourceDefinitionListItem> listAllItems() {
+        return repository.findAll().stream()
+            .sorted(Comparator.comparing((ProjectResourceDefinition d) -> d.getProject().getName())
+                .thenComparing(d -> d.getEnvironment().getName())
+                .thenComparing(ProjectResourceDefinition::getName))
+            .map(d -> new ResourceDefinitionListItem(d, configSummary(d), canDelete(d.getId())))
+            .toList();
     }
 
     public List<ResourceDefinitionListItem> listItemsByEnvironment(String environmentId) {

@@ -1,10 +1,13 @@
-package com.cookiesstore.infra.topology.web;
+package com.cookiesstore.infra.catalog.web;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class VpcResourceForm {
+public class GlobalVpcResourceForm {
+
+    @NotBlank
+    private String environmentId;
 
     @NotBlank
     @Size(max = 150)
@@ -22,6 +25,14 @@ public class VpcResourceForm {
     private boolean enableDnsSupport = true;
 
     private boolean enableDnsHostnames = true;
+
+    public String getEnvironmentId() {
+        return environmentId;
+    }
+
+    public void setEnvironmentId(String environmentId) {
+        this.environmentId = environmentId;
+    }
 
     public String getName() {
         return name;

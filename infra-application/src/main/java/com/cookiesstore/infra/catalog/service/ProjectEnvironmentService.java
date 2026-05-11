@@ -10,6 +10,7 @@ import com.cookiesstore.infra.topology.repository.ApplicationResourceBindingRepo
 import com.cookiesstore.infra.topology.repository.ApplicationServiceDefinitionRepository;
 import com.cookiesstore.infra.topology.repository.ProjectResourceDefinitionRepository;
 import jakarta.transaction.Transactional;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -98,6 +99,14 @@ public class ProjectEnvironmentService {
             throw new IllegalArgumentException("Only environments without topology or deployments can be deleted");
         }
         environmentRepository.delete(environment);
+    }
+
+    public List<ProjectEnvironment> listActiveEnvironments() {
+        return environmentRepository.findAll().stream()
+            .filter(e -> e.getStatus() == RecordStatus.ACTIVE)
+            .sorted(Comparator.comparing((ProjectEnvironment e) -> e.getProject().getName())
+                .thenComparing(ProjectEnvironment::getName))
+            .toList();
     }
 
     public List<ProjectEnvironment> listByProject(String projectId) {

@@ -1,4 +1,4 @@
-package com.cookiesstore.infra.topology.web;
+package com.cookiesstore.infra.catalog.web;
 
 import com.cookiesstore.infra.topology.domain.ProjectResourceDefinition;
 import jakarta.validation.constraints.NotBlank;
