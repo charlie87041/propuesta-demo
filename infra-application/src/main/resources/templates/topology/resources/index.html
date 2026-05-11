@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/app-shell :: head(#{topology.resources.page-title})}"></th:block>
+</head>
+<body class="min-h-screen bg-field text-ink">
+<aside th:replace="~{fragments/app-shell :: sidebar('projects')}"></aside>
+<main class="px-4 py-8 lg:pl-[19rem]">
+    <div class="mx-auto max-w-7xl">
+        <div class="mb-6">
+            <a th:href="@{/projects/{id}/environments(id=${project.id})}"
+               class="text-sm font-medium text-accent hover:text-emerald-800"
+               th:text="#{action.back.environments}">Back to environments</a>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight" th:text="#{topology.resources.title}">Resources</h1>
+            <p class="mt-1 text-sm text-slate-600">
+                <span th:text="${project.name}">Project</span>
+                <span class="mx-2 text-slate-300">/</span>
+                <span th:text="${environment.name}">env</span>
+            </p>
+        </div>
+
+        <div th:if="${success}" class="mb-4 rounded border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+             th:text="${success}"></div>
+        <div th:if="${error}" class="mb-4 rounded border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+             th:text="${error}"></div>
+        <div th:if="${formError}" class="mb-4 rounded border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+             th:text="${formError}"></div>
+
+        <div class="grid gap-5 xl:grid-cols-[1fr_22rem]">
+            <section class="overflow-hidden rounded border border-line bg-white shadow-sm">
+                <table class="min-w-full divide-y divide-line text-sm">
+                    <thead class="bg-field text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <tr>
+                        <th class="px-4 py-3" th:text="#{field.name}">Name</th>
+                        <th class="px-4 py-3" th:text="#{topology.resources.col.type}">Type</th>
+                        <th class="px-4 py-3" th:text="#{topology.resources.col.cidr}">CIDR</th>
+                        <th class="px-4 py-3" th:text="#{field.status}">Status</th>
+                        <th class="px-4 py-3 text-right" th:text="#{field.actions}">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-line">
+                    <tr th:if="${#lists.isEmpty(resources)}">
+                        <td colspan="5" class="px-4 py-10 text-center text-slate-500"
+                            th:text="#{topology.resources.empty}">No resources defined yet.</td>
+                    </tr>
+                    <tr th:each="item : ${resources}" class="hover:bg-field">
+                        <td class="px-4 py-3 font-medium" th:text="${item.definition.name}">main-vpc</td>
+                        <td class="px-4 py-3 font-mono text-xs uppercase" th:text="${item.definition.resourceType}">VPC</td>
+                        <td class="px-4 py-3 font-mono text-xs" th:text="${item.configSummary ?: '-'}">10.0.0.0/16</td>
+                        <td class="px-4 py-3">
+                            <span th:if="${item.active()}" class="rounded bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700"
+                                  th:text="#{status.active}">ACTIVE</span>
+                            <span th:unless="${item.active()}" class="rounded bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600"
+                                  th:text="#{status.archived}">ARCHIVED</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div th:if="${projectMutable}" class="flex justify-end gap-2">
+                                <a th:href="@{/projects/{pId}/environments/{eId}/resources/{rId}/edit(pId=${project.id},eId=${environment.id},rId=${item.definition.id})}"
+                                   class="rounded border border-line px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-field"
+                                   th:text="#{action.edit}">Edit</a>
+                                <form th:if="${item.active()}" method="post"
+                                      th:action="@{/projects/{pId}/environments/{eId}/resources/{rId}/archive(pId=${project.id},eId=${environment.id},rId=${item.definition.id})}">
+                                    <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <button type="submit"
+                                            class="rounded border border-amber-200 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-50"
+                                            th:text="#{action.disable}">Disable</button>
+                                </form>
+                                <form th:unless="${item.active()}" method="post"
+                                      th:action="@{/projects/{pId}/environments/{eId}/resources/{rId}/activate(pId=${project.id},eId=${environment.id},rId=${item.definition.id})}">
+                                    <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <button type="submit"
+                                            class="rounded border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50"
+                                            th:text="#{action.enable}">Enable</button>
+                                </form>
+                                <form th:if="${item.deletable()}" method="post"
+                                      th:action="@{/projects/{pId}/environments/{eId}/resources/{rId}/delete(pId=${project.id},eId=${environment.id},rId=${item.definition.id})}">
+                                    <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <button type="submit"
+                                            class="rounded border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50"
+                                            th:text="#{action.delete}">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section th:unless="${projectMutable}" class="rounded border border-line bg-white p-5 shadow-sm">
+                <h2 class="text-base font-semibold" th:text="#{topology.resources.readonly.title}">Readonly project</h2>
+                <p class="mt-2 text-sm text-slate-600" th:text="#{topology.resources.readonly.desc}">This project is archived, so resources can only be inspected.</p>
+            </section>
+
+            <form th:if="${projectMutable}" method="post"
+                  th:action="@{/projects/{pId}/environments/{eId}/resources(pId=${project.id},eId=${environment.id})}"
+                  th:object="${form}"
+                  class="rounded border border-line bg-white p-5 shadow-sm">
+                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <h2 class="text-base font-semibold" th:text="#{topology.resources.form.title}">New VPC resource</h2>
+
+                <div class="mt-4">
+                    <label for="name" class="mb-1.5 block text-sm font-medium" th:text="#{field.name}">Name</label>
+                    <input id="name" th:field="*{name}"
+                           class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100">
+                    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="mt-1 text-xs text-rose-600"></p>
+                </div>
+
+                <div class="mt-4">
+                    <label for="cidrBlock" class="mb-1.5 block text-sm font-medium" th:text="#{topology.resources.form.field.cidr-block}">CIDR block</label>
+                    <input id="cidrBlock" th:field="*{cidrBlock}" placeholder="10.0.0.0/16"
+                           class="w-full rounded border border-line bg-white px-3 py-2 text-sm font-mono outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100">
+                    <p th:if="${#fields.hasErrors('cidrBlock')}" th:errors="*{cidrBlock}" class="mt-1 text-xs text-rose-600"></p>
+                </div>
+
+                <div class="mt-4 space-y-2">
+                    <p class="text-sm font-medium" th:text="#{topology.resources.form.section.dns}">DNS settings</p>
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="checkbox" th:field="*{enableDnsSupport}"
+                               class="rounded border-line text-accent focus:ring-emerald-100">
+                        <span th:text="#{topology.resources.form.field.enable-dns-support}">Enable DNS support</span>
+                    </label>
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="checkbox" th:field="*{enableDnsHostnames}"
+                               class="rounded border-line text-accent focus:ring-emerald-100">
+                        <span th:text="#{topology.resources.form.field.enable-dns-hostnames}">Enable DNS hostnames</span>
+                    </label>
+                </div>
+
+                <div class="mt-4">
+                    <label for="description" class="mb-1.5 block text-sm font-medium" th:text="#{field.description}">Description</label>
+                    <textarea id="description" th:field="*{description}" rows="2"
+                              class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100"></textarea>
+                </div>
+
+                <button type="submit"
+                        class="mt-5 w-full rounded bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
+                        th:text="#{topology.resources.form.submit}">Create resource</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

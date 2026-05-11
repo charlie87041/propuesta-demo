@@ -1,0 +1,17 @@
+config:
+  aws:region: us-east-1
+  aws:accessKey: test
+  aws:secretKey: test
+  aws:skipCredentialsValidation: "true"
+  aws:skipRequestingAccountId: "true"
+  aws:s3UsePathStyle: "true"
+  aws:endpoints:
+    - ec2: http://localstack:4566
+    - sts: http://localstack:4566
+    - s3: http://localstack:4566
+    - sqs: http://localstack:4566
+    - sns: http://localstack:4566
+    - iam: http://localstack:4566
+    - lambda: http://localstack:4566
+    - cloudwatch: http://localstack:4566
+    - logs: http://localstack:4566

@@ -1,0 +1,47 @@
+server:
+  port: ${INFRA_SERVER_PORT:8082}
+  servlet:
+    session:
+      persistent: false
+
+spring:
+  application:
+    name: cookies-store-infra
+  datasource:
+    url: ${INFRA_DATASOURCE_URL:jdbc:sqlite:infra-application.db}
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      connection-init-sql: PRAGMA foreign_keys=ON
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.community.dialect.SQLiteDialect
+        format_sql: true
+  thymeleaf:
+    cache: false
+
+infra:
+  aws:
+    region: ${AWS_REGION:us-east-1}
+    endpoint: ${AWS_ENDPOINT_URL:}
+  security:
+    encryption-key: ${INFRA_ENCRYPTION_KEY:dev-infra-encryption-key}
+    key-version: ${INFRA_ENCRYPTION_KEY_VERSION:v1}
+  auth:
+    seed:
+      username: ${INFRA_AUTH_SEED_USERNAME:admin}
+      password: ${INFRA_AUTH_SEED_PASSWORD:change-me}
+      display-name: ${INFRA_AUTH_SEED_DISPLAY_NAME:Infra Admin}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

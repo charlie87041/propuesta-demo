@@ -74,3 +74,13 @@ bin/
 .claude/*
 .codex/*
 .aider*
+
+# Pulumi local state
+.pulumi/
+**/.pulumi/
+Pulumi.*.yaml.backup
+Pulumi.*.yaml.bak
+
+# Infra local database
+infra-application.db
+infra-application.db-*

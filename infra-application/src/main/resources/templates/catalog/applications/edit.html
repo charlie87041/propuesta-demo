@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/app-shell :: head(#{applications.edit.page-title})}"></th:block>
+</head>
+<body class="min-h-screen bg-field text-ink">
+<aside th:replace="~{fragments/app-shell :: sidebar('applications')}"></aside>
+<main class="px-4 py-8 lg:pl-[19rem]">
+    <div class="mx-auto max-w-4xl">
+        <div class="mb-6">
+            <a href="/applications" class="text-sm font-medium text-accent hover:text-emerald-800" th:text="#{action.back.applications}">Back to applications</a>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight" th:text="#{applications.edit.title}">Edit application</h1>
+            <p class="mt-1 text-sm text-slate-600">
+                <span class="font-mono" th:text="${application.key}">application-key</span>
+                <span class="mx-2 text-slate-300">/</span>
+                <span th:text="${application.project?.name}">Project</span>
+            </p>
+        </div>
+
+        <form method="post" th:action="@{/applications/{id}(id=${applicationId})}"
+              th:object="${form}" class="rounded border border-line bg-white p-5 shadow-sm">
+            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" th:field="*{projectId}">
+
+            <div th:if="${formError}" class="mb-5 rounded border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+                 th:text="${formError}"></div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+                <div>
+                    <label for="key" class="mb-1.5 block text-sm font-medium" th:text="#{field.key}">Key</label>
+                    <input id="key" th:field="*{key}" class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100">
+                    <p th:if="${#fields.hasErrors('key')}" th:errors="*{key}" class="mt-1 text-xs text-rose-600"></p>
+                </div>
+                <div>
+                    <label for="name" class="mb-1.5 block text-sm font-medium" th:text="#{field.name}">Name</label>
+                    <input id="name" th:field="*{name}" class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100">
+                    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="mt-1 text-xs text-rose-600"></p>
+                </div>
+                <div>
+                    <label for="buildType" class="mb-1.5 block text-sm font-medium" th:text="#{applications.form.field.build-type}">Build type</label>
+                    <select id="buildType" th:field="*{buildType}" class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100">
+                        <option value="" th:text="#{applications.form.field.select-build-type}">Select build type</option>
+                        <option th:each="buildType : ${buildTypes}" th:value="${buildType}" th:text="${buildType}">DOCKER</option>
+                    </select>
+                    <p th:if="${#fields.hasErrors('buildType')}" th:errors="*{buildType}" class="mt-1 text-xs text-rose-600"></p>
+                </div>
+                <div>
+                    <label for="serviceType" class="mb-1.5 block text-sm font-medium" th:text="#{applications.form.field.service-type}">Service type</label>
+                    <select id="serviceType" th:field="*{serviceType}" class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100">
+                        <option value="" th:text="#{applications.form.field.select-service-type}">Select service type</option>
+                        <option th:each="serviceType : ${serviceTypes}" th:value="${serviceType}" th:text="${serviceType}">EC2</option>
+                    </select>
+                    <p th:if="${#fields.hasErrors('serviceType')}" th:errors="*{serviceType}" class="mt-1 text-xs text-rose-600"></p>
+                </div>
+                <div>
+                    <label for="runtime" class="mb-1.5 block text-sm font-medium" th:text="#{applications.form.field.runtime}">Runtime</label>
+                    <input id="runtime" th:field="*{runtime}" class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100">
+                    <p th:if="${#fields.hasErrors('runtime')}" th:errors="*{runtime}" class="mt-1 text-xs text-rose-600"></p>
+                </div>
+                <div>
+                    <label for="defaultPort" class="mb-1.5 block text-sm font-medium" th:text="#{applications.form.field.default-port}">Default port</label>
+                    <input id="defaultPort" type="number" th:field="*{defaultPort}"
+                           class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100">
+                    <p th:if="${#fields.hasErrors('defaultPort')}" th:errors="*{defaultPort}" class="mt-1 text-xs text-rose-600"></p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <label for="sourceLocation" class="mb-1.5 block text-sm font-medium" th:text="#{applications.form.field.source-location}">Source location</label>
+                <input id="sourceLocation" th:field="*{sourceLocation}"
+                       class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100">
+                <p th:if="${#fields.hasErrors('sourceLocation')}" th:errors="*{sourceLocation}" class="mt-1 text-xs text-rose-600"></p>
+            </div>
+
+            <div class="mt-4">
+                <label for="description" class="mb-1.5 block text-sm font-medium" th:text="#{field.description}">Description</label>
+                <textarea id="description" th:field="*{description}" rows="3"
+                          class="w-full rounded border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-emerald-100"></textarea>
+                <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="mt-1 text-xs text-rose-600"></p>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3 border-t border-line pt-5">
+                <a href="/applications" class="rounded border border-line px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-field" th:text="#{action.cancel}">Cancel</a>
+                <button type="submit" class="rounded bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800" th:text="#{action.save}">Save changes</button>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

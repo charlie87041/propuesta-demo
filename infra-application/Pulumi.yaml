@@ -1,0 +1,3 @@
+name: cookies-store-infra
+runtime: java
+description: Infraestructura del ecommerce para entorno local con LocalStack

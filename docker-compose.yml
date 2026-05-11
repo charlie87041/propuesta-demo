@@ -1,4 +1,20 @@
 services:
+    localstack:
+        image: localstack/localstack:latest
+        container_name: localstack
+        restart: unless-stopped
+        environment:
+            SERVICES: ec2,ecs,rds,s3,sqs,sns,ssm,secretsmanager,sts,iam,cloudwatch,logs
+            DEFAULT_REGION: ${AWS_REGION:-us-east-1}
+            DEBUG: ${LOCALSTACK_DEBUG:-0}
+        ports:
+            - "127.0.0.1:4566:4566"
+        volumes:
+            - localstack-data:/var/lib/localstack
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - core-facturae_sail
+
     minio:
         image: minio/minio:latest
         container_name: minio
@@ -34,3 +50,4 @@ networks:
 
 volumes:
     minio-data:
+    localstack-data:

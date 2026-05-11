@@ -5,7 +5,7 @@ ARG GRADLE_VERSION=8.7
 # 1. Limpieza de repos y unificación de instalaciones (Java utils + Python)
 RUN rm -f /etc/apt/sources.list.d/yarn.list /etc/apt/sources.list.d/yarn*.list || true \
     && apt-get update && apt-get install -y --no-install-recommends \
-    wget unzip ca-certificates gh git python3-pip python3-venv wl-clipboard \
+    wget unzip ca-certificates gh git python3-pip python3-venv wl-clipboard awscli \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Instalación de Gradle
@@ -30,6 +30,7 @@ RUN echo "export JAVA_HOME=${JAVA_HOME}" > /etc/profile.d/java.sh \
     && echo "source /etc/profile.d/java.sh" >> ~/.bashrc \
     && echo "source /etc/profile.d/java.sh" >> ~/.zshrc
 
-# 5. Instalación de Aider
-# Usamos --break-system-packages de forma segura para el contenedor
-RUN pip3 install --no-cache-dir aider-chat --break-system-packages
+# 5. Tooling para LocalStack
+# Evitamos pip en build para no depender de descargas grandes/intermitentes.
+RUN printf '#!/usr/bin/env bash\naws --endpoint-url="${AWS_ENDPOINT_URL:-http://localstack:4566}" "$@"\n' > /usr/local/bin/awslocal \
+    && chmod +x /usr/local/bin/awslocal

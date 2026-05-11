@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/app-shell :: head(#{dashboard.page-title})}"></th:block>
+</head>
+<body class="min-h-screen bg-field text-ink">
+<aside th:replace="~{fragments/app-shell :: sidebar('dashboard')}"></aside>
+<main class="px-4 py-8 lg:pl-[19rem]">
+    <div class="mx-auto max-w-7xl">
+    <div class="mb-7 flex items-end justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-semibold tracking-tight" th:text="#{dashboard.title}">Dashboard</h1>
+            <p class="mt-1 text-sm text-slate-600" th:text="#{dashboard.subtitle}">Local infrastructure catalog and deployment workspace.</p>
+        </div>
+        <a href="/projects/new" class="rounded bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800" th:text="#{dashboard.action.new-project}">
+            New project
+        </a>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-3">
+        <a href="/projects" class="rounded border border-line bg-white p-5 shadow-sm transition hover:border-accent">
+            <h2 class="text-base font-semibold" th:text="#{dashboard.card.projects.title}">Projects</h2>
+            <p class="mt-2 text-sm text-slate-600" th:text="#{dashboard.card.projects.desc}">Manage provider-backed infrastructure workspaces.</p>
+        </a>
+        <section class="rounded border border-line bg-white p-5 shadow-sm">
+            <h2 class="text-base font-semibold" th:text="#{dashboard.card.topology.title}">Topology</h2>
+            <p class="mt-2 text-sm text-slate-600" th:text="#{dashboard.card.topology.desc}">Resource definitions and app bindings will live here.</p>
+        </section>
+        <section class="rounded border border-line bg-white p-5 shadow-sm">
+            <h2 class="text-base font-semibold" th:text="#{dashboard.card.deployments.title}">Deployments</h2>
+            <p class="mt-2 text-sm text-slate-600" th:text="#{dashboard.card.deployments.desc}">Pulumi previews, applies and outputs will be tracked here.</p>
+        </section>
+    </div>
+    </div>
+</main>
+</body>
+</html>

@@ -28,8 +28,12 @@
   ],
   "containerEnv": {
     "JAVA_HOME": "/usr/lib/jvm/msopenjdk-current",
-    "OPENROUTER_API_KEY": "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"
+    "AWS_REGION": "us-east-1",
+    "AWS_ENDPOINT_URL": "http://localstack:4566",
+    "PULUMI_CONFIG_PASSPHRASE": "",
+    "PULUMI_BACKEND_URL": "file:///workspaces/propuesta-demo/infra-application/.pulumi"
   },
+  "postCreateCommand": "mkdir -p ~/.aws && printf '[default]\\naws_access_key_id = test\\naws_secret_access_key = test\\n' > ~/.aws/credentials && printf '[default]\\nregion = us-east-1\\n' > ~/.aws/config",
   "appPort": [8080],
   "forwardPorts": [8080],
   "portsAttributes": {

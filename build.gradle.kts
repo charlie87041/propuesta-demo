@@ -17,7 +17,7 @@ allprojects {
 subprojects {
     apply(plugin = "java")
     apply(plugin = "io.spring.dependency-management")
-    if (name != "application" && name != "pos-application") {
+    if (name != "application" && name != "pos-application" && name != "infra-application") {
         apply(plugin = "java-library")
     }
 
@@ -56,6 +56,11 @@ project(":application") {
 }
 
 project(":pos-application") {
+    apply(plugin = "java")
+    apply(plugin = "org.springframework.boot")
+}
+
+project(":infra-application") {
     apply(plugin = "java")
     apply(plugin = "org.springframework.boot")
 }
